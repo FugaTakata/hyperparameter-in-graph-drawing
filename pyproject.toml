@@ -10,6 +10,7 @@ networkx = "^2.8.4"
 matplotlib = "^3.5.2"
 maturin = "^0.13.0"
 optuna = "^2.10.1"
+numpy = "^1.23.1"
 
 [tool.poetry.dev-dependencies]
 ipykernel = "^6.15.1"
