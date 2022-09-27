@@ -12,6 +12,7 @@ maturin = "^0.13.0"
 optuna = "^2.10.1"
 numpy = "^1.23.1"
 seaborn = "^0.11.2"
+py4cytoscape = "^1.5.0"
 
 [tool.poetry.dev-dependencies]
 ipykernel = "^6.15.1"
