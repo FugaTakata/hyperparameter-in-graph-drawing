@@ -3,7 +3,7 @@ import numpy as np
 
 # minimize
 # エッジを直径とした円の内部にノードを含まないようにしたい。
-# そこで内部に含まれる点の総数
+# エッジを直径とした円の内部にある点について、円の中心に近いほどでかいエネルギーを持つ
 def gabriel_graph_property(nx_graph, pos):
     s = 0
     for e in nx_graph.edges:
@@ -15,6 +15,7 @@ def gabriel_graph_property(nx_graph, pos):
         for node_id in nx_graph.nodes:
             if e1 == node_id or e2 == node_id:
                 continue
-            s += max(0, rij - np.linalg.norm(np.array(pos[node_id] - cij)))
+            s += max(0, rij -
+                     np.linalg.norm(np.array(pos[node_id] - cij))) ** 2
 
     return s
