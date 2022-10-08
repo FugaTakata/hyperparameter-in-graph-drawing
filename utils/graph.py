@@ -15,7 +15,7 @@ def generate_graph_from_nx_graph(nx_graph):
     return graph, indices
 
 
-def graph_preprocessing(nx_graph, edge_weight=0):
+def graph_preprocessing(nx_graph, edge_weight=1):
     nx_graph = nx.Graph(nx_graph)
 
     # グラフを無向グラフに
