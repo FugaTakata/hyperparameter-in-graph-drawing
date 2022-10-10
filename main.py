@@ -8,6 +8,8 @@ from utils.calc_quality_metrics import calc_quality_metrics
 DATASET_NAME = 'USpowerGrid'
 DATASET_PATH = f'lib/egraph-rs/js/dataset/{DATASET_NAME}.json'
 
+EDGE_WEIGHT = 30
+
 with open(DATASET_PATH) as f:
     graph_data = json.load(f)
 nx_graph = graph_preprocessing(nx.node_link_graph(graph_data))
@@ -31,9 +33,9 @@ with open(f'data/{DATASET_NAME}_result.json') as f:
 
 for seed in range(0, 20):
     print('seed', seed)
-    # pos = draw_graph(graph, indices, params, seed)
-    pos = jsondata['seed'][str(seed)]['pos']
-    quality_metrics = calc_quality_metrics(nx_graph, pos)
+    pos = draw_graph(graph, indices, params, seed)
+    quality_metrics = calc_quality_metrics(
+        nx_graph, pos, edge_weight=EDGE_WEIGHT)
 
     data['seed'][seed] = {
         'pos': pos,
