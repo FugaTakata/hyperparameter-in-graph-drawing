@@ -12,7 +12,7 @@ EDGE_WEIGHT = 30
 
 with open(DATASET_PATH) as f:
     graph_data = json.load(f)
-nx_graph = graph_preprocessing(nx.node_link_graph(graph_data))
+nx_graph = graph_preprocessing(nx.node_link_graph(graph_data), EDGE_WEIGHT)
 graph, indices = generate_graph_from_nx_graph(nx_graph)
 
 # 前回の実験でstressの値がよかったparams
