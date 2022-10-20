@@ -12,7 +12,7 @@ def stress(nx_graph, pos, K=1, L=1):
             norm = np.linalg.norm(np.array(pos[sid]) - np.array(pos[tid]))
             dij = shortest_paths[sid][tid]
             lij = L * dij
-            kij = K * dij
+            kij = K / dij ** 2
             e = (kij * ((norm - lij) ** 2)) / 2
 
             s += e
