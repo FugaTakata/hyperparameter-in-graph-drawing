@@ -3,14 +3,15 @@ import networkx as nx
 
 
 # minimize
-def stress(nx_graph, pos, K=1, L=1):
-    shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
+def stress(nx_graph, pos, all_shortest_paths, K=1, L=1):
+    if all_shortest_paths is None:
+        all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
     s = 0
     node_ids = sorted([node_id for node_id in pos])
     for i, sid in enumerate(node_ids):
         for tid in node_ids[i + 1:]:
             norm = np.linalg.norm(np.array(pos[sid]) - np.array(pos[tid]))
-            dij = shortest_paths[sid][tid]
+            dij = all_shortest_paths[sid][tid]
             lij = L * dij
             kij = K / dij ** 2
             e = (kij * ((norm - lij) ** 2)) / 2
