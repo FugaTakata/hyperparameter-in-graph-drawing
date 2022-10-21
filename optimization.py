@@ -8,10 +8,12 @@ from utils import graph_preprocessing, generate_graph_from_nx_graph, draw_graph
 from utils.calc_quality_metrics import calc_quality_metrics
 
 parser = argparse.ArgumentParser()
+parser.add_argument('prefix')
 parser.add_argument('dataset_name')
 args = parser.parse_args()
 
 dataset_name = args.dataset_name
+prefix = args.prefix
 
 print(dataset_name)
 
@@ -98,5 +100,5 @@ for best_trial in study.best_trials:
     }
 
 
-with open(f'data/optimization/{dataset_name}.json', mode='w') as f:
+with open(f'data/optimization/{prefix}_{dataset_name}.json', mode='w') as f:
     json.dump(best_trials_data, f, ensure_ascii=False)
