@@ -1,6 +1,7 @@
 import json
 import quality_metrics
 import networkx as nx
+import time
 
 from quality_metrics import stress
 from utils import graph_preprocessing, generate_graph_from_nx_graph, draw_graph
@@ -20,14 +21,16 @@ all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
 with open(f'data/{DATASET_NAME}_rpfs.json') as f:
     jsondata = json.load(f)
 
-data = None
-for seed in range(0, 10):
-    print('seed', seed)
-    pos = jsondata['e']['seed'][seed]['pos']
-    quality_metrics = stress(
-        nx_graph, pos, all_shortest_paths=all_shortest_paths)
+for e in jsondata['e']:
+    for seed in range(0, 10):
+        start = time.time()
+        print('seed', seed)
+        pos = e['seed'][str(seed)]['pos']
+        quality_metrics = stress(
+            nx_graph, pos, all_shortest_paths=all_shortest_paths)
 
-    jsondata['e']['seed'][seed]['stress'] = quality_metrics
+        e['seed'][str(seed)]['stress'] = quality_metrics
+        print(time.time() - start)
 
 with open(f'data/{DATASET_NAME}_rpfs_new.json', mode='w') as f:
     json.dump(jsondata, f, ensure_ascii=False)
