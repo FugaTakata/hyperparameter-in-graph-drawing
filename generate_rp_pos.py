@@ -2,6 +2,7 @@
 rp: random params. rpで作成した描画結果を量産する。
 '''
 
+import os
 import json
 import random
 import argparse
@@ -37,12 +38,13 @@ data = {}
 data['description'] = 'rp: random params. rpで作成した描画結果'
 data['params_description'] = "{'edge_length': random.randint(1, 100),'number_of_pivots': random.randint(1, len(nx_graph.nodes)),'number_of_iterations': random.randint(1, 1000),'eps': random.uniform(0.01, 1)}"
 
-i = 1
-
-with open(f'data/rp_pos/{prefix}_{dataset_name}.json', mode='w') as f:
+write_file_path = f'data/rp_pos/{prefix}_{dataset_name}.json'
+with open(write_file_path, mode='a') as f:
     while True:
-        print(i)
-        i += 1
+        # avoid exceeding 100MB
+        print(os.path.getsize(write_file_path))
+        if 0.9 * 10 ** 6 < os.path.getsize(write_file_path):
+            break
 
         seed = 0
         params = {
