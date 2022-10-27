@@ -33,7 +33,7 @@ params = {
     "number_of_pivots": 1260,
     "number_of_iterations": 220,
     "eps": 0.5456767808072727
-},
+}
 
 data = {}
 data['description'] = 'opfs: optimized params, free seed. 2022/09/27の実験でstressの結果がよかったparamsを用いてUSpowerGridを描画する。このときseedの固定を外すことでparamsが運良くseedにはまったのか？それともどんなseedでもうまく行くのかを調べる。追加で、どんなパラメータであってもseedに依存しないことを確認したい。'
