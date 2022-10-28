@@ -5,6 +5,7 @@ import argparse
 import networkx as nx
 
 import quality_metrics
+from quality_metrics import node_resolution
 from utils import graph_preprocessing, generate_graph_from_nx_graph, draw_graph
 from quality_metrics import stress
 
@@ -29,10 +30,10 @@ all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
 
 # 前回の実験でstressの値がよかったparams
 params = {
-    "edge_length": 30,
-    "number_of_pivots": 1260,
-    "number_of_iterations": 220,
-    "eps": 0.5456767808072727
+    "edge_length": 92,
+    "number_of_pivots": 2744,
+    "number_of_iterations": 179,
+    "eps": 0.5401948252511789
 }
 
 data = {}
@@ -48,11 +49,11 @@ for seed in range(0, 10):
     pos = draw_graph(graph, indices, params, seed)
 
     rd['seed'][seed] = {
-        'stress': stress(nx_graph, pos, all_shortest_paths),
+        'node_resolution': node_resolution(pos),
         'pos': pos,
     }
 data['e'].append(rd)
 
 
-with open(f'data/{dataset_name}_opfs.json', mode='w') as f:
+with open(f'data/{dataset_name}_opfs_node_resolution.json', mode='w') as f:
     json.dump(data, f, ensure_ascii=False)
