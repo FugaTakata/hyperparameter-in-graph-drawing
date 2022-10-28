@@ -43,7 +43,7 @@ with open(write_file_path, mode='a') as f:
     while True:
         # avoid exceeding 100MB
         print(os.path.getsize(write_file_path))
-        if 0.9 * 10 ** 6 < os.path.getsize(write_file_path):
+        if 0.9 * 10 ** 8 < os.path.getsize(write_file_path):
             break
 
         seed = 0
