@@ -31,7 +31,7 @@ quality_metrics_direction['crossing_number'] = "minimize"
 quality_metrics_direction['crossing_angle_maximization'] = 'maximize'
 quality_metrics_direction['aspect_ratio'] = 'maximize'
 quality_metrics_direction['angular_resolution'] = 'maximize'
-quality_metrics_direction['node_resolution'] = 'maximize'
+quality_metrics_direction['node_resolution'] = 'minimize'
 quality_metrics_direction['gabriel_graph_property'] = "minimize"
 
 quality_metrics_names = [
