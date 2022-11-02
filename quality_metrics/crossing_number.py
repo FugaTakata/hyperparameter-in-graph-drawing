@@ -1,8 +1,11 @@
 from utils import edge_crossing_finder
 
 
+direction = 'minimize'
+
+
 # minimize
-def crossing_number(nx_graph, pos, edge_crossing=None):
+def quality(nx_graph, pos, edge_crossing=None):
     if edge_crossing is None:
         edge_crossing = edge_crossing_finder(nx_graph, pos)
 

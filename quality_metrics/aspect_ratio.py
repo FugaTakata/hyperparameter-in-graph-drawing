@@ -2,8 +2,11 @@ from utils import gravity_center
 import numpy as np
 
 
+direction = 'maximize'
+
+
 # maximize
-def aspect_ratio(pos):
+def quality(pos):
     gravity_centered_pos = []
     gx, gy = gravity_center(pos)
     for node_id in pos:

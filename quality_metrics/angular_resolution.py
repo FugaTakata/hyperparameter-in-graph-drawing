@@ -2,9 +2,12 @@ import numpy as np
 import math
 
 
+direction = 'maximize'
+
+
 # maximize
 # すべてのノードについて、あるノードに入射するエッジ同士のなす角度が最も小さいもの
-def angular_resolution(nx_graph, pos):
+def quality(nx_graph, pos):
     edges = {}
     for s, t in nx_graph.edges:
         if s not in edges:

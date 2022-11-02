@@ -2,8 +2,11 @@ from utils import edge_crossing_finder
 import numpy as np
 
 
+direction = 'maximize'
+
+
 # maximization
-def crossing_angle_maximization(nx_graph, pos, edge_crossing=None):
+def quality(nx_graph, pos, edge_crossing=None):
     if edge_crossing is None:
         edge_crossing = edge_crossing_finder(nx_graph, pos)
     s = 0

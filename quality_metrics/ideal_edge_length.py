@@ -2,8 +2,11 @@ import numpy as np
 import networkx as nx
 
 
+direction = 'minimize'
+
+
 # minimize
-def ideal_edge_length(nx_graph, pos):
+def quality(nx_graph, pos):
     s = 0
     for source, target, data in nx_graph.edges(data=True):
         weight = data['weight'] if 'weight' in data and data['weight'] != 0 else 1

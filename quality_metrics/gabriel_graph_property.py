@@ -1,10 +1,13 @@
 import numpy as np
 
 
+direction = 'minimize'
+
+
 # minimize
 # エッジを直径とした円の内部にノードを含まないようにしたい。
 # エッジを直径とした円の内部にある点について、円の中心に近いほどでかいエネルギーを持つ
-def gabriel_graph_property(nx_graph, pos):
+def quality(nx_graph, pos):
     s = 0
     for e in nx_graph.edges:
         e1, e2 = e

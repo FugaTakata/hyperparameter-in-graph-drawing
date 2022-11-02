@@ -49,8 +49,11 @@ def jaccard_similarity_sum(nx_graph, nx_shape_graph):
     return j_s_sum / len(nx_graph.nodes)
 
 
+direction = 'maximize'
+
+
 # maximize
-def shape_based_metrics(nx_graph, pos, edge_weight=1):
+def quality(nx_graph, pos, edge_weight=1):
     nx_shape_graph = generate_delaunay_triangulation_graph(pos, edge_weight)
 
     return jaccard_similarity_sum(nx_graph, nx_shape_graph)

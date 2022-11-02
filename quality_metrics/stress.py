@@ -2,8 +2,11 @@ import numpy as np
 import networkx as nx
 
 
+direction = 'minimize'
+
+
 # minimize
-def stress(nx_graph, pos, all_shortest_paths, K=1, L=1):
+def quality(nx_graph, pos, all_shortest_paths, K=1, L=1):
     if all_shortest_paths is None:
         all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
     s = 0
