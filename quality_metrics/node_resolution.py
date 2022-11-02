@@ -1,16 +1,26 @@
 import numpy as np
+from math import sqrt
 
 
-# maximize
+# minimize
 # ノードのユークリッド距離として定義される。stressなどと一致させるために正規化するらしいけど多分必要ない
 def node_resolution(pos):
     nodes = sorted([node_id for node_id in pos])
-    r = float('inf')
-    ds = []
+    target_resolution = 1 / sqrt(len(nodes))
+    dmax = -float('inf')
+    dmin = float()
+    dist_map = {}
+
     for i, sid in enumerate(nodes):
-        for tid in nodes[i + 1:]:
-            dist = np.linalg.norm(np.array(pos[sid]) - np.array(pos[tid]))
-            ds.append(dist)
-            if dist < r:
-                r = dist
-    return r
+        dist_map[sid] = {}
+        for tid in nodes[i:]:
+            dist_map[sid][tid] = np.linalg.norm(
+                np.array(pos[sid]) - np.array(pos[tid]))
+            if dmax < dist_map[sid][tid]:
+                dmax = dist_map[sid][tid]
+            if dist_map[sid][tid] < dmin:
+                dmin = dist_map[sid][tid]
+
+    vr = 1 - (dmin / target_resolution * dmax)
+
+    return vr
