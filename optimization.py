@@ -6,6 +6,7 @@ import networkx as nx
 
 from utils import graph_preprocessing, generate_graph_from_nx_graph, draw_graph
 from utils.calc_quality_metrics import calc_quality_metrics
+from quality_metrics import node_resolution
 
 parser = argparse.ArgumentParser()
 parser.add_argument('prefix')
@@ -34,15 +35,15 @@ quality_metrics_direction['node_resolution'] = 'maximize'
 quality_metrics_direction['gabriel_graph_property'] = "minimize"
 
 quality_metrics_names = [
-    'angular_resolution',
-    'aspect_ratio',
-    'crossing_angle_maximization',
-    'crossing_number',
-    'gabriel_graph_property',
-    'ideal_edge_length',
+    # 'angular_resolution',
+    # 'aspect_ratio',
+    # 'crossing_angle_maximization',
+    # 'crossing_number',
+    # 'gabriel_graph_property',
+    # 'ideal_edge_length',
     'node_resolution',
-    'shape_based_metrics',
-    'stress'
+    # 'shape_based_metrics',
+    # 'stress'
 ]
 
 
@@ -59,8 +60,11 @@ def objective_wrapper(nx_graph, graph, indices, quality_metrics_names, all_short
         pos = draw_graph(graph, indices, params)
         trial.set_user_attr('pos', pos)
 
-        quality_metrics = calc_quality_metrics(
-            nx_graph, pos, all_shortest_paths, edge_weight)
+        # quality_metrics = calc_quality_metrics(
+        #     nx_graph, pos, all_shortest_paths, edge_weight)
+        quality_metrics = {
+            'node_resolution': node_resolution(pos)
+        }
         trial.set_user_attr('quality_metrics', quality_metrics)
 
         result = tuple([quality_metrics[name]
