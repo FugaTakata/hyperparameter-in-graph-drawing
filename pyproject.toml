@@ -13,6 +13,8 @@ optuna = "^2.10.1"
 numpy = "^1.23.1"
 seaborn = "^0.11.2"
 py4cytoscape = "^1.5.0"
+sklearn = "^0.0"
+statsmodels = "^0.13.4"
 
 [tool.poetry.dev-dependencies]
 ipykernel = "^6.15.1"
