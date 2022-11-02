@@ -1,6 +1,5 @@
 from quality_metrics import angular_resolution, \
-    aspect_ratio, \
-    crossing_angle_maximization, \
+    aspect_ratio, crossing_angle, \
     crossing_number,\
     gabriel_graph_property,\
     ideal_edge_length, \
@@ -17,7 +16,7 @@ def calc_quality_metrics(nx_graph, pos, all_shortest_paths, edge_weight=1):
 
     quality_metrics['angular_resolution'] = angular_resolution(nx_graph, pos)
     quality_metrics['aspect_ratio'] = aspect_ratio(pos)
-    quality_metrics['crossing_angle_maximization'] = crossing_angle_maximization(
+    quality_metrics['crossing_angle_maximization'] = crossing_angle(
         nx_graph, pos, edge_crossing)
     quality_metrics['crossing_number'] = crossing_number(
         nx_graph, pos, edge_crossing)
