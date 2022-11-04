@@ -124,7 +124,7 @@ def main():
     #     raise ValueError(f'{target_params}は無効です')
 
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/find_limitations/{dataset_name}/{target_qs}_{target_params_arg}.json'
+    export_path = f'data/find_limitations/{dataset_name}/{target_qs}_{target_params_arg}_1.json'
 
     target_qnames = [
         qname for qname in all_qnames] if target_qs == 'all' else target_qs.split(',')
@@ -175,10 +175,14 @@ def main():
     elif target_params_arg == 'b':
         target_params = 'number_of_pivots'
         export_data['data'][target_params] = {
-            'data': [], 'f': 'params_v = int(iter_n * (len(nx_graph.nodes) / (iter_to - iter_from + 1)))'}
+            'data': [],
+            'f': 'params_v = iter_n * 5'
+            # 'f': 'params_v = int(iter_n * (len(nx_graph.nodes) / (iter_to - iter_from + 1)))'
+        }
         for iter_n in range(iter_from, iter_to):
-            params_v = int(iter_n * (len(nx_graph.nodes) /
-                                     (iter_to - iter_from + 1))) + 1
+            # params_v = int(iter_n * (len(nx_graph.nodes) /
+            #                          (iter_to - iter_from + 1))) + 1
+            params_v = iter_n * 5
             params = {
                 **base_params,
                 target_params: params_v
