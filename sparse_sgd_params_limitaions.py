@@ -176,13 +176,13 @@ def main():
         target_params = 'number_of_pivots'
         export_data['data'][target_params] = {
             'data': [],
-            'f': 'params_v = iter_n * 5'
+            'f': 'params_v = iter_n * 5 + 100'
             # 'f': 'params_v = int(iter_n * (len(nx_graph.nodes) / (iter_to - iter_from + 1)))'
         }
         for iter_n in range(iter_from, iter_to):
             # params_v = int(iter_n * (len(nx_graph.nodes) /
             #                          (iter_to - iter_from + 1))) + 1
-            params_v = iter_n * 5
+            params_v = iter_n * 5 + 100
             params = {
                 **base_params,
                 target_params: params_v
