@@ -1,32 +1,25 @@
 import numpy as np
-from math import sqrt
 
 
-direction = 'minimize'
+direction = 'maximize'
 
 
-# minimize
-# ノードのユークリッド距離として定義される。stressなどと一致させるために正規化するらしいけど多分必要ない
-def quality(pos):
-    nodes = sorted([node_id for node_id in pos])
-    target_resolution = 1 / sqrt(len(nodes))
+def quality(pos, distances):
+    sorted_node_ids = sorted([node_id for node_id in pos])
+    target_resolution = 1 / np.sqrt(len(sorted_node_ids))
     dmax = -float('inf')
     dmin = float('inf')
-    dist_map = {}
 
-    for i, sid in enumerate(nodes):
-        dist_map[sid] = {}
-        for tid in nodes[i:]:
-            dist_map[sid][tid] = np.linalg.norm(
-                np.array(pos[sid]) - np.array(pos[tid]))
-            if dmax < dist_map[sid][tid]:
-                dmax = dist_map[sid][tid]
+    for i, sid in enumerate(sorted_node_ids):
+        for tid in sorted_node_ids[i:]:
+            if dmax < distances[sid][tid]:
+                dmax = distances[sid][tid]
             if sid == tid:
                 continue
 
-            if dist_map[sid][tid] < dmin:
-                dmin = dist_map[sid][tid]
+            if distances[sid][tid] < dmin:
+                dmin = distances[sid][tid]
 
-    vr = 1 - (dmin / (target_resolution * dmax))
+    q = min(1, dmin / (target_resolution * dmax))
 
-    return vr
+    return q

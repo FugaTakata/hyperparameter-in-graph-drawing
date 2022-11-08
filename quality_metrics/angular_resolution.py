@@ -1,37 +1,39 @@
+import networkx as nx
 import numpy as np
-import math
 
 
 direction = 'maximize'
 
 
-# maximize
-# すべてのノードについて、あるノードに入射するエッジ同士のなす角度が最も小さいもの
+# すべてのノードについて、あるノードに入射するエッジ同士のなす角度が最も小さいものをもとに評価
 def quality(nx_graph, pos):
-    edges = {}
-    for s, t in nx_graph.edges:
-        if s not in edges:
-            edges[s] = {}
-        if t not in edges:
-            edges[t] = {}
-        edges[s][t] = True
-        edges[t][s] = True
+    sorted_node_ids = sorted(nx_graph.nodes)
+    min_angle = float('inf')
 
-    ls = 0
-    for s in pos:
-        if s not in edges:
-            continue
-        l = 2 * math.pi
-        ts = sorted([node_id for node_id in edges[s]])
-        for i, t1 in enumerate(ts):
-            e1 = np.array(pos[s]) - np.array(pos[t1])
-            for t2 in ts[i + 1:]:
-                if t1 == t2 or s == t1 or s == t2:
-                    continue
-                e2 = np.array(pos[s]) - np.array(pos[t2])
-                angle = math.acos(
+    # calc min angle formed by (i, j) and (j, k)
+    for sid in sorted_node_ids:
+        neighbors = sorted(nx_graph.neighbors(sid))
+        pj = np.array(pos[sid])
+        for i, n1 in enumerate(neighbors):
+            pi = np.array(pos[n1])
+            e1 = pi - pj
+            for n2 in enumerate(neighbors[i+1:]):
+                pk = np.array(pos[n2])
+                e2 = pj - pk
+                angle = np.arccos(
                     np.dot(e1, e2) / (np.linalg.norm(e1) * np.linalg.norm(e2)))
-                if angle < l:
-                    l = angle
-        ls += l
-    return ls
+                angle = min(np.pi - angle, angle)
+                if angle < min_angle:
+                    min_angle = angle
+
+    max_degree = -float('inf')
+
+    nx_graph = nx.Graph()
+    for id in sorted_node_ids:
+        degree = nx_graph.degree(id)
+        if max_degree < degree:
+            max_degree = degree
+
+    q = min_angle / ((2 * np.pi) / max_degree)
+
+    return q

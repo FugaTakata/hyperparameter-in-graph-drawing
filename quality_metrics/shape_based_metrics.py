@@ -52,7 +52,6 @@ def jaccard_similarity_sum(nx_graph, nx_shape_graph):
 direction = 'maximize'
 
 
-# maximize
 def quality(nx_graph, pos, edge_weight=1):
     nx_shape_graph = generate_delaunay_triangulation_graph(pos, edge_weight)
 
