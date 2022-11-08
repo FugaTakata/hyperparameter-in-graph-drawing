@@ -17,7 +17,7 @@ def quality(nx_graph, pos):
         for i, n1 in enumerate(neighbors):
             pi = np.array(pos[n1])
             e1 = pi - pj
-            for n2 in enumerate(neighbors[i+1:]):
+            for n2 in neighbors[i+1:]:
                 pk = np.array(pos[n2])
                 e2 = pj - pk
                 angle = np.arccos(
@@ -28,9 +28,8 @@ def quality(nx_graph, pos):
 
     max_degree = -float('inf')
 
-    nx_graph = nx.Graph()
     for id in sorted_node_ids:
-        degree = nx_graph.degree(id)
+        degree = int(nx_graph.degree(id))
         if max_degree < degree:
             max_degree = degree
 
