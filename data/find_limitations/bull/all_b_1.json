@@ -1,0 +1,506 @@
+{
+  "description": "['angular_resolution', 'aspect_ratio', 'crossing_angle', 'crossing_number', 'gabriel_graph_property', 'ideal_edge_length', 'node_resolution', 'shape_based_metrics', 'stress']を用いた最適化のパレート解",
+  "data": {
+    "number_of_pivots": {
+      "data": [
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 5,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 10,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 15,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 20,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 25,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 30,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 35,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 40,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 45,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 50,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 55,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 60,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 65,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 70,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 75,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 80,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 85,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 90,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        },
+        {
+          "pos": {
+            "0": [2.818291187286377, -31.946157455444336],
+            "1": [1.9014393091201782, -1.6156892776489258],
+            "2": [-24.01057243347168, -17.761058807373047],
+            "3": [19.08896255493164, 23.89565086364746],
+            "4": [-54.460853576660156, -22.10785675048828]
+          },
+          "params": {
+            "edge_length": 30,
+            "number_of_pivots": 95,
+            "number_of_iterations": 100,
+            "eps": 0.1
+          },
+          "quality_metrics": {
+            "angular_resolution": 15.707963267948966,
+            "aspect_ratio": 0.4861454327896154,
+            "crossing_angle": 0,
+            "crossing_number": 0,
+            "gabriel_graph_property": 0,
+            "ideal_edge_length": 0.7567862956834012,
+            "node_resolution": 0.21786218998908968,
+            "shape_based_metrics": 0.5666666666666667,
+            "stress": 0.8028581341846015
+          }
+        }
+      ],
+      "f": "params_v = iter_n * 5"
+    }
+  },
+  "iter_from": 1,
+  "iter_to": 20
+}
