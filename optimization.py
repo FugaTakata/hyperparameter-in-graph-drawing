@@ -175,9 +175,9 @@ def main():
     for trial in study.trials:
         trial_number = trial.number
 
-        params = best_trial.user_attrs['params']
-        pos = best_trial.user_attrs['pos']
-        quality = best_trial.user_attrs['quality_metrics']
+        params = trial.user_attrs['params']
+        pos = trial.user_attrs['pos']
+        quality = trial.user_attrs['quality_metrics']
 
         export_data['trials'][trial_number] = {
             'params': params,
