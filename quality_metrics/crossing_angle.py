@@ -2,7 +2,7 @@ from utils import edge_crossing_finder
 import numpy as np
 
 
-direction = 'maximize'
+direction = 'minimize'
 
 
 def quality(nx_graph, pos, edge_crossing=None):
