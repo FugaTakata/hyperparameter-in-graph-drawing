@@ -83,7 +83,7 @@ def main():
         'stress'
     ]
 
-    now = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
     args = parse_args()
     dataset_name = args.dataset_name
