@@ -55,12 +55,12 @@ with open(write_file_path, mode='a') as f:
         }
 
         pos = draw_graph(graph, indices, params, seed)
-        quality_metrics = calc_quality_metrics(
-            nx_graph, pos, all_shortest_paths, edge_weight=EDGE_WEIGHT)
+        # quality_metrics = calc_quality_metrics(
+        #     nx_graph, pos, all_shortest_paths, edge_weight=EDGE_WEIGHT)
 
         data['seed'] = seed
         data['params'] = params
-        data['quality_metrics'] = quality_metrics
+        # data['quality_metrics'] = quality_metrics
         data['pos'] = pos
 
         jsondata = json.dumps(data, ensure_ascii=False)

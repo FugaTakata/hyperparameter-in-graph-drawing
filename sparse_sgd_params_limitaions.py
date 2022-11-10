@@ -219,7 +219,8 @@ def main():
         export_data['data'][target_params] = {
             'data': [], 'f': "params_v = 10 ** -(1.1 ** (iter_n - 1) - 1)"}
         for iter_n in range(iter_from, iter_to):
-            params_v = 10 ** -(1.1 ** (iter_n - 1) - 1)
+            # params_v = 10 ** -(1.1 ** (iter_n - 1) - 1)
+            params_v = 0.3 * iter_n
             params = {
                 **base_params,
                 target_params: params_v

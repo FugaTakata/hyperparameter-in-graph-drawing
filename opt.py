@@ -11,7 +11,7 @@ from quality_metrics import angular_resolution, aspect_ratio, crossing_angle, cr
 def objective_wrapper(nx_graph, graph, indices, qnames, all_shortest_paths, edge_weight=1):
     def objective(trial: optuna.Trial):
         params = {
-            'edge_length': trial.suggest_int('edge_length', 1, 100),
+            'edge_length': edge_weight,
             'number_of_pivots': trial.suggest_int('number_of_pivots', 1, len(nx_graph.nodes)),
             'number_of_iterations': trial.suggest_int('number_of_iterations', 1, 1000),
             'eps': trial.suggest_float('eps', 0.01, 1)
@@ -113,6 +113,7 @@ def main():
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
     export_path = f'data/optimization/{dataset_name}/{target_qs}.json'
 
+    # targetとなるparams配列作成
     target_qnames = [
         qname for qname in all_qnames] if target_qs == 'all' else target_qs.split(',')
 
@@ -124,12 +125,14 @@ def main():
             raise ValueError(f'{tqname} in {target_qnames} is not accepted')
     qnames = sorted(qnames)
 
+    # グラフロード
     with open(dataset_path) as f:
         graph_data = json.load(f)
     nx_graph = graph_preprocessing(nx.node_link_graph(graph_data), EDGE_WEIGHT)
     graph, indices = generate_graph_from_nx_graph(nx_graph)
     all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
 
+    # 最適化
     study = optuna.create_study(
         directions=[qmap[qname].direction
                     for qname in qnames]
@@ -138,6 +141,7 @@ def main():
     study.optimize(objective_wrapper(nx_graph, graph, indices, qnames, all_shortest_paths,
                    edge_weight=EDGE_WEIGHT), n_trials=N_TRIALS, show_progress_bar=True)
 
+    # 出力作成
     export_data = {
         'description': f'{qnames}を用いた最適化のパレート解',
         'data': {}
@@ -155,6 +159,7 @@ def main():
             'pos': pos
         }
 
+    # 出力
     with open(export_path, mode='w') as f:
         json.dump(export_data, f, ensure_ascii=False)
 

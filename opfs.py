@@ -30,10 +30,10 @@ all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
 
 # 前回の実験でstressの値がよかったparams
 params = {
-    "edge_length": 92,
-    "number_of_pivots": 2744,
-    "number_of_iterations": 179,
-    "eps": 0.5401948252511789
+    "edge_length": 56,
+    "number_of_pivots": 917,
+    "number_of_iterations": 155,
+    "eps": 0.8459816384096752
 }
 
 data = {}
@@ -49,11 +49,11 @@ for seed in range(0, 10):
     pos = draw_graph(graph, indices, params, seed)
 
     rd['seed'][seed] = {
-        'node_resolution': node_resolution(pos),
+        'node_resolution': node_resolution.quality(pos),
         'pos': pos,
     }
 data['e'].append(rd)
 
 
-with open(f'data/{dataset_name}_opfs_node_resolution.json', mode='w') as f:
+with open(f'data/opfs_pos/{dataset_name}/node_resolution.json', mode='w') as f:
     json.dump(data, f, ensure_ascii=False)
