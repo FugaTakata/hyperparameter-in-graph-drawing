@@ -91,7 +91,7 @@ def main():
     n_seed = int(args.n_seed)
 
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/rpfs/{dataset_name}/{target_qs}-{n_seed}s-{now}.json'
+    export_path = f'data/rpfs/{dataset_name}/q={target_qs}_seed={n_seed}_d={now}.json'
 
     # 出力ファイルの有無確認
     with open(export_path, mode='a'):

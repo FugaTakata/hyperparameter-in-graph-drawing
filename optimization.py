@@ -119,15 +119,14 @@ def main():
         'stress': stress
     }
 
-    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
     args = parse_args()
     dataset_name = args.dataset_name
     target_qs = args.target_qs
     n_trials = int(args.n_trials)
-
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/optimization/{dataset_name}/{target_qs}-{n_trials}.json'
+    export_path = f'data/optimization/{dataset_name}/q={target_qs}_n_trials={n_trials}_d={now}.json'
 
     # 出力ファイルの有無確認
     with open(export_path, mode='a'):
