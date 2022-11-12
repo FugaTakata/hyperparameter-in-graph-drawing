@@ -11,7 +11,7 @@ import networkx as nx
 import optuna
 
 from utils import graph_preprocessing, generate_graph_from_nx_graph, draw_graph, edge_crossing_finder
-from quality_metrics import angular_resolution, aspect_ratio, crossing_angle, crossing_number, gabriel_graph_property, ideal_edge_length, node_resolution, shape_based_metrics, stress
+from quality_metrics import angular_resolution, aspect_ratio, crossing_angle, crossing_number, gabriel_graph_property, ideal_edge_length, node_resolution, run_time, shape_based_metrics, stress
 
 
 def objective_wrapper(nx_graph, graph, indices, qnames, all_shortest_paths, edge_weight=1):
@@ -24,13 +24,21 @@ def objective_wrapper(nx_graph, graph, indices, qnames, all_shortest_paths, edge
         }
         trial.set_user_attr('params', params)
 
+        rt = run_time.RunTime()
+        rt.start()
         pos = draw_graph(graph, indices, params)
+        rt.end()
+
         trial.set_user_attr('pos', pos)
 
         # quality_metrics = calc_quality_metrics(
         #     nx_graph, pos, all_shortest_paths, edge_weight)
         quality_metrics = calc_qs(
             nx_graph, pos, all_shortest_paths, qnames, edge_weight)
+        quality_metrics = {
+            **quality_metrics,
+            'run_time': rt.quality()
+        }
         trial.set_user_attr('quality_metrics', quality_metrics)
 
         result = tuple([quality_metrics[name]
@@ -40,7 +48,6 @@ def objective_wrapper(nx_graph, graph, indices, qnames, all_shortest_paths, edge
 
 
 def calc_qs(nx_graph, pos, all_shortest_paths, qnames, edge_weight=1):
-    start = time.time()
     result = {}
     edge_crossing = None
     if 'crossing_angle' in qnames or 'crossing_number' in qnames:
@@ -70,7 +77,6 @@ def calc_qs(nx_graph, pos, all_shortest_paths, qnames, edge_weight=1):
         elif qname == 'stress':
             result[qname] = stress.quality(nx_graph, pos, all_shortest_paths)
 
-    print(time.time() - start)
     return result
 
 
@@ -103,8 +109,9 @@ def main():
         'gabriel_graph_property',
         'ideal_edge_length',
         'node_resolution',
+        'run_time',
         'shape_based_metrics',
-        'stress'
+        'stress',
     ]
 
     qmap = {
@@ -115,6 +122,7 @@ def main():
         'gabriel_graph_property': gabriel_graph_property,
         'ideal_edge_length': ideal_edge_length,
         'node_resolution': node_resolution,
+        'run_time': run_time,
         'shape_based_metrics': shape_based_metrics,
         'stress': stress
     }
@@ -126,7 +134,7 @@ def main():
     target_qs = args.target_qs
     n_trials = int(args.n_trials)
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/optimization/{dataset_name}/q={target_qs}_n_trials={n_trials}_d={now}.json'
+    export_path = f'data/optimization/{dataset_name}/q={target_qs}_n_trials={n_trials}.json'
 
     # 出力ファイルの有無確認
     with open(export_path, mode='a'):
@@ -154,7 +162,10 @@ def main():
     # 最適化
     study = optuna.create_study(
         directions=[qmap[qname].direction
-                    for qname in qnames]
+                    for qname in qnames],
+        storage=f'sqlite:///db/optimization.db',
+        study_name='optimize',
+        load_if_exists=True
     )
 
     study.optimize(objective_wrapper(nx_graph, graph, indices, qnames, all_shortest_paths,
