@@ -12,7 +12,7 @@ import random
 import networkx as nx
 
 from utils import graph_preprocessing, generate_graph_from_nx_graph, draw_graph, edge_crossing_finder
-from quality_metrics import angular_resolution, aspect_ratio, crossing_angle, crossing_number, gabriel_graph_property, ideal_edge_length, node_resolution, shape_based_metrics, stress
+from quality_metrics import angular_resolution, aspect_ratio, crossing_angle, crossing_number, gabriel_graph_property, ideal_edge_length, node_resolution, run_time, shape_based_metrics, stress
 
 
 def calc_qs(nx_graph, pos, all_shortest_paths, qnames, edge_weight=1):
@@ -134,9 +134,16 @@ def main():
         for _ in range(n_seed):
             seed = random.randint(0, 10000)
 
+            rt = run_time.RunTime()
+            rt.start()
             pos = draw_graph(graph, indices, params, seed)
+            rt.end()
             quality = calc_qs(nx_graph, pos, all_shortest_paths,
                               qnames, edge_weight=EDGE_WEIGHT)
+            quality_metrics = {
+                **quality_metrics,
+                'run_time': rt.quality()
+            }
             export_data['data'].append({
                 'seed': seed,
                 'quality': quality,
