@@ -140,8 +140,8 @@ def main():
             rt.end()
             quality = calc_qs(nx_graph, pos, all_shortest_paths,
                               qnames, edge_weight=EDGE_WEIGHT)
-            quality_metrics = {
-                **quality_metrics,
+            quality = {
+                **quality,
                 'run_time': rt.quality()
             }
             export_data['data'].append({
