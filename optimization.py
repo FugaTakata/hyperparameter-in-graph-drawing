@@ -163,9 +163,6 @@ def main():
     study = optuna.create_study(
         directions=[qmap[qname].direction
                     for qname in qnames],
-        storage=f'sqlite:///db/optimization.db',
-        study_name='optimize',
-        load_if_exists=True
     )
 
     study.optimize(objective_wrapper(nx_graph, graph, indices, qnames, all_shortest_paths,
