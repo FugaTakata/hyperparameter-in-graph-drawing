@@ -59,9 +59,9 @@ def parse_args():
     # seed数
     parser.add_argument('n_seed')
 
-    # どのparamsか？
+    # どの評価指標のopfsか？
     # stress
-    parser.add_argument('target_params')
+    parser.add_argument('target_quality')
 
     args = parser.parse_args()
 
@@ -88,10 +88,10 @@ if __name__ == '__main__':
     dataset_name = args.dataset_name
     target_qs = args.target_qs
     n_seed = int(args.n_seed)
-    target_params = args.target_params
+    target_quality = args.target_quality
 
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/opfs/{dataset_name}/q={target_qs}_seed={n_seed}_target_params={target_params}.json'
+    export_path = f'data/opfs/{dataset_name}/q={target_qs}_seed={n_seed}_target_quality={target_quality}.json'
 
     # get_best_trial_params.ipynbで作成
     with open(f'data/optimized_params/{dataset_name}/params.json') as f:
@@ -127,9 +127,8 @@ if __name__ == '__main__':
     }
 
     for target_q in opt_params:
-        if target_q != target_params:
+        if target_q != target_quality:
             continue
-        now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
         params = opt_params[target_q]
         export_data['data'][target_q] = {
@@ -158,5 +157,5 @@ if __name__ == '__main__':
                 'pos': pos
             })
 
-        with open(export_path, mode='w') as f:
-            f.write(json.dumps(export_data, ensure_ascii=False) + "\n")
+            with open(export_path, mode='w') as f:
+                f.write(json.dumps(export_data, ensure_ascii=False) + "\n")
