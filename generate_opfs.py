@@ -90,8 +90,10 @@ if __name__ == '__main__':
     n_seed = int(args.n_seed)
     target_quality = args.target_quality
 
+    now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/opfs/{dataset_name}/q={target_qs}_seed={n_seed}_target_quality={target_quality}.json'
+    export_path = f'data/opfs/{dataset_name}/q={target_qs}_seed={n_seed}_target_quality={target_quality}_date={now}.json'
 
     # get_best_trial_params.ipynbで作成
     with open(f'data/optimized_params/{dataset_name}/params.json') as f:
@@ -100,8 +102,6 @@ if __name__ == '__main__':
     # export確認
     with open(export_path, mode='a') as f:
         pass
-
-    now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
     # targetとなるquality metrics名の配列作成
     target_qnames = [
