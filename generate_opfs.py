@@ -12,9 +12,6 @@ import networkx as nx
 from utils import graph_preprocessing, generate_graph_from_nx_graph, draw_graph, edge_crossing_finder
 from quality_metrics import angular_resolution, aspect_ratio, crossing_angle, crossing_number, gabriel_graph_property, ideal_edge_length, node_resolution, run_time, shape_based_metrics, stress
 
-# get_best_trial_params.ipynbで作成
-opt_params = {}
-
 
 def calc_qs(nx_graph, pos, all_shortest_paths, qnames, edge_weight=1):
     result = {}
@@ -62,6 +59,10 @@ def parse_args():
     # seed数
     parser.add_argument('n_seed')
 
+    # どのparamsか？
+    # stress
+    parser.add_argument('target_params')
+
     args = parser.parse_args()
 
     return args
@@ -87,9 +88,18 @@ if __name__ == '__main__':
     dataset_name = args.dataset_name
     target_qs = args.target_qs
     n_seed = int(args.n_seed)
+    target_params = args.target_params
 
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/opfs/{dataset_name}/q={target_qs}_seed={n_seed}.json'
+    export_path = f'data/opfs/{dataset_name}/q={target_qs}_seed={n_seed}_target_params={target_params}.json'
+
+    # get_best_trial_params.ipynbで作成
+    with open(f'data/optimized_params/{dataset_name}/params.json') as f:
+        opt_params = json.load(f)
+
+    # export確認
+    with open(export_path, mode='a') as f:
+        pass
 
     now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
@@ -117,6 +127,8 @@ if __name__ == '__main__':
     }
 
     for target_q in opt_params:
+        if target_q != target_params:
+            continue
         now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
         params = opt_params[target_q]
@@ -126,6 +138,7 @@ if __name__ == '__main__':
         }
         for _ in range(n_seed):
             seed = random.randint(0, 10000)
+            print(_, seed)
 
             rt = run_time.RunTime()
             rt.start()
@@ -145,5 +158,5 @@ if __name__ == '__main__':
                 'pos': pos
             })
 
-    with open(export_path, mode='a') as f:
-        f.write(json.dumps(export_data, ensure_ascii=False) + "\n")
+        with open(export_path, mode='w') as f:
+            f.write(json.dumps(export_data, ensure_ascii=False) + "\n")
