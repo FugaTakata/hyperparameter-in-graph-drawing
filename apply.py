@@ -97,7 +97,7 @@ if __name__ == '__main__':
     now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    export_path = f'data/apply/{dataset_name}/q={target_qs}_seed={n_seed}_target_quality={target_quality}.json'
+    export_path = f'data/apply/{dataset_name}/q={target_qs}_seed={n_seed}_target_quality={target_quality}_params_from={apply_dataset}.json'
 
     # get_best_trial_params.ipynbで作成
     with open(f'data/optimized_params/{apply_dataset}/params.json') as f:
