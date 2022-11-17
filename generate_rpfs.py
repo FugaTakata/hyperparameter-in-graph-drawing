@@ -133,6 +133,7 @@ def main():
 
         for _ in range(n_seed):
             seed = random.randint(0, 10000)
+            print(_, seed)
 
             rt = run_time.RunTime()
             rt.start()
