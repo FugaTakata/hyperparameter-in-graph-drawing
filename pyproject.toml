@@ -16,6 +16,7 @@ py4cytoscape = "^1.5.0"
 sklearn = "^0.0"
 statsmodels = "^0.13.4"
 optuna-dashboard = "^0.7.3"
+tulip-python = "^5.6.3"
 
 [tool.poetry.dev-dependencies]
 ipykernel = "^6.15.1"

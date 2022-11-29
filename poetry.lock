@@ -1119,6 +1119,14 @@ python-versions = ">=3.7"
 test = ["pre-commit", "pytest"]
 
 [[package]]
+name = "tulip-python"
+version = "5.6.3"
+description = "Large graphs analysis and drawing"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.3.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -1150,7 +1158,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "5a0db58ef80ef3948a11780595df282bb8353e637d69a5cc0d43dfd7422d8eb7"
+content-hash = "4177a058bd29a35a7cec70fba45bc438d35ba7263355bb512468934f8803b915"
 
 [metadata.files]
 alembic = []
@@ -1638,6 +1646,7 @@ tqdm = [
     {file = "tqdm-4.64.0.tar.gz", hash = "sha256:40be55d30e200777a307a7585aee69e4eabb46b4ec6a4b4a5f2d9f11e7d5408d"},
 ]
 traitlets = []
+tulip-python = []
 typing-extensions = []
 urllib3 = []
 wcwidth = [
