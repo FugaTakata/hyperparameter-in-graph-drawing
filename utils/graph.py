@@ -1,5 +1,33 @@
 import networkx as nx
 from egraph import Graph, Coordinates, Rng, SparseSgd
+import json
+from tulip import tlp
+
+
+def generate_egraph_graph(nx_graph):
+    eg_graph = Graph()
+
+    indices = {}
+    for u in nx_graph.nodes:
+        indices[u] = eg_graph.add_node(u)
+    for u, v in nx_graph.edges:
+        eg_graph.add_edge(indices[u], indices[v], (u, v))
+
+    return eg_graph, indices
+
+
+def generate_tulip_graph(nx_graph):
+    tlp_graph = tlp.newGraph()
+    nx_tlp_node_map = {}
+
+    for u in nx_graph.nodes:
+        tlp_node = tlp_graph.addNode({'nx_id': u})
+        nx_tlp_node_map[str(u)] = tlp_node
+
+    for u, v in nx_graph.edges:
+        tlp_graph.addEdge(nx_tlp_node_map[str(u)], nx_tlp_node_map[str(v)], {})
+
+    return tlp_graph
 
 
 # グラフの生成・読み込み
@@ -40,9 +68,20 @@ def graph_preprocessing(nx_graph, edge_weight=1):
     return new_graph
 
 
+def load_nx_graph(dataset_path, edge_weight=1):
+    with open(dataset_path) as f:
+        graph_data = json.load(f)
+    nx_graph = graph_preprocessing(
+        nx.node_link_graph(graph_data), edge_weight=edge_weight)
+
+    return nx_graph
+
+
 # グラフの描画
 def draw_graph(graph, indices, params, seed=0):
     drawing = Coordinates.initial_placement(graph)
+    for u, i in indices.items():
+        print(drawing.x(i), drawing.y(i))
     rng = Rng.seed_from(seed)  # random seed
     sgd = SparseSgd(
         graph,
@@ -62,5 +101,7 @@ def draw_graph(graph, indices, params, seed=0):
     scheduler.run(step)
 
     pos = {u: (drawing.x(i), drawing.y(i)) for u, i in indices.items()}
+    for u, i in indices.items():
+        print(drawing.x(i), drawing.y(i))
 
     return pos
