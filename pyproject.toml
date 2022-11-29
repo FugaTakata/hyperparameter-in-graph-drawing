@@ -6,15 +6,12 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-networkx = "^2.8.4"
+networkx = {extras = ["default"], version = "^2.8.8"}
 matplotlib = "^3.5.2"
 maturin = "^0.13.0"
 optuna = "^2.10.1"
 numpy = "^1.23.1"
-seaborn = "^0.11.2"
-py4cytoscape = "^1.5.0"
 sklearn = "^0.0"
-statsmodels = "^0.13.4"
 optuna-dashboard = "^0.7.3"
 tulip-python = "^5.6.3"
 
