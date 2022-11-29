@@ -5,6 +5,7 @@
 import json
 import argparse
 import os
+import math
 
 from tulip import tlp
 
@@ -86,7 +87,7 @@ def search_params(layout_name, dataset_name, nx_graph: nx.Graph, all_pairs_path_
                 print(f'{target_params_name}={candidate}')
                 number_of_pivots_rate = candidate if target_params_name == 'number_of_pivots_rate' else base_params[
                     'number_of_pivots_rate']
-                number_of_pivots = int(
+                number_of_pivots = math.ceil(
                     number_of_pivots_rate * len(nx_graph.nodes))
                 params = {
                     **base_params,
@@ -140,6 +141,7 @@ def search_params(layout_name, dataset_name, nx_graph: nx.Graph, all_pairs_path_
         initial_pos = nx.random_layout(nx_graph, seed=0)
         for target_params_name in target_params_names:
             for candidate in candidates[target_params_name]:
+                print(f'{target_params_name}={candidate}')
                 k_rate = candidate if target_params_name == 'k_rate' else base_params['k_rate']
                 k = k_rate * len(nx_graph.nodes)
                 params = {
@@ -205,6 +207,7 @@ def search_params(layout_name, dataset_name, nx_graph: nx.Graph, all_pairs_path_
         tlp_graph = generate_tulip_graph(nx_graph)
         for target_params_name in target_params_names:
             for candidate in candidates[target_params_name]:
+                print(f'{target_params_name}={candidate}')
                 params = {
                     **tlp.getDefaultPluginParameters(tlp_layout_name, tlp_graph),
                     **base_params,
@@ -225,6 +228,10 @@ def search_params(layout_name, dataset_name, nx_graph: nx.Graph, all_pairs_path_
                     **quality_metrics,
                     'run_time': run_time.quality()
                 }
+
+                del params['result']
+                del params['edge length property']
+                del params['node size']
 
                 result_df = save_df(dataset_name=dataset_name,
                                     layout_name=layout_name,
@@ -247,6 +254,7 @@ def search_params(layout_name, dataset_name, nx_graph: nx.Graph, all_pairs_path_
         eg_graph, indices = generate_egraph_graph(nx_graph)
         for target_params_name in target_params_names:
             for candidate in candidates[target_params_name]:
+                print(f'{target_params_name}={candidate}')
                 params = {
                     **base_params,
                     target_params_name: candidate
@@ -327,26 +335,36 @@ if __name__ == '__main__':
         'USpowerGrid',
     ])
 
-    layout_names = [
-        SS,
-        FR,
-        FM3,
-        KK
+    layout_name_abbreviations = [
+        'SS',
+        'FR',
+        'FM3',
+        'KK'
     ]
 
     # args = parse_args()
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset_name', choices=dataset_names)
-    parser.add_argument('layout_name', choices=layout_names)
+    parser.add_argument('layout_name_abbreviation',
+                        choices=layout_name_abbreviations)
 
     args = parser.parse_args()
 
+    if args.layout_name_abbreviation == 'SS':
+        layout_name = SS
+    elif args.layout_name_abbreviation == 'FR':
+        layout_name = FR
+    elif args.layout_name_abbreviation == 'FM3':
+        layout_name = FM3
+    elif args.layout_name_abbreviation == 'KK':
+        layout_name = KK
+
     dataset_path = f'lib/egraph-rs/js/dataset/{args.dataset_name}.json'
-    export_path = f'data/params/search/results/{args.layout_name}/{args.dataset_name}.pkl'
+    export_path = f'data/params/search/results/{layout_name}/{args.dataset_name}.pkl'
 
     # prepare directories
     os.makedirs(
-        f'data/params/search/results/{args.layout_name}', exist_ok=True)
+        f'data/params/search/results/{layout_name}', exist_ok=True)
 
     # load graph
     nx_graph = load_nx_graph(dataset_path=dataset_path,
@@ -355,7 +373,7 @@ if __name__ == '__main__':
     # all_pairs_path_length
     all_pairs_path_length = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
 
-    search_params(args.layout_name,
+    search_params(layout_name,
                   args.dataset_name,
                   nx_graph,
                   all_pairs_path_length=all_pairs_path_length,
