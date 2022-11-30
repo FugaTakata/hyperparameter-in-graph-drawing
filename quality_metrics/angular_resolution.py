@@ -1,3 +1,5 @@
+import math
+
 import networkx as nx
 import numpy as np
 
@@ -21,7 +23,7 @@ def quality(nx_graph, pos):
                 pk = np.array(pos[n2])
                 e2 = pj - pk
                 angle = np.arccos(
-                    np.dot(e1, e2) / (np.linalg.norm(e1) * np.linalg.norm(e2)))
+                    max(min(1, np.dot(e1, e2) / (np.linalg.norm(e1) * np.linalg.norm(e2))), -1))
                 angle = min(np.pi - angle, angle)
                 if angle < min_angle:
                     min_angle = angle
