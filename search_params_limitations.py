@@ -186,7 +186,7 @@ def search_params(layout_name, dataset_name, nx_graph: nx.Graph, all_pairs_path_
             "page format": "square",
             "quality vs speed": "beautiful and fast",
             "edge length measurement": "midpoint",
-            "allowed positions": "integer",
+            "allowed positions": "all",
             "tip over": "no growing row",
             "presort": "decreasing height",
             "galaxy choice": "non uniform lower mass",
