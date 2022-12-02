@@ -24,7 +24,8 @@ def quality(nx_graph, pos, edge_crossing=None):
                 pt2 = np.array(pos[t2])
                 e2 = ps2 - pt2
                 angle = np.arccos(
-                    np.dot(e1, e2) / (np.linalg.norm(e1) * np.linalg.norm(e2)))
+                    max(min(1, np.dot(e1, e2) / (np.linalg.norm(e1) * np.linalg.norm(e2))), -1))
+
                 q_c = max(abs(np.pi - angle - np.pi/2),
                           abs(angle - np.pi/2))/(np.pi/2)
 
