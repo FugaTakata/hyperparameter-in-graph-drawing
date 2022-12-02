@@ -16,4 +16,7 @@ def fruchterman_reingold(nx_graph, initial_pos, params):
         pos=initial_pos
     )
 
+    for key in pos:
+        pos[key] = list(pos[key])
+
     return pos
