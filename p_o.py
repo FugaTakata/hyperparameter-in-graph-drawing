@@ -359,7 +359,6 @@ if __name__ == '__main__':
             raise ValueError(f'{tqname} in {target_qnames} is not accepted')
     qnames = sorted(qnames)
 
-    concurrency = 4
     max_cpu = os.cpu_count()
     assert concurrency <= max_cpu
 
