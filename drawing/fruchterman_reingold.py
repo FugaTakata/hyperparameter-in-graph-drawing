@@ -18,6 +18,6 @@ def fruchterman_reingold(nx_graph, initial_pos, params):
 
     for key in pos:
         p = pos[key]
-        pos[key] = list(float(p[0]), float(p[1]))
+        pos[key] = [float(p[0]), float(p[1])]
 
     return pos
