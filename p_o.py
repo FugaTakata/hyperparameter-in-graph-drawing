@@ -62,23 +62,23 @@ def optimize(dataset_path, qnames, n_trials, database_uri, study_name, layout_na
 
     if layout_name == FR:
         initial_pos = nx.random_layout(nx_graph, seed=0)
-        study.optimize(fr_objective(initial_pos=initial_pos, nx_graph=nx_graph, all_shortest_paths=all_shortest_paths, qnames=qnames,all_qnames=all_qnames edge_weight=edge_weight),
+        study.optimize(fr_objective(initial_pos=initial_pos, nx_graph=nx_graph, all_shortest_paths=all_shortest_paths, qnames=qnames, all_qnames=all_qnames, edge_weight=edge_weight),
                        n_trials=n_trials, show_progress_bar=True)
     elif layout_name == KK:
         graph, indices = generate_egraph_graph(nx_graph)
-        study.optimize(kk_objective(nx_graph=nx_graph, eg_graph=graph, indices=indices, all_shortest_paths=all_shortest_paths, qnames=qnames,all_qnames=all_qnames edge_weight=edge_weight),
+        study.optimize(kk_objective(nx_graph=nx_graph, eg_graph=graph, indices=indices, all_shortest_paths=all_shortest_paths, qnames=qnames, all_qnames=all_qnames, edge_weight=edge_weight),
                        n_trials=n_trials, show_progress_bar=True)
     elif layout_name == SS:
         graph, indices = generate_egraph_graph(nx_graph)
-        study.optimize(ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths,all_qnames=all_qnames
+        study.optimize(ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths, all_qnames=all_qnames,
                                     edge_weight=edge_weight), n_trials=n_trials, show_progress_bar=True)
     elif layout_name == FM3:
         tlp_graph = generate_tulip_graph(nx_graph)
         study.optimize(fm3_objective(nx_graph=nx_graph, tlp_graph=tlp_graph, all_shortest_paths=all_shortest_paths,
-                       qnames=qnames,all_qnames=all_qnames edge_weight=edge_weight), n_trials=n_trials, show_progress_bar=True)
+                       qnames=qnames,all_qnames=all_qnames, edge_weight=edge_weight), n_trials=n_trials, show_progress_bar=True)
 
 
-def fm3_objective(nx_graph, tlp_graph, all_shortest_paths, qnames,all_qnames, edge_weight):
+def fm3_objective(nx_graph, tlp_graph, all_shortest_paths, qnames, all_qnames, edge_weight):
     def objective(trial: optuna.Trial):
         tlp_layout_name = 'FM^3 (OGDF)'
         base_params = {
