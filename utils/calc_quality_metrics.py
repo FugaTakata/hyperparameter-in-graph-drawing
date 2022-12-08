@@ -3,6 +3,7 @@ from quality_metrics import angular_resolution, aspect_ratio, crossing_angle, cr
 
 
 def calc_qs(nx_graph, pos, all_shortest_paths, qnames, edge_weight=1):
+    print(qnames)
     result = {}
     edge_crossing = None
     if 'crossing_angle' in qnames or 'crossing_number' in qnames:

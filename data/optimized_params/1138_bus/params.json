@@ -1,1 +1,62 @@
-{"angular_resolution": {"edge_length": 30, "number_of_pivots": 793, "number_of_iterations": 60, "eps": 0.3983202098343257}, "aspect_ratio": {"edge_length": 30, "number_of_pivots": 995, "number_of_iterations": 18, "eps": 0.48123795334355796}, "crossing_angle": {"edge_length": 30, "number_of_pivots": 784, "number_of_iterations": 188, "eps": 0.5868096964515409}, "crossing_number": {"edge_length": 30, "number_of_pivots": 1107, "number_of_iterations": 69, "eps": 0.10153119578082652}, "gabriel_graph_property": {"edge_length": 30, "number_of_pivots": 268, "number_of_iterations": 51, "eps": 0.690972256274956}, "ideal_edge_length": {"edge_length": 30, "number_of_pivots": 1106, "number_of_iterations": 177, "eps": 0.137790984937441}, "node_resolution": {"edge_length": 30, "number_of_pivots": 1137, "number_of_iterations": 131, "eps": 0.025552291554864243}, "run_time": {"edge_length": 30, "number_of_pivots": 1, "number_of_iterations": 7, "eps": 0.6886625905114283}, "shape_based_metrics": {"edge_length": 30, "number_of_pivots": 1130, "number_of_iterations": 176, "eps": 0.1656816502384046}, "stress": {"edge_length": 30, "number_of_pivots": 1138, "number_of_iterations": 101, "eps": 0.09265759799720127}}
+{
+  "angular_resolution": {
+    "edge_length": 30,
+    "number_of_pivots": 793,
+    "number_of_iterations": 60,
+    "eps": 0.3983202098343257
+  },
+  "aspect_ratio": {
+    "edge_length": 30,
+    "number_of_pivots": 995,
+    "number_of_iterations": 18,
+    "eps": 0.48123795334355796
+  },
+  "crossing_angle": {
+    "edge_length": 30,
+    "number_of_pivots": 784,
+    "number_of_iterations": 188,
+    "eps": 0.5868096964515409
+  },
+  "crossing_number": {
+    "edge_length": 30,
+    "number_of_pivots": 1107,
+    "number_of_iterations": 69,
+    "eps": 0.10153119578082652
+  },
+  "gabriel_graph_property": {
+    "edge_length": 30,
+    "number_of_pivots": 268,
+    "number_of_iterations": 51,
+    "eps": 0.690972256274956
+  },
+  "ideal_edge_length": {
+    "edge_length": 30,
+    "number_of_pivots": 1106,
+    "number_of_iterations": 177,
+    "eps": 0.137790984937441
+  },
+  "node_resolution": {
+    "edge_length": 30,
+    "number_of_pivots": 1137,
+    "number_of_iterations": 131,
+    "eps": 0.025552291554864243
+  },
+  "run_time": {
+    "edge_length": 30,
+    "number_of_pivots": 1,
+    "number_of_iterations": 7,
+    "eps": 0.6886625905114283
+  },
+  "shape_based_metrics": {
+    "edge_length": 30,
+    "number_of_pivots": 1130,
+    "number_of_iterations": 176,
+    "eps": 0.1656816502384046
+  },
+  "stress": {
+    "edge_length": 30,
+    "number_of_pivots": 1138,
+    "number_of_iterations": 101,
+    "eps": 0.09265759799720127
+  }
+}

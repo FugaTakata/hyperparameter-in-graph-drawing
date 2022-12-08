@@ -1,0 +1,12 @@
+{
+  "angular_resolution": "maximize",
+  "aspect_ratio": "maximize",
+  "crossing_angle": "minimize",
+  "crossing_number": "minimize",
+  "gabriel_graph_property": "maximize",
+  "ideal_edge_length": "minimize",
+  "node_resolution": "maximize",
+  "run_time": "minimize",
+  "shape_based_metrics": "maximize",
+  "stress": "minimize"
+}

@@ -13,7 +13,7 @@ import networkx as nx
 import optuna
 from tulip import tlp
 
-from utils import graph_preprocessing, draw_graph, edge_crossing_finder
+from utils import graph_preprocessing
 from utils.calc_quality_metrics import calc_qs
 from utils.graph import generate_egraph_graph, generate_tulip_graph
 from quality_metrics.run_time import RunTime
@@ -369,6 +369,7 @@ if __name__ == '__main__':
         'database_uri': database_uri,
         'study_name': study_name,
         'layout_name': layout_name,
+        'all_qnames': all_qnames,
         'edge_weight': EDGE_WEIGHT
     }) for _ in range(concurrency)]
 
