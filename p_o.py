@@ -341,7 +341,7 @@ if __name__ == '__main__':
     concurrency = args.concurrency
 
     dataset_path = f'lib/egraph-rs/js/dataset/{dataset_name}.json'
-    database_uri = f'sqlite:///db/optimization/{layout_name}/{dataset_name}/{target_qs}-{n_trials}.db'
+    database_uri = f'sqlite:///db/optimization/{layout_name}/{dataset_name}/{target_qs}-{n_trials * concurrency}.db'
     study_name = f'{target_qs}'
 
     os.makedirs(
