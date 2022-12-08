@@ -31,7 +31,7 @@ FM3 = 'FM3'
 KK = 'Kamada-Kawai'
 
 
-def optimize(dataset_path, qnames, n_trials, database_uri, study_name, layout_name, edge_weight=1):
+def optimize(dataset_path, qnames, n_trials, database_uri, study_name, layout_name,all_qnames, edge_weight=1):
     # グラフのロード
     with open(dataset_path) as f:
         graph_data = json.load(f)
@@ -62,23 +62,23 @@ def optimize(dataset_path, qnames, n_trials, database_uri, study_name, layout_na
 
     if layout_name == FR:
         initial_pos = nx.random_layout(nx_graph, seed=0)
-        study.optimize(fr_objective(initial_pos=initial_pos, nx_graph=nx_graph, all_shortest_paths=all_shortest_paths, qnames=qnames, edge_weight=edge_weight),
+        study.optimize(fr_objective(initial_pos=initial_pos, nx_graph=nx_graph, all_shortest_paths=all_shortest_paths, qnames=qnames,all_qnames=all_qnames edge_weight=edge_weight),
                        n_trials=n_trials, show_progress_bar=True)
     elif layout_name == KK:
         graph, indices = generate_egraph_graph(nx_graph)
-        study.optimize(kk_objective(nx_graph=nx_graph, eg_graph=graph, indices=indices, all_shortest_paths=all_shortest_paths, qnames=qnames, edge_weight=edge_weight),
+        study.optimize(kk_objective(nx_graph=nx_graph, eg_graph=graph, indices=indices, all_shortest_paths=all_shortest_paths, qnames=qnames,all_qnames=all_qnames edge_weight=edge_weight),
                        n_trials=n_trials, show_progress_bar=True)
     elif layout_name == SS:
         graph, indices = generate_egraph_graph(nx_graph)
-        study.optimize(ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths,
+        study.optimize(ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths,all_qnames=all_qnames
                                     edge_weight=edge_weight), n_trials=n_trials, show_progress_bar=True)
     elif layout_name == FM3:
         tlp_graph = generate_tulip_graph(nx_graph)
         study.optimize(fm3_objective(nx_graph=nx_graph, tlp_graph=tlp_graph, all_shortest_paths=all_shortest_paths,
-                       qnames=qnames, edge_weight=edge_weight), n_trials=n_trials, show_progress_bar=True)
+                       qnames=qnames,all_qnames=all_qnames edge_weight=edge_weight), n_trials=n_trials, show_progress_bar=True)
 
 
-def fm3_objective(nx_graph, tlp_graph, all_shortest_paths, qnames, edge_weight):
+def fm3_objective(nx_graph, tlp_graph, all_shortest_paths, qnames,all_qnames, edge_weight):
     def objective(trial: optuna.Trial):
         tlp_layout_name = 'FM^3 (OGDF)'
         base_params = {
@@ -118,7 +118,7 @@ def fm3_objective(nx_graph, tlp_graph, all_shortest_paths, qnames, edge_weight):
             nx_graph,
             pos,
             all_shortest_paths=all_shortest_paths,
-            qnames=qnames,
+            qnames=all_qnames,
             edge_weight=edge_weight)
         quality_metrics = {
             **quality_metrics,
@@ -136,7 +136,7 @@ def fm3_objective(nx_graph, tlp_graph, all_shortest_paths, qnames, edge_weight):
     return objective
 
 
-def fr_objective(initial_pos, nx_graph, all_shortest_paths, qnames, edge_weight):
+def fr_objective(initial_pos, nx_graph, all_shortest_paths, qnames,all_qnames, edge_weight):
     def objective(trial: optuna.Trial):
         k_rate = trial.suggest_float('k_rate', 0.01, 1)
         k = math.ceil(k_rate * len(nx_graph.nodes))
@@ -168,7 +168,7 @@ def fr_objective(initial_pos, nx_graph, all_shortest_paths, qnames, edge_weight)
             nx_graph,
             pos,
             all_shortest_paths=all_shortest_paths,
-            qnames=qnames,
+            qnames=all_qnames,
             edge_weight=edge_weight)
         quality_metrics = {
             **quality_metrics,
@@ -181,7 +181,7 @@ def fr_objective(initial_pos, nx_graph, all_shortest_paths, qnames, edge_weight)
     return objective
 
 
-def ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths, edge_weight=1):
+def ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths,all_qnames, edge_weight=1):
     def objective(trial: optuna.Trial):
         number_of_pivots_rate = trial.suggest_float(
             'number_of_pivots_rate', 0.01, 1)
@@ -209,7 +209,7 @@ def ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths, edge_weig
             nx_graph,
             pos,
             all_shortest_paths=all_shortest_paths,
-            qnames=qnames,
+            qnames=all_qnames,
             edge_weight=edge_weight)
         quality_metrics = {
             **quality_metrics,
@@ -222,7 +222,7 @@ def ss_objective(nx_graph, graph, indices, qnames, all_shortest_paths, edge_weig
     return objective
 
 
-def kk_objective(nx_graph, eg_graph, indices, qnames, all_shortest_paths, edge_weight=1):
+def kk_objective(nx_graph, eg_graph, indices, qnames, all_shortest_paths,all_qnames, edge_weight=1):
     def objective(trial: optuna.Trial):
         params = {
             'edge_length': edge_weight,
@@ -238,7 +238,7 @@ def kk_objective(nx_graph, eg_graph, indices, qnames, all_shortest_paths, edge_w
             nx_graph,
             pos,
             all_shortest_paths=all_shortest_paths,
-            qnames=qnames,
+            qnames=all_qnames,
             edge_weight=edge_weight)
         quality_metrics = {
             **quality_metrics,
