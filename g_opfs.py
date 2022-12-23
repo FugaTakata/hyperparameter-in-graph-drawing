@@ -104,6 +104,12 @@ def parse_args():
         "--seed-to", type=int, required=True, help="n seed to. s <= t"
     )
     parser.add_argument(
+        "-t",
+        choices=ALL_QUALITY_METRICS_NAMES,
+        required=True,
+        help="target quality metrics name",
+    )
+    parser.add_argument(
         "-l",
         choices=layout_name_abbreviations,
         required=True,
@@ -120,11 +126,12 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
+    # dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
+    dataset_path = f"lib/egraph-rs/js/dataset/les_miserables.json"
 
     export_directory = f"data/n_opfs/{args.l}/{args.d}"
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    export_path = f"{export_directory}/{now}.pkl"
+    export_path = f"{export_directory}/{args.t}.pkl"
     os.makedirs(export_directory, exist_ok=True)
 
     with open(dataset_path) as f:
@@ -135,43 +142,43 @@ if __name__ == "__main__":
     )
 
     data_df = pd.read_pickle(f"data/params/{args.l}/{args.d}/opt.pkl")
+    target_df = data_df[data_df["target"] == args.t]
     df = pd.DataFrame()
 
     if args.l == SS:
         graph, indices = generate_egraph_graph(nx_graph)
-        for i, v in data_df.iterrows():
-            params = v["params"]
-            target = v["target"]
 
-            for s in range(args.seed_from, args.seed_to + 1):
-                print(target, i, s)
-                rt = RunTime()
+        params = target_df.params[0]
 
-                rt.start()
-                pos = sgd(graph, indices, params, s)
-                rt.end()
+        for s in range(args.seed_from, args.seed_to + 1):
+            print(args.t, s)
+            rt = RunTime()
 
-                quality_metrics = calc_qs(
-                    nx_graph=nx_graph,
-                    pos=pos,
-                    all_pairs_shortest_path_length=all_pairs_shortest_path_length,
-                    target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
-                    edge_weight=EDGE_WEIGHT,
-                )
-                quality_metrics = {
-                    **quality_metrics,
-                    "run_time": rt.quality(),
-                }
+            rt.start()
+            pos = sgd(graph, indices, params, s)
+            rt.end()
 
-                df = save(
-                    base_df=df,
-                    export_path=export_path,
-                    target=target,
-                    n_seed=s,
-                    params=params,
-                    pos=pos,
-                    quality_metrics=quality_metrics,
-                )
+            quality_metrics = calc_qs(
+                nx_graph=nx_graph,
+                pos=pos,
+                all_pairs_shortest_path_length=all_pairs_shortest_path_length,
+                target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
+                edge_weight=EDGE_WEIGHT,
+            )
+            quality_metrics = {
+                **quality_metrics,
+                "run_time": rt.quality(),
+            }
+
+            df = save(
+                base_df=df,
+                export_path=export_path,
+                target=args.t,
+                n_seed=s,
+                params=params,
+                pos=pos,
+                quality_metrics=quality_metrics,
+            )
     if args.l == FM3:
         tlp_layout_name = "FM^3 (OGDF)"
 
