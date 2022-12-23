@@ -8,223 +8,257 @@ import json
 import math
 import os
 import random
-import time
-from multiprocessing import Process
 
 # Third Party Library
 import networkx as nx
 import pandas as pd
 
 # First Party Library
+from drawing.fm3 import fm3
 from drawing.sgd import sgd
+from quality_metrics import (
+    angular_resolution,
+    aspect_ratio,
+    crossing_angle,
+    crossing_number,
+    gabriel_graph_property,
+    ideal_edge_length,
+    node_resolution,
+    run_time,
+    shape_based_metrics,
+    stress,
+)
 from quality_metrics.run_time import RunTime
-from utils import graph_preprocessing
 from utils.calc_quality_metrics import calc_qs
-from utils.graph import generate_egraph_graph
+from utils.dataset import dataset_names
+from utils.graph import (
+    generate_egraph_graph,
+    generate_tulip_graph,
+    graph_preprocessing,
+)
 
-SS = "Sparse-SGD"
-FR = "Fruchterman-Reingold"
+SS = "SS"
+FR = "FR"
 FM3 = "FM3"
-KK = "Kamada-Kawai"
+KK = "KK"
+
+QUALITY_METRICS = {
+    "angular_resolution": angular_resolution,
+    "aspect_ratio": aspect_ratio,
+    "crossing_angle": crossing_angle,
+    "crossing_number": crossing_number,
+    "gabriel_graph_property": gabriel_graph_property,
+    "ideal_edge_length": ideal_edge_length,
+    "node_resolution": node_resolution,
+    "run_time": run_time,
+    "shape_based_metrics": shape_based_metrics,
+    "stress": stress,
+}
+
+ALL_QUALITY_METRICS_NAMES = sorted([name for name in QUALITY_METRICS])
 
 
-def rpfs(dataset_path, export_path, n_params, n_seed, edge_weight=1):
-    # グラフのロード
-    with open(dataset_path) as f:
-        graph_data = json.load(f)
-    nx_graph = graph_preprocessing(nx.node_link_graph(graph_data), edge_weight)
-    all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
+def save(
+    base_df,
+    export_path,
+    n_params,
+    n_seed,
+    params,
+    pos,
+    quality_metrics,
+):
+    new_df = pd.DataFrame(
+        [
+            {
+                "n_params": n_params,
+                "n_seed": n_seed,
+                "params": params,
+                "pos": pos,
+                "quality_metrics": quality_metrics,
+            }
+        ]
+    )
 
-    all_qnames = [
-        "angular_resolution",
-        "aspect_ratio",
-        "crossing_angle",
-        "crossing_number",
-        "gabriel_graph_property",
-        "ideal_edge_length",
-        "node_resolution",
-        "run_time",
-        "shape_based_metrics",
-        "stress",
+    df = pd.concat([base_df, new_df])
+    df.to_pickle(export_path)
+
+    return df
+
+
+def parse_args():
+    layout_name_abbreviations = [
+        SS,
+        FR,
+        FM3,
+        KK,
     ]
 
-    graph, indices = generate_egraph_graph(nx_graph)
+    parser = argparse.ArgumentParser()
 
-    df = pd.DataFrame()
+    parser.add_argument(
+        "-d", choices=dataset_names, required=True, help="dataset name"
+    )
+    parser.add_argument("-p", type=int, required=True, help="n params")
+    parser.add_argument("-s", type=int, required=True, help="n seed")
+    parser.add_argument(
+        "-l",
+        choices=layout_name_abbreviations,
+        required=True,
+        help="layout name",
+    )
 
-    for i in range(n_params):
-        number_of_pivots_rate = random.uniform(0.01, 1)
-        number_of_pivots = math.ceil(
-            number_of_pivots_rate * len(nx_graph.nodes)
-        )
-        params = {
-            "edge_length": edge_weight,
-            "number_of_pivots_rate": number_of_pivots_rate,
-            "number_of_pivots": number_of_pivots,
-            "number_of_iterations": random.randrange(1, 200 + 1),
-            "eps": random.uniform(0.01, 1),
-        }
+    args = parser.parse_args()
 
-        for s in range(n_seed):
-            run_time = RunTime()
-
-            run_time.start()
-            pos = sgd(graph, indices, params, s)
-            run_time.end()
-
-            quality_metrics = calc_qs(
-                nx_graph,
-                pos,
-                all_shortest_paths=all_shortest_paths,
-                qnames=all_qnames,
-                edge_weight=edge_weight,
-            )
-            quality_metrics = {
-                **quality_metrics,
-                "run_time": run_time.quality(),
-            }
-
-            new_df = pd.DataFrame(
-                [
-                    {
-                        "n_params": i,
-                        "n_seed": s,
-                        "params": params,
-                        "pos": pos,
-                        "quality_metrics": quality_metrics,
-                    }
-                ]
-            )
-
-            df = pd.concat([df, new_df])
-            df.to_pickle(export_path)
+    return args
 
 
 if __name__ == "__main__":
     EDGE_WEIGHT = 30
 
-    all_qnames = [
-        "angular_resolution",
-        "aspect_ratio",
-        "crossing_angle",
-        "crossing_number",
-        "gabriel_graph_property",
-        "ideal_edge_length",
-        "node_resolution",
-        "run_time",
-        "shape_based_metrics",
-        "stress",
-    ]
+    args = parse_args()
 
-    dataset_names = sorted(
-        [
-            "3elt",
-            "1138_bus",
-            "bull",
-            "chvatal",
-            "cubical",
-            "davis_southern_women",
-            "desargues",
-            "diamond",
-            "dodecahedral",
-            "dwt_1005",
-            "dwt_2680",
-            "florentine_families",
-            "frucht",
-            "heawood",
-            "hoffman_singleton",
-            "house_x",
-            "house",
-            "icosahedral",
-            "karate_club",
-            "krackhardt_kite",
-            "les_miserables",
-            "moebius_kantor",
-            "octahedral",
-            "package",
-            "pappus",
-            "petersen",
-            "poli",
-            "qh882",
-            "sedgewick_maze",
-            "tutte",
-            "USpowerGrid",
-        ]
-    )
+    dataset_path = f"lib/egraph-rs/js/dataset/{args.dataset_name}.json"
 
-    layout_name_abbreviations = ["SS", "FR", "FM3", "KK"]
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("dataset_name", choices=dataset_names)
-
-    parser.add_argument("target_qs")
-
-    parser.add_argument("n_params_per_cpu", type=int)
-
-    parser.add_argument("n_seed", type=int)
-
-    parser.add_argument("concurrency", type=int)
-
-    parser.add_argument(
-        "layout_name_abbreviation", choices=layout_name_abbreviations
-    )
-
-    args = parser.parse_args()
-
-    if args.layout_name_abbreviation == "SS":
-        layout_name = SS
-    elif args.layout_name_abbreviation == "FR":
-        layout_name = FR
-    elif args.layout_name_abbreviation == "FM3":
-        layout_name = FM3
-    elif args.layout_name_abbreviation == "KK":
-        layout_name = KK
-
-    dataset_name = args.dataset_name
-    target_qs = args.target_qs
-    concurrency = args.concurrency
-
-    dataset_path = f"lib/egraph-rs/js/dataset/{dataset_name}.json"
-    export_directory = f"data/n_rpfs/{layout_name}/{dataset_name}"
-
+    export_directory = f"data/n_rpfs/{args.l}/{args.d}"
+    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    export_path = f"{export_directory}/{now}.pkl"
     os.makedirs(export_directory, exist_ok=True)
 
-    # targetとなるquality metrics名の配列作成
-    target_qnames = (
-        [qname for qname in all_qnames]
-        if target_qs == "all"
-        else target_qs.split(",")
+    with open(dataset_path) as f:
+        graph_data = json.load(f)
+    nx_graph = graph_preprocessing(nx.node_link_graph(graph_data), EDGE_WEIGHT)
+    all_pairs_shortest_path_length = dict(
+        nx.all_pairs_dijkstra_path_length(nx_graph)
     )
 
-    qnames = []
-    for tqname in target_qnames:
-        if tqname in all_qnames:
-            qnames.append(tqname)
-        else:
-            raise ValueError(f"{tqname} in {target_qnames} is not accepted")
-    qnames = sorted(qnames)
+    df = pd.DataFrame()
 
-    max_cpu = os.cpu_count()
-    assert concurrency <= max_cpu
+    if args.l == SS:
+        graph, indices = generate_egraph_graph(nx_graph)
+        for i in range(args.p):
+            number_of_pivots_rate = random.uniform(0.01, 1)
+            number_of_pivots = math.ceil(
+                number_of_pivots_rate * len(nx_graph.nodes)
+            )
+            params = {
+                "edge_length": EDGE_WEIGHT,
+                "number_of_pivots_rate": number_of_pivots_rate,
+                "number_of_pivots": number_of_pivots,
+                "number_of_iterations": random.randrange(1, 200 + 1),
+                "eps": random.uniform(0.01, 1),
+            }
 
-    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            for s in range(args.s):
+                rt = RunTime()
 
-    workers = [
-        Process(
-            target=rpfs,
-            kwargs={
-                "dataset_path": dataset_path,
-                "export_path": f"{export_directory}/{now}-{i}.pkl",
-                "n_params": args.n_params_per_cpu,
-                "n_seed": args.n_seed,
-                "edge_weight": EDGE_WEIGHT,
-            },
-        )
-        for i in range(concurrency)
-    ]
+                rt.start()
+                pos = sgd(graph, indices, params, s)
+                rt.end()
 
-    for worker in workers:
-        worker.start()
-        time.sleep(2)
+                quality_metrics = calc_qs(
+                    nx_graph=nx_graph,
+                    pos=pos,
+                    all_pairs_shortest_path_length=all_pairs_shortest_path_length,
+                    qnames=ALL_QUALITY_METRICS_NAMES,
+                    edge_weight=EDGE_WEIGHT,
+                )
+                quality_metrics = {
+                    **quality_metrics,
+                    "run_time": rt.quality(),
+                }
 
+                df = save(
+                    base_df=df,
+                    export_path=export_path,
+                    n_params=i,
+                    n_seed=s,
+                    params=params,
+                    pos=pos,
+                    quality_metrics=quality_metrics,
+                )
+    if args.l == FM3:
+        tlp_layout_name = "FM^3 (OGDF)"
+
+        tlp_graph = generate_tulip_graph(nx_graph)
+        for p in range(args.p):
+            params = {
+                "unit edge length": EDGE_WEIGHT,
+                "new initial placement": True,
+                "fixed iterations": random.randrange(1, 1000),
+                "threshold": random.uniform(0.001, 1.0),
+                "page format": "square",
+                "quality vs speed": "beautiful and fast",
+                "edge length measurement": "midpoint",
+                "allowed positions": "all",
+                "tip over": "no growing row",
+                "presort": "decreasing height",
+                "galaxy choice": "non uniform lower mass",
+                "max iter change": "linearly decreasing",
+                "initial placement": "advanced",
+                "force model": "new",
+                "repulsive force method": "nmm",
+                "initial placement forces": "uniform grid",
+                "reduced tree construction": "subtree by subtree",
+                "smallest cell finding": "iteratively",
+            }
+
+            for s in range(args.s):
+                print(f"{p}-{s}")
+                rt = RunTime()
+
+                rt.start()
+                pos = fm3(tlp_graph, params)
+                rt.end()
+
+                quality_metrics = calc_qs(
+                    nx_graph=nx_graph,
+                    pos=pos,
+                    all_pairs_shortest_path_length=all_pairs_shortest_path_length,
+                    qnames=ALL_QUALITY_METRICS_NAMES,
+                    edge_weight=EDGE_WEIGHT,
+                )
+                quality_metrics = {
+                    **quality_metrics,
+                    "run_time": rt.quality(),
+                }
+
+                del params["result"]
+                del params["edge length property"]
+                del params["node size"]
+
+                df = save(
+                    base_df=df,
+                    export_path=export_path,
+                    n_params=i,
+                    n_seed=s,
+                    params=params,
+                    pos=pos,
+                    quality_metrics=quality_metrics,
+                )
+    # if args.l == FR:
+    #     initial_pos = nx.random_layout(nx_graph, seed=0)
+    #     for p in range(args.p):
+    #         k_rate = random.uniform(0.01, 1)
+    #         k = math.ceil(k_rate * len(nx_graph.nodes))
+    #         params = {
+    #             "k_rate": k_rate,
+    #             "k": k,
+    #             "fixed": None,
+    #             "iterations": random.randrange(1, 1000),
+    #             "threshold": random.uniform("threshold", 0.00001, 0.001),
+    #             "weight": "weight",
+    #             "scale": None,
+    #             "center": None,
+    #             "dim": 2,
+    #             "seed": 0,
+    #         }
+
+    #         for s in range(args.s):
+    #             params["seed"] = s
+
+    #             rt = RunTime()
+
+    #             rt.start()
+    #             pos = fruchterman_reingold(
+    #                 nx_graph=nx_graph,
+    #             )
