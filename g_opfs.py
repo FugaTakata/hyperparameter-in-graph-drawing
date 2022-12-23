@@ -126,8 +126,7 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    # dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
-    dataset_path = f"lib/egraph-rs/js/dataset/les_miserables.json"
+    dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
     export_directory = f"data/n_opfs/{args.l}/{args.d}"
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
