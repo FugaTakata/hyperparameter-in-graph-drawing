@@ -22,7 +22,7 @@ from quality_metrics import (
 )
 from utils.dataset import dataset_names
 from utils.graph import graph_preprocessing
-from utils.objective import ss_objective
+from utils.objective import fr_objective, ss_objective
 
 SS = "SS"
 FR = "FR"
@@ -106,6 +106,18 @@ def optimize(
     if layout_name == SS:
         study.optimize(
             ss_objective(
+                nx_graph=nx_graph,
+                all_pairs_shortest_path_length=all_pairs_shortest_path_length,
+                target_quality_metrics_names=target_quality_metrics_names,
+                all_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
+                edge_weight=edge_weight,
+            ),
+            n_trials=n_trials,
+            show_progress_bar=True,
+        )
+    elif layout_name == FR:
+        study.optimize(
+            fr_objective(
                 nx_graph=nx_graph,
                 all_pairs_shortest_path_length=all_pairs_shortest_path_length,
                 target_quality_metrics_names=target_quality_metrics_names,

@@ -1,6 +1,9 @@
-import networkx as nx
-from egraph import Graph, Coordinates, Rng, SparseSgd
+# Standard Library
 import json
+
+# Third Party Library
+import networkx as nx
+from egraph import Coordinates, Graph, Rng, SparseSgd
 from tulip import tlp
 
 
@@ -21,7 +24,7 @@ def generate_tulip_graph(nx_graph):
     nx_tlp_node_map = {}
 
     for u in nx_graph.nodes:
-        tlp_node = tlp_graph.addNode({'nx_id': u})
+        tlp_node = tlp_graph.addNode({"nx_id": u})
         nx_tlp_node_map[str(u)] = tlp_node
 
     for u, v in nx_graph.edges:
@@ -62,8 +65,9 @@ def graph_preprocessing(nx_graph, edge_weight=1):
 
     # エッジにidと重みを追加
     for i, edge in enumerate(largest_cc_graph.edges):
-        new_graph.add_edge(str(edge[0]), str(
-            edge[1]), weight=edge_weight, id=str(i))
+        new_graph.add_edge(
+            str(edge[0]), str(edge[1]), weight=edge_weight, id=str(i)
+        )
 
     return new_graph
 
@@ -72,7 +76,8 @@ def load_nx_graph(dataset_path, edge_weight=1):
     with open(dataset_path) as f:
         graph_data = json.load(f)
     nx_graph = graph_preprocessing(
-        nx.node_link_graph(graph_data), edge_weight=edge_weight)
+        nx.node_link_graph(graph_data), edge_weight=edge_weight
+    )
 
     return nx_graph
 
@@ -85,13 +90,13 @@ def draw_graph(graph, indices, params, seed=0):
     rng = Rng.seed_from(seed)  # random seed
     sgd = SparseSgd(
         graph,
-        lambda _: params['edge_length'],  # edge length
-        params['number_of_pivots'],  # number of pivots
+        lambda _: params["edge_length"],  # edge length
+        params["number_of_pivots"],  # number of pivots
         rng,
     )
     scheduler = sgd.scheduler(
-        params['number_of_iterations'],  # number of iterations
-        params['eps'],  # eps: eta_min = eps * min d[i, j] ^ 2
+        params["number_of_iterations"],  # number of iterations
+        params["eps"],  # eps: eta_min = eps * min d[i, j] ^ 2
     )
 
     def step(eta):
