@@ -89,7 +89,7 @@ def fr_objective(
             "pos": initial_pos,
             "fixed": None,
             "iterations": trial.suggest_int("iterations", 1, 200),
-            "threshold": trial.suggest_float("threshold", 0.00001, 0.0001),
+            "threshold": trial.suggest_float("threshold", 0.00001, 0.001),
             "weight": "weight",
             "scale": 1,
             "center": None,
