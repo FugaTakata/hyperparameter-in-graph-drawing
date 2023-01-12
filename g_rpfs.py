@@ -199,6 +199,7 @@ if __name__ == "__main__":
             }
 
             for s in range(args.s):
+                print(p, s)
                 params = {**params, "seed": s}
 
                 rt = RunTime()
