@@ -180,18 +180,14 @@ if __name__ == "__main__":
                 )
     elif args.l == FR:
         for p in range(args.p):
-            initial_pos = nx.random_layout(nx_graph)
             pid = uuid.uuid4()
-            for k in initial_pos:
-                x, y = initial_pos[k]
-                initial_pos[k] = [float(x), float(y)]
 
             k_rate = random.uniform(0.01, 1)
             k = math.ceil(k_rate * len(nx_graph.nodes))
             params = {
                 "k_rate": k_rate,
                 "k": k,
-                "pos": initial_pos,
+                "pos": None,
                 "fixed": None,
                 "iterations": random.randint(1, 200),
                 "threshold": random.uniform(0.00001, 0.001),
@@ -201,15 +197,14 @@ if __name__ == "__main__":
                 "dim": 2,
                 "seed": None,
             }
+
             for s in range(args.s):
                 params = {**params, "seed": s}
 
                 rt = RunTime()
 
                 rt.start()
-                pos = fruchterman_reingold(
-                    nx_graph=nx_graph, initial_pos=initial_pos, params=params
-                )
+                pos = fruchterman_reingold(nx_graph=nx_graph, params=params)
                 rt.end()
 
                 quality_metrics = calc_qs(
@@ -224,27 +219,12 @@ if __name__ == "__main__":
                     "run_time": rt.quality(),
                 }
 
-                new_df = pd.DataFrame(
-                    [
-                        {
-                            "pid": pid,
-                            "n_seed": s,
-                            "params": params,
-                            "pos": pos,
-                            "quality_metrics": quality_metrics,
-                        }
-                    ]
+                df = save(
+                    base_df=df,
+                    export_path=export_path,
+                    pid=pid,
+                    n_seed=s,
+                    params=params,
+                    pos=pos,
+                    quality_metrics=quality_metrics,
                 )
-
-                df = pd.concat([df, new_df])
-                df.to_pickle(export_path)
-
-                # df = save(
-                #     base_df=df,
-                #     export_path=export_path,
-                #     pid=pid,
-                #     n_seed=s,
-                #     params=params,
-                #     pos=pos,
-                #     quality_metrics=quality_metrics,
-                # )
