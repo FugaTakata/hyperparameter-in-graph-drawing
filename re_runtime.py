@@ -9,6 +9,7 @@ import math
 import os
 import random
 import sys
+import uuid
 
 # Third Party Library
 import networkx as nx
@@ -133,47 +134,37 @@ if __name__ == "__main__":
 
     if args.l == SS:
         graph, indices = generate_egraph_graph(nx_graph)
-        for i in range(args.p):
-            number_of_pivots_rate = random.uniform(0.01, 1)
-            number_of_pivots = math.ceil(
-                number_of_pivots_rate * len(nx_graph.nodes)
-            )
-            params = {
-                "edge_length": EDGE_WEIGHT,
-                "number_of_pivots_rate": number_of_pivots_rate,
-                "number_of_pivots": number_of_pivots,
-                "number_of_iterations": random.randrange(1, 200 + 1),
-                "eps": random.uniform(0.01, 1),
+
+        for i, v in data_df.iterrows():
+            params = v.params
+            quality_metrics = v.quality_metrics
+            n_seed = v.n_seed
+            b_pos = v.pos
+            n_params = v.n_params
+
+            rt = RunTime()
+
+            rt.start()
+            pos = sgd(graph, indices, params, n_seed)
+            rt.end()
+
+            print("before", quality_metrics["run_time"])
+
+            quality_metrics = {
+                **quality_metrics,
+                "run_time": rt.quality(),
             }
+            print("after", quality_metrics["run_time"])
+            df = save(
+                base_df=df,
+                export_path=export_path,
+                pid=n_params,
+                n_seed=n_seed,
+                params=params,
+                pos=pos,
+                quality_metrics=quality_metrics,
+            )
 
-            for s in range(args.s):
-                rt = RunTime()
-
-                rt.start()
-                pos = sgd(graph, indices, params, s)
-                rt.end()
-
-                quality_metrics = calc_qs(
-                    nx_graph=nx_graph,
-                    pos=pos,
-                    all_pairs_shortest_path_length=all_pairs_shortest_path_length,
-                    target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
-                    edge_weight=EDGE_WEIGHT,
-                )
-                quality_metrics = {
-                    **quality_metrics,
-                    "run_time": rt.quality(),
-                }
-
-                df = save(
-                    base_df=df,
-                    export_path=export_path,
-                    pid=i,
-                    n_seed=s,
-                    params=params,
-                    pos=pos,
-                    quality_metrics=quality_metrics,
-                )
     elif args.l == FR:
         for i, v in data_df.iterrows():
             pid = v.pid
