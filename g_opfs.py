@@ -5,8 +5,10 @@ SparseSgdのパラメータ最適化実験
 import argparse
 import datetime
 import json
+import math
 import os
 import random
+import uuid
 
 # Third Party Library
 import networkx as nx
@@ -14,6 +16,7 @@ import pandas as pd
 
 # First Party Library
 from drawing.fm3 import fm3
+from drawing.fruchterman_reingold import fruchterman_reingold
 from drawing.sgd import sgd
 from quality_metrics import (
     angular_resolution,
@@ -178,88 +181,41 @@ if __name__ == "__main__":
                 pos=pos,
                 quality_metrics=quality_metrics,
             )
-    if args.l == FM3:
-        tlp_layout_name = "FM^3 (OGDF)"
+    if args.l == FR:
+        params = target_df.params[0]
+        params = {**params, "pos": None}
 
-        tlp_graph = generate_tulip_graph(nx_graph)
-        for p in range(args.p):
-            params = {
-                "unit edge length": EDGE_WEIGHT,
-                "new initial placement": True,
-                "fixed iterations": random.randrange(1, 1000),
-                "threshold": random.uniform(0.001, 1.0),
-                "page format": "square",
-                "quality vs speed": "beautiful and fast",
-                "edge length measurement": "midpoint",
-                "allowed positions": "all",
-                "tip over": "no growing row",
-                "presort": "decreasing height",
-                "galaxy choice": "non uniform lower mass",
-                "max iter change": "linearly decreasing",
-                "initial placement": "advanced",
-                "force model": "new",
-                "repulsive force method": "nmm",
-                "initial placement forces": "uniform grid",
-                "reduced tree construction": "subtree by subtree",
-                "smallest cell finding": "iteratively",
+        for s in range(args.seed_from, args.seed_to + 1):
+            params = {**params, "seed": s}
+
+            rt = RunTime()
+
+            rt.start()
+            print(params["seed"])
+            pos = fruchterman_reingold(
+                nx_graph=nx_graph,
+                params=params,
+            )
+            rt.end()
+
+            quality_metrics = calc_qs(
+                nx_graph=nx_graph,
+                pos=pos,
+                all_pairs_shortest_path_length=all_pairs_shortest_path_length,
+                target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
+                edge_weight=EDGE_WEIGHT,
+            )
+            quality_metrics = {
+                **quality_metrics,
+                "run_time": rt.quality(),
             }
 
-            for s in range(args.s):
-                print(f"{p}-{s}")
-                rt = RunTime()
-
-                rt.start()
-                pos = fm3(tlp_graph, params)
-                rt.end()
-
-                quality_metrics = calc_qs(
-                    nx_graph=nx_graph,
-                    pos=pos,
-                    all_pairs_shortest_path_length=all_pairs_shortest_path_length,
-                    qnames=ALL_QUALITY_METRICS_NAMES,
-                    edge_weight=EDGE_WEIGHT,
-                )
-                quality_metrics = {
-                    **quality_metrics,
-                    "run_time": rt.quality(),
-                }
-
-                del params["result"]
-                del params["edge length property"]
-                del params["node size"]
-
-                df = save(
-                    base_df=df,
-                    export_path=export_path,
-                    n_seed=s,
-                    params=params,
-                    pos=pos,
-                    quality_metrics=quality_metrics,
-                )
-    # if args.l == FR:
-    #     initial_pos = nx.random_layout(nx_graph, seed=0)
-    #     for p in range(args.p):
-    #         k_rate = random.uniform(0.01, 1)
-    #         k = math.ceil(k_rate * len(nx_graph.nodes))
-    #         params = {
-    #             "k_rate": k_rate,
-    #             "k": k,
-    #             "fixed": None,
-    #             "iterations": random.randrange(1, 1000),
-    #             "threshold": random.uniform("threshold", 0.00001, 0.001),
-    #             "weight": "weight",
-    #             "scale": None,
-    #             "center": None,
-    #             "dim": 2,
-    #             "seed": 0,
-    #         }
-
-    #         for s in range(args.s):
-    #             params["seed"] = s
-
-    #             rt = RunTime()
-
-    #             rt.start()
-    #             pos = fruchterman_reingold(
-    #                 nx_graph=nx_graph,
-    #             )
+            df = save(
+                base_df=df,
+                export_path=export_path,
+                target=args.t,
+                n_seed=s,
+                params=params,
+                pos=pos,
+                quality_metrics=quality_metrics,
+            )
