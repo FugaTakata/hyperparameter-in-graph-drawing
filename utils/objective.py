@@ -77,7 +77,6 @@ def fr_objective(
     initial_pos = nx.random_layout(nx_graph, seed=0)
     for k in initial_pos:
         x, y = initial_pos[k]
-        print(x, y, float(x), float(y))
         initial_pos[k] = [float(x), float(y)]
 
     def objective(trial: optuna.Trial):
