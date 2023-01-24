@@ -102,9 +102,7 @@ def fr_objective(
         run_time = RunTime()
 
         run_time.start()
-        pos = fruchterman_reingold(
-            nx_graph, initial_pos=initial_pos, params=params
-        )
+        pos = fruchterman_reingold(nx_graph, params=params)
         run_time.end()
 
         trial.set_user_attr("pos", pos)
