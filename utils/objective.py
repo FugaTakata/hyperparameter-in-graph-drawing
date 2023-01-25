@@ -80,8 +80,16 @@ def fr_objective(
         initial_pos[k] = [float(x), float(y)]
 
     def objective(trial: optuna.Trial):
-        k_rate = trial.suggest_float("k_rate", 0.01, 1)
-        k = math.ceil(k_rate * len(nx_graph.nodes))
+        k_rate = trial.suggest_float("k_rate", 0.00, 1)
+        # k 1/n ~ 0.1
+        n = len(nx_graph.nodes)
+        start_e = 1 / n
+        end_e = 0.1
+        if end_e < start_e:
+            print("error")
+            raise ValueError()
+        d = end_e - start_e
+        k = k_rate * d + start_e
         params = {
             "k_rate": k_rate,
             "k": k,
