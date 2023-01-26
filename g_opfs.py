@@ -186,12 +186,12 @@ if __name__ == "__main__":
         params = {**params, "pos": None}
 
         for s in range(args.seed_from, args.seed_to + 1):
+            print(args.t, s)
             params = {**params, "seed": s}
 
             rt = RunTime()
 
             rt.start()
-            print(params["seed"])
             pos = fruchterman_reingold(
                 nx_graph=nx_graph,
                 params=params,
