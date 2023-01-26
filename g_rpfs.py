@@ -138,6 +138,7 @@ if __name__ == "__main__":
     if args.l == SS:
         graph, indices = generate_egraph_graph(nx_graph)
         for i in range(args.p):
+            pid = uuid.uuid4()
             number_of_pivots_rate = random.uniform(0.01, 1)
             number_of_pivots = math.ceil(
                 number_of_pivots_rate * len(nx_graph.nodes)
@@ -151,6 +152,7 @@ if __name__ == "__main__":
             }
 
             for s in range(args.s):
+                print(i, s)
                 rt = RunTime()
 
                 rt.start()
@@ -172,7 +174,7 @@ if __name__ == "__main__":
                 df = save(
                     base_df=df,
                     export_path=export_path,
-                    pid=i,
+                    pid=pid,
                     n_seed=s,
                     params=params,
                     pos=pos,
