@@ -141,8 +141,11 @@ if __name__ == "__main__":
             pid = uuid.uuid4()
             number_of_pivots_rate = random.uniform(0.01, 1)
             number_of_pivots = math.ceil(
-                number_of_pivots_rate * len(nx_graph.nodes)
+                number_of_pivots_rate * math.sqrt(len(nx_graph.nodes))
             )
+            # number_of_pivots = math.ceil(
+            #     number_of_pivots_rate * len(nx_graph.nodes)
+            # )
             params = {
                 "edge_length": EDGE_WEIGHT,
                 "number_of_pivots_rate": number_of_pivots_rate,
@@ -184,8 +187,20 @@ if __name__ == "__main__":
         for p in range(args.p):
             pid = uuid.uuid4()
 
+            # k_rate = random.uniform(0.01, 1)
+            # k = math.ceil(k_rate * len(nx_graph.nodes))
+
             k_rate = random.uniform(0.01, 1)
-            k = math.ceil(k_rate * len(nx_graph.nodes))
+            # k 1/n ~ 0.1
+            n = len(nx_graph.nodes)
+            start_e = 1 / n
+            end_e = 0.1
+            if end_e < start_e:
+                print("error")
+                raise ValueError()
+            d = end_e - start_e
+            k = k_rate * d + start_e
+
             params = {
                 "k_rate": k_rate,
                 "k": k,
