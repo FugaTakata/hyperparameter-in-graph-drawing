@@ -64,3 +64,5 @@ target/
 
 .venv
 .DS_Store
+
+ignore_*.pkl
