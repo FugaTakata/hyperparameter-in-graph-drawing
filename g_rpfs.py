@@ -122,8 +122,8 @@ if __name__ == "__main__":
     dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
     export_directory = f"data/n_rpfs/{args.l}/{args.d}"
-    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    export_path = f"{export_directory}/{now}.pkl"
+    file_id = str(uuid.uuid4())
+    export_path = f"{export_directory}/{file_id}.pkl"
     os.makedirs(export_directory, exist_ok=True)
 
     with open(dataset_path) as f:
