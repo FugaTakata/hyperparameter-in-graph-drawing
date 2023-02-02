@@ -156,6 +156,7 @@ if __name__ == "__main__":
                 if pos[key] != b_pos[key]:
                     print(key, pos[key], b_pos[key], "pos changed")
                     es.append({"pid": pid, "n_seed": n_seed, "params": params})
+                    break
 
             df = save(
                 base_df=df,
