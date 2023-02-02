@@ -128,6 +128,7 @@ if __name__ == "__main__":
     df = pd.DataFrame()
 
     data_df = pd.read_pickle(args.f)
+    es = []
 
     if args.l == SS:
         graph, indices = generate_egraph_graph(nx_graph)
@@ -154,7 +155,7 @@ if __name__ == "__main__":
             for key in pos:
                 if pos[key] != b_pos[key]:
                     print(key, pos[key], b_pos[key], "pos changed")
-                    sys.exit()
+                    es.append({"pid": pid, "n_seed": n_seed, "params": params})
 
             df = save(
                 base_df=df,
@@ -190,7 +191,7 @@ if __name__ == "__main__":
             for key in pos:
                 if pos[key] != b_pos[key]:
                     print(key, pos[key], b_pos[key], "pos changed")
-                    sys.exit()
+                    es.append({"pid": pid, "n_seed": n_seed, "params": params})
 
             df = save(
                 base_df=df,
