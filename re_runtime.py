@@ -167,6 +167,7 @@ if __name__ == "__main__":
                 pos=pos,
                 quality_metrics=quality_metrics,
             )
+        print(es)
 
     elif args.l == FR:
         for i, v in data_df.iterrows():
@@ -203,3 +204,4 @@ if __name__ == "__main__":
                 pos=pos,
                 quality_metrics=quality_metrics,
             )
+        print(es)
