@@ -124,9 +124,6 @@ if __name__ == "__main__":
     with open(dataset_path) as f:
         graph_data = json.load(f)
     nx_graph = graph_preprocessing(nx.node_link_graph(graph_data), EDGE_WEIGHT)
-    all_pairs_shortest_path_length = dict(
-        nx.all_pairs_dijkstra_path_length(nx_graph)
-    )
 
     df = pd.DataFrame()
 
