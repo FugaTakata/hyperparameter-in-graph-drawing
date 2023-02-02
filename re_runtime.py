@@ -117,8 +117,8 @@ if __name__ == "__main__":
     dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
     export_directory = f"data/n_rpfs/{args.l}/{args.d}"
-    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    export_path = f"{export_directory}/{now}.pkl"
+    d_id = str(uuid.uuid4())
+    export_path = f"{export_directory}/{d_id}.pkl"
     os.makedirs(export_directory, exist_ok=True)
 
     with open(dataset_path) as f:
@@ -136,11 +136,12 @@ if __name__ == "__main__":
         graph, indices = generate_egraph_graph(nx_graph)
 
         for i, v in data_df.iterrows():
+            pid = v.pid
             params = v.params
             quality_metrics = v.quality_metrics
             n_seed = v.n_seed
             b_pos = v.pos
-            n_params = v.n_params
+            print(pid, n_seed)
 
             rt = RunTime()
 
@@ -148,17 +149,20 @@ if __name__ == "__main__":
             pos = sgd(graph, indices, params, n_seed)
             rt.end()
 
-            print("before", quality_metrics["run_time"])
-
             quality_metrics = {
                 **quality_metrics,
                 "run_time": rt.quality(),
             }
-            print("after", quality_metrics["run_time"])
+
+            for key in pos:
+                if pos[key] != b_pos[key]:
+                    print(key, pos[key], b_pos[key], "pos changed")
+                    sys.exit()
+
             df = save(
                 base_df=df,
                 export_path=export_path,
-                pid=n_params,
+                pid=pid,
                 n_seed=n_seed,
                 params=params,
                 pos=pos,
@@ -181,13 +185,10 @@ if __name__ == "__main__":
             pos = fruchterman_reingold(nx_graph=nx_graph, params=params)
             rt.end()
 
-            print("before", quality_metrics["run_time"])
-
             quality_metrics = {
                 **quality_metrics,
                 "run_time": rt.quality(),
             }
-            print("after", quality_metrics["run_time"])
 
             for key in pos:
                 if pos[key] != b_pos[key]:
