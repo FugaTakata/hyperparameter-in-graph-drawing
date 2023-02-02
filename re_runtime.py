@@ -124,6 +124,9 @@ if __name__ == "__main__":
     with open(dataset_path) as f:
         graph_data = json.load(f)
     nx_graph = graph_preprocessing(nx.node_link_graph(graph_data), EDGE_WEIGHT)
+    all_pairs_shortest_path_length = dict(
+        nx.all_pairs_dijkstra_path_length(nx_graph)
+    )
 
     df = pd.DataFrame()
 
@@ -134,6 +137,7 @@ if __name__ == "__main__":
         graph, indices = generate_egraph_graph(nx_graph)
 
         for i, v in data_df.iterrows():
+            diff = False
             pid = v.pid
             params = v.params
             quality_metrics = v.quality_metrics
@@ -155,8 +159,38 @@ if __name__ == "__main__":
             for key in pos:
                 if pos[key] != b_pos[key]:
                     print(key, pos[key], b_pos[key], "pos changed")
-                    es.append({"pid": pid, "n_seed": n_seed, "params": params})
+                    diff = True
                     break
+
+            if diff:
+                rt = RunTime()
+
+                rt.start()
+                pos = sgd(graph, indices, params, n_seed)
+                rt.end()
+
+                quality_metrics = calc_qs(
+                    nx_graph=nx_graph,
+                    pos=pos,
+                    all_pairs_shortest_path_length=all_pairs_shortest_path_length,
+                    target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
+                    edge_weight=EDGE_WEIGHT,
+                )
+                quality_metrics = {
+                    **quality_metrics,
+                    "run_time": rt.quality(),
+                }
+
+                df = save(
+                    base_df=df,
+                    export_path=export_path,
+                    pid=pid,
+                    n_seed=n_seed,
+                    params=params,
+                    pos=pos,
+                    quality_metrics=quality_metrics,
+                )
+                continue
 
             df = save(
                 base_df=df,
@@ -167,10 +201,10 @@ if __name__ == "__main__":
                 pos=pos,
                 quality_metrics=quality_metrics,
             )
-        print(es)
 
     elif args.l == FR:
         for i, v in data_df.iterrows():
+            diff = False
             pid = v.pid
             params = v.params
             n_seed = v.n_seed
@@ -194,6 +228,38 @@ if __name__ == "__main__":
                 if pos[key] != b_pos[key]:
                     print(key, pos[key], b_pos[key], "pos changed")
                     es.append({"pid": pid, "n_seed": n_seed, "params": params})
+                    diff = True
+                    break
+
+            if diff:
+                rt = RunTime()
+
+                rt.start()
+                pos = fruchterman_reingold(nx_graph=nx_graph, params=params)
+                rt.end()
+
+                quality_metrics = calc_qs(
+                    nx_graph=nx_graph,
+                    pos=pos,
+                    all_pairs_shortest_path_length=all_pairs_shortest_path_length,
+                    target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
+                    edge_weight=EDGE_WEIGHT,
+                )
+                quality_metrics = {
+                    **quality_metrics,
+                    "run_time": rt.quality(),
+                }
+
+                df = save(
+                    base_df=df,
+                    export_path=export_path,
+                    pid=pid,
+                    n_seed=n_seed,
+                    params=params,
+                    pos=pos,
+                    quality_metrics=quality_metrics,
+                )
+                continue
 
             df = save(
                 base_df=df,
@@ -204,4 +270,3 @@ if __name__ == "__main__":
                 pos=pos,
                 quality_metrics=quality_metrics,
             )
-        print(es)
