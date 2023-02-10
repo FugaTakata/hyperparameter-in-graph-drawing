@@ -163,12 +163,6 @@ if __name__ == "__main__":
                     break
 
             if diff:
-                rt = RunTime()
-
-                rt.start()
-                pos = sgd(graph, indices, params, n_seed)
-                rt.end()
-
                 quality_metrics = calc_qs(
                     nx_graph=nx_graph,
                     pos=pos,
@@ -232,12 +226,6 @@ if __name__ == "__main__":
                     break
 
             if diff:
-                rt = RunTime()
-
-                rt.start()
-                pos = fruchterman_reingold(nx_graph=nx_graph, params=params)
-                rt.end()
-
                 quality_metrics = calc_qs(
                     nx_graph=nx_graph,
                     pos=pos,
