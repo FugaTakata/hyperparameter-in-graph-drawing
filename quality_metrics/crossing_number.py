@@ -1,12 +1,13 @@
-from utils import edge_crossing_finder
+from utils import edge_crossing_finder_naive, edge_crossing_finder
+from itertools import combinations
 
 
 direction = 'minimize'
 
 
-def quality(nx_graph, pos, edge_crossing=None):
+def quality_naive(nx_graph, pos, edge_crossing=None):
     if edge_crossing is None:
-        edge_crossing = edge_crossing_finder(nx_graph, pos)
+        edge_crossing = edge_crossing_finder_naive(nx_graph, pos)
 
     s = 0
     node_ids = sorted([node_id for node_id in edge_crossing])
@@ -15,4 +16,12 @@ def quality(nx_graph, pos, edge_crossing=None):
             if edge_crossing[sid][tid]:
                 s += 1
 
+    return s
+
+
+def quality(nx_graph, pos, edge_crossing=None):
+    if edge_crossing is None:
+        edge_crossing = edge_crossing_finder(nx_graph, pos)
+    s = len(edge_crossing)
+    # assert s == quality_naive(nx_graph, pos)
     return s
