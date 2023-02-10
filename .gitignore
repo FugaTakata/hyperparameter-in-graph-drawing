@@ -66,3 +66,5 @@ target/
 .DS_Store
 
 ignore_*.pkl
+ignore_*.db
+ignore_*
