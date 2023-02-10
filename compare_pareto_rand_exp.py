@@ -84,7 +84,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-export_path = f"data/c_pareto_rand_exp/images/{args.l}/{args.d}"
+export_path = f"data/c_pareto_rand_exp/{args.l}/{args.d}"
 os.makedirs(export_path, exist_ok=True)
 
 l = args.l
@@ -134,8 +134,8 @@ for name in ALL_QUALITY_METRICS_NAMES:
     plt.boxplot(
         bins,
         labels=labels,
-        # whis=float("inf"),
-        sym="",
+        whis=float("inf"),
+        # sym="",
     )
     plt.xticks(rotation=-60, ha="center")
     plt.savefig(

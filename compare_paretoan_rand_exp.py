@@ -96,7 +96,7 @@ D_FROM = args.dataset_from
 D_TO = args.dataset_to
 PATTERN = f"{D_FROM}-{D_TO}"
 
-export_path = f"data/c_paretoan_rand_exp/images/{args.l}/{PATTERN}"
+export_path = f"data/c_paretoan_rand_exp/{args.l}/{PATTERN}"
 os.makedirs(export_path, exist_ok=True)
 
 L = args.l
@@ -147,7 +147,8 @@ for name in ALL_QUALITY_METRICS_NAMES:
     plt.boxplot(
         bins,
         labels=labels,
-        # whis=float("inf"),
+        whis=float("inf"),
+        # sym="",
     )
     plt.xticks(rotation=-60, ha="center")
     plt.savefig(

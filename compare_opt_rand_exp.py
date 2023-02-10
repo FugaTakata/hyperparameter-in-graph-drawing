@@ -159,7 +159,7 @@ for name in ALL_QUALITY_METRICS_NAMES:
     plt.boxplot(
         bins,
         labels=labels,
-        # whis=float("inf"),
+        whis=float("inf"),
         # sym="",
     )
     plt.xticks(rotation=-60, ha="center")

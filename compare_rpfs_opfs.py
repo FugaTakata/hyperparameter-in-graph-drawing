@@ -77,7 +77,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-export_path = f"data/c_rpfs_opfs/images/{args.l}/{args.d}"
+export_path = f"data/c_rpfs_opfs/{args.l}/{args.d}"
 os.makedirs(export_path, exist_ok=True)
 
 l = args.l
@@ -166,7 +166,8 @@ for name in ALL_QUALITY_METRICS_NAMES:
             NAME_ABBREVIATIONS[name2] for name2 in ALL_QUALITY_METRICS_NAMES
         ]
         + [f"r_{str(n).zfill(2)}" for n in range(len(q_rpfs[name]))],
-        # whis=float("inf"),
+        whis=float("inf"),
+        # sym="",
     )
     plt.xticks(rotation=-60, ha="center")
     plt.savefig(
