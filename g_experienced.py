@@ -1,11 +1,6 @@
-"""
-SparseSgdのパラメータ最適化実験
-"""
 # Standard Library
 import argparse
-import datetime
 import json
-import math
 import os
 import random
 import uuid
@@ -15,8 +10,6 @@ import networkx as nx
 import pandas as pd
 
 # First Party Library
-from drawing.fm3 import fm3
-from drawing.fruchterman_reingold import fruchterman_reingold
 from drawing.sgd import sgd
 from quality_metrics import (
     angular_resolution,
@@ -26,23 +19,14 @@ from quality_metrics import (
     gabriel_graph_property,
     ideal_edge_length,
     node_resolution,
-    run_time,
     shape_based_metrics,
     stress,
 )
-from quality_metrics.run_time import RunTime
 from utils.calc_quality_metrics import calc_qs
 from utils.dataset import dataset_names
-from utils.graph import (
-    generate_egraph_graph,
-    generate_tulip_graph,
-    graph_preprocessing,
-)
+from utils.graph import generate_egraph_graph, graph_preprocessing
 
 SS = "SS"
-FR = "FR"
-FM3 = "FM3"
-KK = "KK"
 
 QUALITY_METRICS = {
     "angular_resolution": angular_resolution,
@@ -52,18 +36,18 @@ QUALITY_METRICS = {
     "gabriel_graph_property": gabriel_graph_property,
     "ideal_edge_length": ideal_edge_length,
     "node_resolution": node_resolution,
-    # "run_time": run_time,
     "shape_based_metrics": shape_based_metrics,
     "stress": stress,
 }
 
 ALL_QUALITY_METRICS_NAMES = sorted([name for name in QUALITY_METRICS])
+
 RAND_MAX = 2**32
 
 
 def save(
     export_path,
-    target,
+    pid,
     seed,
     params,
     pos,
@@ -76,11 +60,12 @@ def save(
     new_df = pd.DataFrame(
         [
             {
-                "target": target,
+                "pid": pid,
                 "seed": seed,
                 "params": params,
                 "pos": pos,
                 "quality_metrics": quality_metrics,
+                "type": "experienced",
             }
         ]
     )
@@ -90,31 +75,14 @@ def save(
 
 
 def parse_args():
-    layout_name_abbreviations = [
-        SS,
-        FR,
-        FM3,
-        KK,
-    ]
+    layout_name_abbreviations = [SS]
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
         "-d", choices=dataset_names, required=True, help="dataset name"
     )
-    # parser.add_argument(
-    #     "--seed-from", type=int, required=True, help="n seed from. n <= s"
-    # )
-    # parser.add_argument(
-    #     "--seed-to", type=int, required=True, help="n seed to. s <= t"
-    # )
     parser.add_argument("-s", type=int, required=True, help="n seed")
-    parser.add_argument(
-        "-t",
-        choices=ALL_QUALITY_METRICS_NAMES,
-        required=True,
-        help="target quality metrics name",
-    )
     parser.add_argument(
         "-l",
         choices=layout_name_abbreviations,
@@ -134,9 +102,9 @@ if __name__ == "__main__":
 
     dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
-    export_directory = f"data/opfs/{args.l}/{args.d}"
-    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    export_path = f"{export_directory}/{args.t}.pkl"
+    export_directory = f"data/experienced/{args.l}/{args.d}"
+    file_id = str(uuid.uuid4())
+    export_path = f"{export_directory}/{file_id}.pkl"
     os.makedirs(export_directory, exist_ok=True)
 
     with open(dataset_path) as f:
@@ -146,24 +114,22 @@ if __name__ == "__main__":
         nx.all_pairs_dijkstra_path_length(nx_graph)
     )
 
-    data_df = pd.read_pickle(
-        f"data/params/optimized/{args.l}/{args.d}/opt.pkl"
-    )
-    target_df = data_df[data_df["target"] == args.t]
-
     if args.l == SS:
         graph, indices = generate_egraph_graph(nx_graph)
 
-        params = target_df.params[0]
+        params = {
+            "edge_length": EDGE_WEIGHT,
+            "number_of_pivots": 50,
+            "number_of_iterations": 100,
+            "eps": 0.1,
+        }
 
         for s in range(args.s):
+            pid = uuid.uuid4()
             seed = random.randint(0, RAND_MAX)
-            print(args.t, s, seed)
-            # rt = RunTime()
+            print(pid, s, seed)
 
-            # rt.start()
-            pos = sgd(graph, indices, params, s)
-            # rt.end()
+            pos = sgd(graph, indices, params, seed)
 
             quality_metrics = calc_qs(
                 nx_graph=nx_graph,
@@ -172,54 +138,11 @@ if __name__ == "__main__":
                 target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
                 edge_weight=EDGE_WEIGHT,
             )
-            # quality_metrics = {
-            #     **quality_metrics,
-            #     "run_time": rt.quality(),
-            # }
 
             save(
-                # base_df=df,
                 export_path=export_path,
-                target=args.t,
+                pid=pid,
                 seed=seed,
-                params=params,
-                pos=pos,
-                quality_metrics=quality_metrics,
-            )
-    if args.l == FR:
-        params = target_df.params[0]
-        params = {**params, "pos": None}
-
-        for s in range(args.seed_from, args.seed_to + 1):
-            print(args.t, s)
-            params = {**params, "seed": s}
-
-            rt = RunTime()
-
-            rt.start()
-            pos = fruchterman_reingold(
-                nx_graph=nx_graph,
-                params=params,
-            )
-            rt.end()
-
-            quality_metrics = calc_qs(
-                nx_graph=nx_graph,
-                pos=pos,
-                all_pairs_shortest_path_length=all_pairs_shortest_path_length,
-                target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
-                edge_weight=EDGE_WEIGHT,
-            )
-            quality_metrics = {
-                **quality_metrics,
-                "run_time": rt.quality(),
-            }
-
-            df = save(
-                base_df=df,
-                export_path=export_path,
-                target=args.t,
-                n_seed=s,
                 params=params,
                 pos=pos,
                 quality_metrics=quality_metrics,
