@@ -10,7 +10,8 @@ import pandas as pd
 # First Party Library
 from drawing.fruchterman_reingold import fruchterman_reingold
 from drawing.sgd import sgd
-from quality_metrics import run_time
+
+# from quality_metrics import run_time
 from utils.calc_quality_metrics import calc_qs
 from utils.graph import generate_egraph_graph, graph_preprocessing
 
@@ -22,7 +23,7 @@ ALL_QUALITY_METRICS_NAMES = [
     "gabriel_graph_property",
     "ideal_edge_length",
     "node_resolution",
-    "run_time",
+    # "run_time",
     "shape_based_metrics",
     "stress",
 ]
@@ -55,8 +56,8 @@ question_id = args.q
 
 ps = [
     "les_miserables-1138_bus",
-    "les_miserables-USpowerGrid",
-    "1138_bus-USpowerGrid",
+    # "les_miserables-USpowerGrid",
+    # "1138_bus-USpowerGrid",
 ]
 
 df = pd.read_pickle(f"data/question3/{l}/{question_id}/data.pkl")
@@ -85,27 +86,27 @@ for p in ps:
             continue
         params = row["params"]
         seed = row["seed"]
-        pos = None
-        rt = run_time.RunTime()
+        # pos = None
+        # rt = run_time.RunTime()
 
-        rt.start()
-        if l == "FR":
-            pos = fruchterman_reingold(nx_graph, params)
-        elif l == "SS":
-            pos = sgd(graph, indices, params, seed)
-        rt.end()
+        # rt.start()
+        # if l == "FR":
+        #     pos = fruchterman_reingold(nx_graph, params)
+        # elif l == "SS":
+        #     pos = sgd(graph, indices, params, seed)
+        # rt.end()
 
-        if row.pos != pos:
-            print("diff", row.id)
+        # if row.pos != pos:
+        #     print("diff", row.id)
 
         quality_metrics = calc_qs(
             nx_graph=nx_graph,
-            pos=pos,
+            pos=r_dict["pos"],
             all_pairs_shortest_path_length=all_pairs_shortest_path_length,
             target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
             edge_weight=EDGE_WEIGHT,
         )
-        quality_metrics = {**quality_metrics, "run_time": rt.quality()}
+        # quality_metrics = {**quality_metrics, "run_time": rt.quality()}
         print(quality_metrics)
         r_dict["quality_metrics"] = quality_metrics
         new_df = pd.concat([new_df, pd.DataFrame([r_dict])])
