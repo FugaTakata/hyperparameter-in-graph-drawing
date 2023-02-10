@@ -78,7 +78,7 @@ for p in ps:
 
     for i, row in df.iterrows():
         r_dict = row.to_dict()
-        if r_dict["dataset_from"] != d_from and r_dict["dataset_to"] != d_to:
+        if r_dict["dataset_from"] != d_from or r_dict["dataset_to"] != d_to:
             continue
         params = row["params"]
         seed = row["seed"]
