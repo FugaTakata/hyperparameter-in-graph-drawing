@@ -80,24 +80,8 @@ for p in ps:
         r_dict = row.to_dict()
         if r_dict["dataset_from"] != d_from and r_dict["dataset_to"] != d_to:
             continue
-        if r_dict["type"] != "multi_optimized":
-            r_dict["quality_metrics"] = None
-            new_df = pd.concat([new_df, pd.DataFrame([r_dict])])
-            continue
         params = row["params"]
         seed = row["seed"]
-        # pos = None
-        # rt = run_time.RunTime()
-
-        # rt.start()
-        # if l == "FR":
-        #     pos = fruchterman_reingold(nx_graph, params)
-        # elif l == "SS":
-        #     pos = sgd(graph, indices, params, seed)
-        # rt.end()
-
-        # if row.pos != pos:
-        #     print("diff", row.id)
 
         quality_metrics = calc_qs(
             nx_graph=nx_graph,
@@ -111,4 +95,4 @@ for p in ps:
         r_dict["quality_metrics"] = quality_metrics
         new_df = pd.concat([new_df, pd.DataFrame([r_dict])])
 
-new_df.to_pickle(f"data/question3/{l}/{question_id}/data_with_qs.pkl")
+new_df.to_pickle(f"data/question3/{l}/{question_id}/data_qs.pkl")
