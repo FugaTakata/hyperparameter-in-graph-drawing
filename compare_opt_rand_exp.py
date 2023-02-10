@@ -77,7 +77,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-export_path = f"data/c_rpfs_opfs_exfs/images/{args.l}/{args.d}"
+export_path = f"data/c_opt_rand_exp/{args.l}/{args.d}"
 os.makedirs(export_path, exist_ok=True)
 
 l = args.l
@@ -155,16 +155,12 @@ for name in ALL_QUALITY_METRICS_NAMES:
     bins = [q_opfs[name], q_exfs[name], sum(q_rpfs[name], [])]
     direction = QUALITY_METRICS[name].direction
     plt.title(f'{name} {"+" if direction == "maximize" else "-"}')
-    labels = (
-        [f"o_{NAME_ABBREVIATIONS[name]}"]
-        + ["expe"]
-        + ["rand"]
-        # + [f"r_{str(n).zfill(2)}" for n in range(len(q_rpfs[name]))]
-    )
+    labels = [f"o_{NAME_ABBREVIATIONS[name]}"] + ["exp"] + ["rand"]
     plt.boxplot(
         bins,
         labels=labels,
-        whis=float("inf"),
+        # whis=float("inf"),
+        # sym="",
     )
     plt.xticks(rotation=-60, ha="center")
     plt.savefig(

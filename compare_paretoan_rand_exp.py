@@ -65,7 +65,23 @@ layout_name_abbreviations = [
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "-d", choices=dataset_names, required=True, help="dataset name"
+    "--dataset-from",
+    choices=dataset_names,
+    required=True,
+    help="dataset name",
+)
+parser.add_argument(
+    "--dataset-to",
+    choices=dataset_names,
+    required=True,
+    help="dataset name",
+)
+parser.add_argument(
+    "-t",
+    choices=ALL_QUALITY_METRICS_NAMES,
+    nargs="*",
+    required=True,
+    help="target quality metrics names",
 )
 parser.add_argument(
     "-l",
@@ -76,32 +92,33 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+D_FROM = args.dataset_from
+D_TO = args.dataset_to
+PATTERN = f"{D_FROM}-{D_TO}"
 
-export_path = f"data/c_rpfs_opfs/images/{args.l}/{args.d}"
+export_path = f"data/c_paretoan_rand_exp/images/{args.l}/{PATTERN}"
 os.makedirs(export_path, exist_ok=True)
 
-l = args.l
-d = args.d
+L = args.l
 
-rpfs_df = pd.read_pickle(f"data/rpfs/{l}/{d}/ignore_20rp_50fs.pkl")
-opfs_df = pd.read_pickle(f"data/opfs/{l}/{d}/ignore_all.pkl")
-experienced = pd.read_pickle(f"data/experienced/{l}/{d}/ignore_50fs.pkl")
-
+rpfs_df = pd.read_pickle(f"data/rpfs/{L}/{D_TO}/ignore_20rp_50fs.pkl")
+exfs_df = pd.read_pickle(f"data/experienced/{L}/{D_TO}/ignore_50fs.pkl")
+mopfs_df = pd.read_pickle(
+    f"data/paretofs/{L}/{PATTERN}/{','.join(args.t)}.pkl"
+)
 
 q_opfs = {}
-q_opfs_all = {}
 for name in ALL_QUALITY_METRICS_NAMES:
     q_opfs[name] = []
-    q_opfs_all[name] = {}
-    for name2 in ALL_QUALITY_METRICS_NAMES:
-        q_opfs_all[name][name2] = []
-for name in ALL_QUALITY_METRICS_NAMES:
-    tdf = opfs_df[opfs_df["target"] == name]
-    for q in tdf["quality_metrics"]:
-        q_opfs[name].append(q[name])
-        for name2 in ALL_QUALITY_METRICS_NAMES:
-            q_opfs_all[name][name2].append(q[name2])
+for row in mopfs_df.itertuples():
+    for name in row.quality_metrics:
+        q_opfs[name].append(row.quality_metrics[name])
 
+q_exfs = {}
+for name in ALL_QUALITY_METRICS_NAMES:
+    q_exfs[name] = []
+    for row in exfs_df.itertuples():
+        q_exfs[name].append(row.quality_metrics[name])
 
 q_rpfs = {}
 for name in ALL_QUALITY_METRICS_NAMES:
@@ -122,50 +139,14 @@ for q in rpfs_df["quality_metrics"]:
         s = 0
 
 
-optimized = []
-counts = {}
-opfs_mean = {}
-rpfs_means = {}
-border = 15
 for name in ALL_QUALITY_METRICS_NAMES:
-    direction = QUALITY_METRICS[name].direction
-    opfs_mean[name] = statistics.median(q_opfs[name])
-    count = 0
-
-    if name not in rpfs_means:
-        rpfs_means[name] = []
-    for vs in q_rpfs[name]:
-        rpfs_means[name].append(statistics.median(vs))
-
-    for mean in rpfs_means[name]:
-        if direction == "maximize":
-            if mean <= opfs_mean[name]:
-                count += 1
-        elif direction == "minimize":
-            if opfs_mean[name] <= mean:
-                count += 1
-    if border <= count:
-        optimized.append(name)
-    counts[name] = count
-dict_data = {"optimized": optimized, "counts": counts}
-with open(f"{export_path}/result.json", mode="w") as f:
-    json.dump(dict_data, f)
-
-
-for name in ALL_QUALITY_METRICS_NAMES:
-    q_all = []
-    for name2 in ALL_QUALITY_METRICS_NAMES:
-        q_all.append(q_opfs_all[name2][name])
-
-    bins = [*q_all, *q_rpfs[name]]
+    bins = [q_opfs[name], q_exfs[name], sum(q_rpfs[name], [])]
     direction = QUALITY_METRICS[name].direction
     plt.title(f'{name} {"+" if direction == "maximize" else "-"}')
+    labels = ["m_opt"] + ["exp"] + ["rand"]
     plt.boxplot(
         bins,
-        labels=[
-            NAME_ABBREVIATIONS[name2] for name2 in ALL_QUALITY_METRICS_NAMES
-        ]
-        + [f"r_{str(n).zfill(2)}" for n in range(len(q_rpfs[name]))],
+        labels=labels,
         # whis=float("inf"),
     )
     plt.xticks(rotation=-60, ha="center")
