@@ -70,3 +70,4 @@ ignore_*.db
 ignore_*
 *.ipynb
 *.csv
+*.out
