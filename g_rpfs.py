@@ -3,7 +3,6 @@ SparseSgdのパラメータ最適化実験
 """
 # Standard Library
 import argparse
-import datetime
 import json
 import math
 import os
@@ -15,7 +14,6 @@ import networkx as nx
 import pandas as pd
 
 # First Party Library
-from drawing.fm3 import fm3
 from drawing.fruchterman_reingold import fruchterman_reingold
 from drawing.sgd import sgd
 from quality_metrics import (
@@ -33,11 +31,7 @@ from quality_metrics import (
 from quality_metrics.run_time import RunTime
 from utils.calc_quality_metrics import calc_qs
 from utils.dataset import dataset_names
-from utils.graph import (
-    generate_egraph_graph,
-    generate_tulip_graph,
-    graph_preprocessing,
-)
+from utils.graph import generate_egraph_graph, graph_preprocessing
 
 SS = "SS"
 FR = "FR"
@@ -52,28 +46,33 @@ QUALITY_METRICS = {
     "gabriel_graph_property": gabriel_graph_property,
     "ideal_edge_length": ideal_edge_length,
     "node_resolution": node_resolution,
-    "run_time": run_time,
+    # "run_time": run_time,
     "shape_based_metrics": shape_based_metrics,
     "stress": stress,
 }
 
 ALL_QUALITY_METRICS_NAMES = sorted([name for name in QUALITY_METRICS])
 
+RAND_MAX = 2**32
+
 
 def save(
-    base_df,
     export_path,
     pid,
-    n_seed,
+    seed,
     params,
     pos,
     quality_metrics,
 ):
+    base_df = pd.DataFrame()
+    if os.path.exists(export_path):
+        base_df = pd.read_pickle(export_path)
+
     new_df = pd.DataFrame(
         [
             {
                 "pid": pid,
-                "n_seed": n_seed,
+                "seed": seed,
                 "params": params,
                 "pos": pos,
                 "quality_metrics": quality_metrics,
@@ -83,8 +82,6 @@ def save(
 
     df = pd.concat([base_df, new_df])
     df.to_pickle(export_path)
-
-    return df
 
 
 def parse_args():
@@ -121,7 +118,7 @@ if __name__ == "__main__":
 
     dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
-    export_directory = f"data/n_rpfs/{args.l}/{args.d}"
+    export_directory = f"data/rpfs/{args.l}/{args.d}"
     file_id = str(uuid.uuid4())
     export_path = f"{export_directory}/{file_id}.pkl"
     os.makedirs(export_directory, exist_ok=True)
@@ -133,34 +130,34 @@ if __name__ == "__main__":
         nx.all_pairs_dijkstra_path_length(nx_graph)
     )
 
-    df = pd.DataFrame()
-
     if args.l == SS:
         graph, indices = generate_egraph_graph(nx_graph)
         for i in range(args.p):
             pid = uuid.uuid4()
-            number_of_pivots_rate = random.uniform(0.01, 1)
-            number_of_pivots = math.ceil(
-                number_of_pivots_rate * math.sqrt(len(nx_graph.nodes))
-            )
+            # number_of_pivots_rate = random.uniform(0.01, 1)
+            # number_of_pivots = math.ceil(
+            #     number_of_pivots_rate * math.sqrt(len(nx_graph.nodes))
+            # )
             # number_of_pivots = math.ceil(
             #     number_of_pivots_rate * len(nx_graph.nodes)
             # )
             params = {
                 "edge_length": EDGE_WEIGHT,
-                "number_of_pivots_rate": number_of_pivots_rate,
-                "number_of_pivots": number_of_pivots,
-                "number_of_iterations": random.randrange(1, 200 + 1),
+                # "number_of_pivots_rate": number_of_pivots_rate,
+                # "number_of_pivots": number_of_pivots,
+                "number_of_pivots": random.randint(1, 100),
+                "number_of_iterations": random.randint(1, 200),
                 "eps": random.uniform(0.01, 1),
             }
 
             for s in range(args.s):
-                print(i, s)
-                rt = RunTime()
+                seed = random.randint(0, RAND_MAX)
+                print(i, s, seed)
+                # rt = RunTime()
 
-                rt.start()
-                pos = sgd(graph, indices, params, s)
-                rt.end()
+                # rt.start()
+                pos = sgd(graph, indices, params, seed)
+                # rt.end()
 
                 quality_metrics = calc_qs(
                     nx_graph=nx_graph,
@@ -169,20 +166,20 @@ if __name__ == "__main__":
                     target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
                     edge_weight=EDGE_WEIGHT,
                 )
-                quality_metrics = {
-                    **quality_metrics,
-                    "run_time": rt.quality(),
-                }
+                # quality_metrics = {
+                #     **quality_metrics,
+                #     "run_time": rt.quality(),
+                # }
 
-                df = save(
-                    base_df=df,
+                save(
                     export_path=export_path,
                     pid=pid,
-                    n_seed=s,
+                    seed=seed,
                     params=params,
                     pos=pos,
                     quality_metrics=quality_metrics,
                 )
+
     elif args.l == FR:
         for p in range(args.p):
             pid = uuid.uuid4()
@@ -206,7 +203,7 @@ if __name__ == "__main__":
                 "k": k,
                 "pos": None,
                 "fixed": None,
-                "iterations": random.randint(1, 200),
+                "iterations": random.randint(10, 200),
                 "threshold": random.uniform(0.00001, 0.001),
                 "weight": "weight",
                 "scale": 1,
@@ -237,8 +234,7 @@ if __name__ == "__main__":
                     "run_time": rt.quality(),
                 }
 
-                df = save(
-                    base_df=df,
+                save(
                     export_path=export_path,
                     pid=pid,
                     n_seed=s,

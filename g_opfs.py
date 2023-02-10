@@ -52,28 +52,32 @@ QUALITY_METRICS = {
     "gabriel_graph_property": gabriel_graph_property,
     "ideal_edge_length": ideal_edge_length,
     "node_resolution": node_resolution,
-    "run_time": run_time,
+    # "run_time": run_time,
     "shape_based_metrics": shape_based_metrics,
     "stress": stress,
 }
 
 ALL_QUALITY_METRICS_NAMES = sorted([name for name in QUALITY_METRICS])
+RAND_MAX = 2**32
 
 
 def save(
-    base_df,
     export_path,
     target,
-    n_seed,
+    seed,
     params,
     pos,
     quality_metrics,
 ):
+    base_df = pd.DataFrame()
+    if os.path.exists(export_path):
+        base_df = pd.read_pickle(export_path)
+
     new_df = pd.DataFrame(
         [
             {
                 "target": target,
-                "n_seed": n_seed,
+                "seed": seed,
                 "params": params,
                 "pos": pos,
                 "quality_metrics": quality_metrics,
@@ -83,8 +87,6 @@ def save(
 
     df = pd.concat([base_df, new_df])
     df.to_pickle(export_path)
-
-    return df
 
 
 def parse_args():
@@ -100,12 +102,13 @@ def parse_args():
     parser.add_argument(
         "-d", choices=dataset_names, required=True, help="dataset name"
     )
-    parser.add_argument(
-        "--seed-from", type=int, required=True, help="n seed from. n <= s"
-    )
-    parser.add_argument(
-        "--seed-to", type=int, required=True, help="n seed to. s <= t"
-    )
+    # parser.add_argument(
+    #     "--seed-from", type=int, required=True, help="n seed from. n <= s"
+    # )
+    # parser.add_argument(
+    #     "--seed-to", type=int, required=True, help="n seed to. s <= t"
+    # )
+    parser.add_argument("-s", type=int, required=True, help="n seed")
     parser.add_argument(
         "-t",
         choices=ALL_QUALITY_METRICS_NAMES,
@@ -131,7 +134,7 @@ if __name__ == "__main__":
 
     dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
-    export_directory = f"data/n_opfs/{args.l}/{args.d}"
+    export_directory = f"data/opfs/{args.l}/{args.d}"
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     export_path = f"{export_directory}/{args.t}.pkl"
     os.makedirs(export_directory, exist_ok=True)
@@ -145,20 +148,20 @@ if __name__ == "__main__":
 
     data_df = pd.read_pickle(f"data/params/{args.l}/{args.d}/opt.pkl")
     target_df = data_df[data_df["target"] == args.t]
-    df = pd.DataFrame()
 
     if args.l == SS:
         graph, indices = generate_egraph_graph(nx_graph)
 
         params = target_df.params[0]
 
-        for s in range(args.seed_from, args.seed_to + 1):
-            print(args.t, s)
-            rt = RunTime()
+        for s in range(args.s):
+            seed = random.randint(0, RAND_MAX)
+            print(args.t, s, seed)
+            # rt = RunTime()
 
-            rt.start()
+            # rt.start()
             pos = sgd(graph, indices, params, s)
-            rt.end()
+            # rt.end()
 
             quality_metrics = calc_qs(
                 nx_graph=nx_graph,
@@ -167,16 +170,16 @@ if __name__ == "__main__":
                 target_quality_metrics_names=ALL_QUALITY_METRICS_NAMES,
                 edge_weight=EDGE_WEIGHT,
             )
-            quality_metrics = {
-                **quality_metrics,
-                "run_time": rt.quality(),
-            }
+            # quality_metrics = {
+            #     **quality_metrics,
+            #     "run_time": rt.quality(),
+            # }
 
-            df = save(
-                base_df=df,
+            save(
+                # base_df=df,
                 export_path=export_path,
                 target=args.t,
-                n_seed=s,
+                seed=seed,
                 params=params,
                 pos=pos,
                 quality_metrics=quality_metrics,
