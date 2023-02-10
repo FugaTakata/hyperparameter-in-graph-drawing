@@ -78,7 +78,16 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-d", choices=dataset_names, required=True, help="dataset name"
+        "--dataset-from",
+        choices=dataset_names,
+        required=True,
+        help="dataset name",
+    )
+    parser.add_argument(
+        "--dataset-to",
+        choices=dataset_names,
+        required=True,
+        help="dataset name",
     )
     parser.add_argument(
         "-t",
@@ -104,11 +113,13 @@ if __name__ == "__main__":
 
     args = parse_args()
     L = args.l
-    D = args.d
+    D_FROM = args.dataset_from
+    D_TO = args.dataset_to
+    PATTERN = f"{D_FROM}-{D_TO}"
 
-    dataset_path = f"lib/egraph-rs/js/dataset/{D}.json"
+    dataset_path = f"lib/egraph-rs/js/dataset/{D_TO}.json"
 
-    export_directory = f"data/paretofs/{L}/{D}"
+    export_directory = f"data/paretofs/{L}/{PATTERN}"
     export_path = f"{export_directory}/{','.join(args.t)}.pkl"
     os.makedirs(export_directory, exist_ok=True)
 
@@ -121,7 +132,7 @@ if __name__ == "__main__":
     graph, indices = generate_egraph_graph(nx_graph)
 
     study_name = ",".join(args.t)
-    storage_path = f"sqlite:///db_opt/{L}/{D}/{study_name}.db"
+    storage_path = f"sqlite:///db_opt/{L}/{D_FROM}/{study_name}.db"
     study = optuna.load_study(storage=storage_path, study_name=study_name)
 
     for best_trial in study.best_trials:
