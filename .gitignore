@@ -68,3 +68,5 @@ target/
 ignore_*.pkl
 ignore_*.db
 ignore_*
+*.ipynb
+*.csv
