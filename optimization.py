@@ -37,7 +37,7 @@ QUALITY_METRICS = {
     "gabriel_graph_property": gabriel_graph_property,
     "ideal_edge_length": ideal_edge_length,
     "node_resolution": node_resolution,
-    "run_time": run_time,
+    # "run_time": run_time,
     "shape_based_metrics": shape_based_metrics,
     "stress": stress,
 }
@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
-    database_directory = f"db/opt/{args.l}/{args.d}"
+    database_directory = f"db_opt/{args.l}/{args.d}"
     study_name = f"{','.join(args.t)}"
     database_uri = f"sqlite:///{database_directory}/{study_name}.db"
     os.makedirs(database_directory, exist_ok=True)

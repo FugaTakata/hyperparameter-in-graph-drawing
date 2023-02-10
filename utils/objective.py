@@ -1,5 +1,5 @@
 # Standard Library
-import math
+# import math
 
 # Third Party Library
 import networkx as nx
@@ -23,29 +23,29 @@ def ss_objective(
     graph, indices = generate_egraph_graph(nx_graph)
 
     def objective(trial: optuna.Trial):
-        number_of_pivots_rate = trial.suggest_float(
-            "number_of_pivots_rate", 0.01, 1
-        )
-        number_of_pivots = math.ceil(
-            number_of_pivots_rate * math.sqrt(len(nx_graph.nodes))
-        )
+        # number_of_pivots_rate = trial.suggest_float(
+        #     "number_of_pivots_rate", 0.01, 1
+        # )
+        # number_of_pivots = math.ceil(
+        #     number_of_pivots_rate * math.sqrt(len(nx_graph.nodes))
+        # )
         params = {
             "edge_length": edge_weight,
-            "number_of_pivots_rate": number_of_pivots_rate,
-            "number_of_pivots": number_of_pivots,
+            # "number_of_pivots_rate": number_of_pivots_rate,
+            "number_of_pivots": trial.suggest_int("number_of_pivots", 1, 100),
             "number_of_iterations": trial.suggest_int(
                 "number_of_iterations", 1, 200
             ),
             "eps": trial.suggest_float("eps", 0.01, 1),
         }
         trial.set_user_attr("params", params)
-        del params["number_of_pivots_rate"]
+        # del params["number_of_pivots_rate"]
 
-        run_time = RunTime()
+        # run_time = RunTime()
 
-        run_time.start()
+        # run_time.start()
         pos = sgd(graph, indices, params, 0)
-        run_time.end()
+        # run_time.end()
 
         trial.set_user_attr("pos", pos)
 
@@ -56,7 +56,7 @@ def ss_objective(
             target_quality_metrics_names=all_quality_metrics_names,
             edge_weight=edge_weight,
         )
-        quality_metrics = {**quality_metrics, "run_time": run_time.quality()}
+        # quality_metrics = {**quality_metrics, "run_time": run_time.quality()}
         trial.set_user_attr("quality_metrics", quality_metrics)
 
         result = tuple(
