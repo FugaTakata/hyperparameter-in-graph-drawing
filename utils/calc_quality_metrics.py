@@ -1,3 +1,6 @@
+# Standard Library
+# import time
+
 # First Party Library
 from quality_metrics import (
     angular_resolution,
@@ -11,8 +14,6 @@ from quality_metrics import (
     stress,
 )
 from utils.edge_crossing_finder import edge_crossing_finder
-
-import time
 
 
 def calc_qs(
@@ -28,13 +29,13 @@ def calc_qs(
         "crossing_angle" in target_quality_metrics_names
         or "crossing_number" in target_quality_metrics_names
     ):
-        start = time.perf_counter()
+        # start = time.perf_counter()
         edge_crossing = edge_crossing_finder(nx_graph, pos)
-        stop = time.perf_counter()
-        print('edge_crossing_finder', stop - start)
+        # stop = time.perf_counter()
+        # print("edge_crossing_finder", stop - start)
 
     for qname in target_quality_metrics_names:
-        start = time.perf_counter()
+        # start = time.perf_counter()
         if qname == "angular_resolution":
             result[qname] = angular_resolution.quality(nx_graph, pos)
         elif qname == "aspect_ratio":
@@ -63,7 +64,7 @@ def calc_qs(
             result[qname] = stress.quality(
                 nx_graph, pos, all_pairs_shortest_path_length
             )
-        stop = time.perf_counter()
-        print(qname, stop - start)
+        # stop = time.perf_counter()
+        # print(qname, stop - start)
 
     return result
