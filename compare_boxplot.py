@@ -8,7 +8,7 @@ import statistics
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 # First Party Library
 from quality_metrics import (
@@ -77,84 +77,80 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-images_export_path = f"data/c_rpfs_opfs/images/{args.l}/{args.d}"
-os.makedirs(images_export_path, exist_ok=True)
-result_export_path = f"data/c_rpfs_opfs/results/{args.l}/{args.d}"
-os.makedirs(result_export_path, exist_ok=True)
+export_path = f"data/c_rpfs_opfs/images/{args.l}/{args.d}"
+os.makedirs(export_path, exist_ok=True)
+
+l = args.l
+d = args.d
+
+rpfs_df = pd.read_pickle(f"data/rpfs/{l}/{d}/ignore_20rp_50fs.pkl")
+opfs_df = pd.read_pickle(f"data/opfs/{l}/{d}/ignore_all.pkl")
+experienced = pd.read_pickle(f"data/experienced/{l}/{d}/ignore_50fs.pkl")
 
 
-for l in [args.l]:
-    for d in [args.d]:
-        rpfs_df = pd.read_pickle(f"data/n_rpfs/{l}/{d}/ignore_20rp_50fs.pkl")
-        opfs_df = pd.read_pickle(f"data/n_opfs/{l}/{d}/ignore_all.pkl")
-        q_opfs = {}
-        q_opfs_all = {}
+q_opfs = {}
+q_opfs_all = {}
+for name in ALL_QUALITY_METRICS_NAMES:
+    q_opfs[name] = []
+    q_opfs_all[name] = {}
+    for name2 in ALL_QUALITY_METRICS_NAMES:
+        q_opfs_all[name][name2] = []
+for name in ALL_QUALITY_METRICS_NAMES:
+    tdf = opfs_df[opfs_df["target"] == name]
+    for q in tdf["quality_metrics"]:
+        q_opfs[name].append(q[name])
+        for name2 in ALL_QUALITY_METRICS_NAMES:
+            q_opfs_all[name][name2].append(q[name2])
 
+
+q_rpfs = {}
+for name in ALL_QUALITY_METRICS_NAMES:
+    q_rpfs[name] = []
+q_tmp = {}
+s = 0
+for q in rpfs_df["quality_metrics"]:
+    if s == 0:
         for name in ALL_QUALITY_METRICS_NAMES:
-            q_opfs[name] = []
-            q_opfs_all[name] = {}
-            for name2 in ALL_QUALITY_METRICS_NAMES:
-                q_opfs_all[name][name2] = []
-
+            q_tmp[name] = []
+    for name in ALL_QUALITY_METRICS_NAMES:
+        q_tmp[name].append(q[name])
+    if s == 49:
         for name in ALL_QUALITY_METRICS_NAMES:
-            tdf = opfs_df[opfs_df["target"] == name]
-            for q in tdf["quality_metrics"]:
-                q_opfs[name].append(q[name])
-                for name2 in ALL_QUALITY_METRICS_NAMES:
-                    q_opfs_all[name][name2].append(q[name2])
-
-        q_rpfs = {}
-
-        for name in ALL_QUALITY_METRICS_NAMES:
-            q_rpfs[name] = []
-
-        q_tmp = {}
+            q_rpfs[name].append(q_tmp[name])
+    s += 1
+    if s == 50:
         s = 0
-        for q in rpfs_df["quality_metrics"]:
-            if s == 0:
-                for name in ALL_QUALITY_METRICS_NAMES:
-                    q_tmp[name] = []
-            for name in ALL_QUALITY_METRICS_NAMES:
-                q_tmp[name].append(q[name])
-            if s == 49:
-                for name in ALL_QUALITY_METRICS_NAMES:
-                    q_rpfs[name].append(q_tmp[name])
-            s += 1
-            if s == 50:
-                s = 0
 
-        optimized = []
-        counts = {}
 
-        opfs_mean = {}
-        rpfs_means = {}
+optimized = []
+counts = {}
+opfs_mean = {}
+rpfs_means = {}
+border = 15
+for name in ALL_QUALITY_METRICS_NAMES:
+    direction = QUALITY_METRICS[name].direction
+    opfs_mean[name] = statistics.median(q_opfs[name])
+    count = 0
 
-        border = 15
+    if name not in rpfs_means:
+        rpfs_means[name] = []
+    for vs in q_rpfs[name]:
+        rpfs_means[name].append(statistics.median(vs))
 
-        for name in ALL_QUALITY_METRICS_NAMES:
-            direction = QUALITY_METRICS[name].direction
-            opfs_mean[name] = statistics.median(q_opfs[name])
-            count = 0
+    for mean in rpfs_means[name]:
+        if direction == "maximize":
+            if mean <= opfs_mean[name]:
+                count += 1
+        elif direction == "minimize":
+            if opfs_mean[name] <= mean:
+                count += 1
+    if border <= count:
+        optimized.append(name)
+    counts[name] = count
+dict_data = {"optimized": optimized, "counts": counts}
+with open(f"{export_path}/result.json", mode="w") as f:
+    json.dump(dict_data, f)
 
-            if name not in rpfs_means:
-                rpfs_means[name] = []
-            for vs in q_rpfs[name]:
-                rpfs_means[name].append(statistics.median(vs))
-
-            for mean in rpfs_means[name]:
-                if direction == "maximize":
-                    if mean <= opfs_mean[name]:
-                        count += 1
-                elif direction == "minimize":
-                    if opfs_mean[name] <= mean:
-                        count += 1
-            if border <= count:
-                optimized.append(name)
-            counts[name] = count
-
-        dict_data = {"optimized": optimized, "counts": counts}
-        with open(f"{result_export_path}/result.json", mode="w") as f:
-            json.dump(dict_data, f)
 
 for name in ALL_QUALITY_METRICS_NAMES:
     q_all = []
@@ -174,7 +170,7 @@ for name in ALL_QUALITY_METRICS_NAMES:
     )
     plt.xticks(rotation=-60, ha="center")
     plt.savefig(
-        f"{images_export_path}/{name}.png",
+        f"{export_path}/{name}.png",
         format="png",
         dpi=300,
         facecolor="white",
@@ -182,11 +178,11 @@ for name in ALL_QUALITY_METRICS_NAMES:
     plt.close()
 
 
-dst_export_path = f"{images_export_path}/all.png"
+dst_export_path = f"{export_path}/all.png"
 images = []
 tmp = []
 for quality in ALL_QUALITY_METRICS_NAMES:
-    image_path = f"{images_export_path}/{quality}.png"
+    image_path = f"{export_path}/{quality}.png"
     img = Image.open(image_path)
 
     tmp.append({"image": img})
