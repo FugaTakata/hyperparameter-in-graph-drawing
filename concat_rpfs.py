@@ -49,7 +49,7 @@ export_directory = f"data/rpfs/{args.l}/{args.d}"
 df = pd.DataFrame()
 filenames = os.listdir(export_directory)
 for name in filenames:
-    if ".pkl" in name and "ignore" not in name:
+    if ".pkl" in name and "ignore" not in name and "for_pareto" not in name:
         df = pd.concat([df, pd.read_pickle(f"{export_directory}/{name}")])
 df.info()
 
