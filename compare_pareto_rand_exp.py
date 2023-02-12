@@ -146,7 +146,7 @@ for name in ALL_QUALITY_METRICS_NAMES:
         max_threshold = max(
             np.percentile(rpfs_bin, 75), max(q_opfs[name]), max(q_exfs[name])
         )
-        rpfs_bin = [min(v, max_threshold * 2) for v in rpfs_bin]
+        rpfs_bin = [min(v, max_threshold * 1.5) for v in rpfs_bin]
     bins = [q_opfs[name], q_exfs[name], rpfs_bin]
     direction = QUALITY_METRICS[name].direction
     plt.title(f'{name} {"+" if direction == "maximize" else "-"}')
