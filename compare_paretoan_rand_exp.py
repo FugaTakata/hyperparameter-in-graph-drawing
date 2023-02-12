@@ -109,11 +109,15 @@ os.makedirs(export_path, exist_ok=True)
 
 L = args.l
 
-rpfs_df = pd.read_pickle(f"data/rpfs/{L}/{D_TO}/ignore_20rp_50fs.pkl")
+rpfs_df = pd.read_pickle(f"data/rpfs_ex/{L}/{D_TO}/ignore_100rp_1fs.pkl")
 exfs_df = pd.read_pickle(f"data/experienced/{L}/{D_TO}/ignore_50fs.pkl")
 mopfs_df = pd.read_pickle(
     f"data/paretofs/{L}/{PATTERN}/{','.join(args.t)}.pkl"
 )
+
+n_pareto = len(mopfs_df)
+rpfs_df = rpfs_df.sample(n=n_pareto)
+exfs_df = exfs_df.sample(n=n_pareto)
 
 q_opfs = {}
 for name in ALL_QUALITY_METRICS_NAMES:
@@ -128,27 +132,33 @@ for name in ALL_QUALITY_METRICS_NAMES:
     for row in exfs_df.itertuples():
         q_exfs[name].append(row.quality_metrics[name])
 
+# q_rpfs = {}
+# for name in ALL_QUALITY_METRICS_NAMES:
+#     q_rpfs[name] = []
+# q_tmp = {}
+# s = 0
+# for q in rpfs_df["quality_metrics"]:
+#     if s == 0:
+#         for name in ALL_QUALITY_METRICS_NAMES:
+#             q_tmp[name] = []
+#     for name in ALL_QUALITY_METRICS_NAMES:
+#         q_tmp[name].append(q[name])
+#     if s == 49:
+#         for name in ALL_QUALITY_METRICS_NAMES:
+#             q_rpfs[name].append(q_tmp[name])
+#     s += 1
+#     if s == 50:
+#         s = 0
+
 q_rpfs = {}
 for name in ALL_QUALITY_METRICS_NAMES:
     q_rpfs[name] = []
-q_tmp = {}
-s = 0
 for q in rpfs_df["quality_metrics"]:
-    if s == 0:
-        for name in ALL_QUALITY_METRICS_NAMES:
-            q_tmp[name] = []
     for name in ALL_QUALITY_METRICS_NAMES:
-        q_tmp[name].append(q[name])
-    if s == 49:
-        for name in ALL_QUALITY_METRICS_NAMES:
-            q_rpfs[name].append(q_tmp[name])
-    s += 1
-    if s == 50:
-        s = 0
-
+        q_rpfs[name].append(q[name])
 
 for name in ALL_QUALITY_METRICS_NAMES:
-    rpfs_bin = sum(q_rpfs[name], [])
+    rpfs_bin = q_rpfs[name]
     if ADJUST_RANDOMIZED_LONG_BEARD and (
         name == "crossing_number"
         or name == "ideal_edge_length"
