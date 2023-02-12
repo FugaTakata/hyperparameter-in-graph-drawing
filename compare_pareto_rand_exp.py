@@ -7,6 +7,7 @@ import statistics
 # Third Party Library
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from PIL import Image
 
@@ -25,6 +26,7 @@ from quality_metrics import (
 from utils.dataset import dataset_names
 
 mpl.use("Agg")
+
 
 SS = "SS"
 FR = "FR"
@@ -68,6 +70,9 @@ parser.add_argument(
     "-d", choices=dataset_names, required=True, help="dataset name"
 )
 parser.add_argument(
+    "-a", help="adjust randomized long beard", action="store_true"
+)
+parser.add_argument(
     "-t",
     choices=ALL_QUALITY_METRICS_NAMES,
     nargs="*",
@@ -84,7 +89,12 @@ parser.add_argument(
 args = parser.parse_args()
 
 
+ADJUST_RANDOMIZED_LONG_BEARD = args.a
+
 export_path = f"data/c_pareto_rand_exp/{args.l}/{args.d}"
+if ADJUST_RANDOMIZED_LONG_BEARD:
+    export_path = f"data/c_pareto_rand_exp_adjusted/{args.l}/{args.d}"
+
 os.makedirs(export_path, exist_ok=True)
 
 l = args.l
@@ -127,15 +137,23 @@ for q in rpfs_df["quality_metrics"]:
 
 
 for name in ALL_QUALITY_METRICS_NAMES:
-    bins = [q_opfs[name], q_exfs[name], sum(q_rpfs[name], [])]
+    rpfs_bin = sum(q_rpfs[name], [])
+    if ADJUST_RANDOMIZED_LONG_BEARD and (
+        name == "crossing_number"
+        or name == "ideal_edge_length"
+        or name == "stress"
+    ):
+        max_threshold = max(
+            np.percentile(rpfs_bin, 75), max(q_opfs[name]), max(q_exfs[name])
+        )
+        rpfs_bin = [min(v, max_threshold * 2) for v in rpfs_bin]
+    bins = [q_opfs[name], q_exfs[name], rpfs_bin]
     direction = QUALITY_METRICS[name].direction
     plt.title(f'{name} {"+" if direction == "maximize" else "-"}')
-    labels = ["m_opt"] + ["exp"] + ["rand"]
     plt.boxplot(
         bins,
-        labels=labels,
+        labels=["m_opt"] + ["exp"] + ["rand"],
         whis=float("inf"),
-        # sym="",
     )
     plt.xticks(rotation=-60, ha="center")
     plt.savefig(
