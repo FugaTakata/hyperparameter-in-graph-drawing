@@ -1,0 +1,19 @@
+{
+  "optimized": [
+    "crossing_number",
+    "ideal_edge_length",
+    "node_resolution",
+    "stress"
+  ],
+  "counts": {
+    "angular_resolution": 12,
+    "aspect_ratio": 7,
+    "crossing_angle": 14,
+    "crossing_number": 18,
+    "gabriel_graph_property": 4,
+    "ideal_edge_length": 20,
+    "node_resolution": 19,
+    "shape_based_metrics": 14,
+    "stress": 20
+  }
+}
