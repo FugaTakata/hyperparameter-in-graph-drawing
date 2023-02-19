@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     dataset_path = f"lib/egraph-rs/js/dataset/{D}.json"
 
-    export_directory = f"data/paretofs/{L}/{D}"
+    export_directory = f"data/paretofs_m/{L}/{D}"
     export_path = f"{export_directory}/{','.join(args.t)}.pkl"
     os.makedirs(export_directory, exist_ok=True)
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     graph, indices = generate_egraph_graph(nx_graph)
 
     study_name = ",".join(args.t)
-    storage_path = f"sqlite:///db_opt/{L}/{D}/{study_name}.db"
+    storage_path = f"sqlite:///db_opt_m/{L}/{D}/{study_name}.db"
     study = optuna.load_study(storage=storage_path, study_name=study_name)
 
     for best_trial in study.best_trials:

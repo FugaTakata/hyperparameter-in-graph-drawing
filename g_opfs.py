@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     dataset_path = f"lib/egraph-rs/js/dataset/{args.d}.json"
 
-    export_directory = f"data/opfs/{args.l}/{args.d}"
+    export_directory = f"data/opfs_m/{args.l}/{args.d}"
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     export_path = f"{export_directory}/{args.t}.pkl"
     os.makedirs(export_directory, exist_ok=True)
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     )
 
     data_df = pd.read_pickle(
-        f"data/params/optimized/{args.l}/{args.d}/opt.pkl"
+        f"data/params_m/optimized/{args.l}/{args.d}/opt.pkl"
     )
     target_df = data_df[data_df["target"] == args.t]
 

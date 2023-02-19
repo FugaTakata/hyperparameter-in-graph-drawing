@@ -50,7 +50,7 @@ df = pd.DataFrame()
 for q in ALL_QUALITY_METRICS_NAMES:
     study = optuna.load_study(
         study_name=q,
-        storage=f"sqlite:///db_opt/{args.l}/{args.d}/{q}.db",
+        storage=f"sqlite:///db_opt_m/{args.l}/{args.d}/{q}.db",
     )
     params = study.best_trial.user_attrs["params"]
     new_df = pd.DataFrame([{"target": q, "params": params}])
@@ -58,7 +58,7 @@ for q in ALL_QUALITY_METRICS_NAMES:
     df = pd.concat([df, new_df])
 
 
-direc = f"data/params/optimized/{args.l}/{args.d}/"
+direc = f"data/params_m/optimized/{args.l}/{args.d}/"
 os.makedirs(direc, exist_ok=True)
 pd.to_pickle(df, f"{direc}/opt.pkl")
 df = pd.read_pickle(f"{direc}/opt.pkl")

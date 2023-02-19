@@ -44,7 +44,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-export_directory = f"data/opfs/{args.l}/{args.d}"
+export_directory = f"data/opfs_m/{args.l}/{args.d}"
 
 df = pd.DataFrame()
 for name in ALL_QUALITY_METRICS_NAMES:
