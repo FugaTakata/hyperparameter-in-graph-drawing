@@ -82,16 +82,16 @@ args = parser.parse_args()
 ADJUST_RANDOMIZED_LONG_BEARD = args.a
 
 
-export_path = f"data/c_opt_rand_exp/{args.l}/{args.d}"
+export_path = f"data/c_opt_rand_exp_m/{args.l}/{args.d}"
 if ADJUST_RANDOMIZED_LONG_BEARD:
-    export_path = f"data/c_opt_rand_exp_adjusted/{args.l}/{args.d}"
+    export_path = f"data/c_opt_rand_exp_adjusted_m/{args.l}/{args.d}"
 os.makedirs(export_path, exist_ok=True)
 
 l = args.l
 d = args.d
 
 rpfs_df = pd.read_pickle(f"data/rpfs/{l}/{d}/ignore_20rp_50fs.pkl")
-opfs_df = pd.read_pickle(f"data/opfs/{l}/{d}/ignore_all.pkl")
+opfs_df = pd.read_pickle(f"data/opfs_m/{l}/{d}/ignore_all.pkl")
 exfs_df = pd.read_pickle(f"data/experienced/{l}/{d}/ignore_50fs.pkl")
 
 q_opfs = {}

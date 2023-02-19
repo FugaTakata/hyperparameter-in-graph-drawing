@@ -57,6 +57,7 @@ NAME_ABBREVIATIONS = {
 
 ALL_QUALITY_METRICS_NAMES = sorted([name for name in QUALITY_METRICS])
 
+
 layout_name_abbreviations = [
     SS,
     FR,
@@ -64,26 +65,10 @@ layout_name_abbreviations = [
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
+    "-d", choices=dataset_names, required=True, help="dataset name"
+)
+parser.add_argument(
     "-a", help="adjust randomized long beard", action="store_true"
-)
-parser.add_argument(
-    "--dataset-from",
-    choices=dataset_names,
-    required=True,
-    help="dataset name",
-)
-parser.add_argument(
-    "--dataset-to",
-    choices=dataset_names,
-    required=True,
-    help="dataset name",
-)
-parser.add_argument(
-    "-t",
-    choices=ALL_QUALITY_METRICS_NAMES,
-    nargs="*",
-    required=True,
-    help="target quality metrics names",
 )
 parser.add_argument(
     "-l",
@@ -94,43 +79,45 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-D_FROM = args.dataset_from
-D_TO = args.dataset_to
-PATTERN = f"{D_FROM}-{D_TO}"
-
 ADJUST_RANDOMIZED_LONG_BEARD = args.a
-TARGET_QUALITY_METRICS = args.t
 
-export_path = f"data/c_paretoan_rand_exp/{args.l}/{PATTERN}"
+
+export_path = f"data/c_opt_rand_exp_3/{args.l}/{args.d}"
 if ADJUST_RANDOMIZED_LONG_BEARD:
-    export_path = f"data/c_paretoan_rand_exp_adjusted/{args.l}/{PATTERN}"
-
+    export_path = f"data/c_opt_rand_exp_adjusted_3/{args.l}/{args.d}"
 os.makedirs(export_path, exist_ok=True)
 
-L = args.l
+l = args.l
+d = args.d
 
-rpfs_df = pd.read_pickle(f"{export_path}/rpfs_data.pkl")
-exfs_df = pd.read_pickle(f"{export_path}/exfs_data.pkl")
-
-# rpfs_df = pd.read_pickle(f"data/rpfs_ex/{L}/{D_TO}/ignore_100rp_1fs.pkl")
-# exfs_df = pd.read_pickle(f"data/experienced/{L}/{D_TO}/ignore_50fs.pkl")
-mopfs_df = pd.read_pickle(
-    f"data/paretofs/{L}/{PATTERN}/{','.join(args.t)}.pkl"
-)
-
-# n_pareto = len(mopfs_df)
-# rpfs_df = rpfs_df.sample(n=n_pareto)
-# exfs_df = exfs_df.sample(n=n_pareto)
-
-# rpfs_df.to_pickle(f"{export_path}/rpfs_data.pkl")
-# exfs_df.to_pickle(f"{export_path}/exfs_data.pkl")
+rpfs_df = pd.read_pickle(f"data/rpfs/{l}/{d}/ignore_20rp_50fs.pkl")
+opfs_df = pd.read_pickle(f"data/opfs/{l}/{d}/ignore_all.pkl")
+opfs_m_df = pd.read_pickle(f"data/opfs_m/{l}/{d}/ignore_all.pkl")
+opfs_m0_df = pd.read_pickle(f"data/opfs_m0/{l}/{d}/ignore_all.pkl")
+exfs_df = pd.read_pickle(f"data/experienced/{l}/{d}/ignore_50fs.pkl")
 
 q_opfs = {}
 for name in ALL_QUALITY_METRICS_NAMES:
     q_opfs[name] = []
-for row in mopfs_df.itertuples():
-    for name in row.quality_metrics:
-        q_opfs[name].append(row.quality_metrics[name])
+for name in ALL_QUALITY_METRICS_NAMES:
+    tdf = opfs_df[opfs_df["target"] == name]
+    for q in tdf["quality_metrics"]:
+        q_opfs[name].append(q[name])
+q_opfs_m = {}
+for name in ALL_QUALITY_METRICS_NAMES:
+    q_opfs_m[name] = []
+for name in ALL_QUALITY_METRICS_NAMES:
+    tdf = opfs_m_df[opfs_m_df["target"] == name]
+    for q in tdf["quality_metrics"]:
+        q_opfs_m[name].append(q[name])
+q_opfs_m0 = {}
+for name in ALL_QUALITY_METRICS_NAMES:
+    q_opfs_m0[name] = []
+for name in ALL_QUALITY_METRICS_NAMES:
+    tdf = opfs_m0_df[opfs_m0_df["target"] == name]
+    for q in tdf["quality_metrics"]:
+        q_opfs_m0[name].append(q[name])
+
 
 q_exfs = {}
 for name in ALL_QUALITY_METRICS_NAMES:
@@ -138,33 +125,57 @@ for name in ALL_QUALITY_METRICS_NAMES:
     for row in exfs_df.itertuples():
         q_exfs[name].append(row.quality_metrics[name])
 
-# q_rpfs = {}
-# for name in ALL_QUALITY_METRICS_NAMES:
-#     q_rpfs[name] = []
-# q_tmp = {}
-# s = 0
-# for q in rpfs_df["quality_metrics"]:
-#     if s == 0:
-#         for name in ALL_QUALITY_METRICS_NAMES:
-#             q_tmp[name] = []
-#     for name in ALL_QUALITY_METRICS_NAMES:
-#         q_tmp[name].append(q[name])
-#     if s == 49:
-#         for name in ALL_QUALITY_METRICS_NAMES:
-#             q_rpfs[name].append(q_tmp[name])
-#     s += 1
-#     if s == 50:
-#         s = 0
-
 q_rpfs = {}
 for name in ALL_QUALITY_METRICS_NAMES:
     q_rpfs[name] = []
+q_tmp = {}
+s = 0
 for q in rpfs_df["quality_metrics"]:
+    if s == 0:
+        for name in ALL_QUALITY_METRICS_NAMES:
+            q_tmp[name] = []
     for name in ALL_QUALITY_METRICS_NAMES:
-        q_rpfs[name].append(q[name])
+        q_tmp[name].append(q[name])
+    if s == 49:
+        for name in ALL_QUALITY_METRICS_NAMES:
+            q_rpfs[name].append(q_tmp[name])
+    s += 1
+    if s == 50:
+        s = 0
 
-for name in TARGET_QUALITY_METRICS:
-    rpfs_bin = q_rpfs[name]
+
+optimized = []
+counts = {}
+opfs_mean = {}
+rpfs_means = {}
+border = 15
+for name in ALL_QUALITY_METRICS_NAMES:
+    direction = QUALITY_METRICS[name].direction
+    opfs_mean[name] = statistics.median(q_opfs[name])
+    count = 0
+
+    if name not in rpfs_means:
+        rpfs_means[name] = []
+    for vs in q_rpfs[name]:
+        rpfs_means[name].append(statistics.median(vs))
+
+    for mean in rpfs_means[name]:
+        if direction == "maximize":
+            if mean <= opfs_mean[name]:
+                count += 1
+        elif direction == "minimize":
+            if opfs_mean[name] <= mean:
+                count += 1
+    if border <= count:
+        optimized.append(name)
+    counts[name] = count
+dict_data = {"optimized": optimized, "counts": counts}
+with open(f"{export_path}/result.json", mode="w") as f:
+    json.dump(dict_data, f)
+
+
+for name in ALL_QUALITY_METRICS_NAMES:
+    rpfs_bin = sum(q_rpfs[name], [])
     if ADJUST_RANDOMIZED_LONG_BEARD and (
         name == "crossing_number"
         or name == "ideal_edge_length"
@@ -174,17 +185,29 @@ for name in TARGET_QUALITY_METRICS:
             np.percentile(rpfs_bin, 75), max(q_opfs[name]), max(q_exfs[name])
         )
         rpfs_bin = [min(v, max_threshold * 1.5) for v in rpfs_bin]
-    bins = [q_opfs[name], q_exfs[name], rpfs_bin]
+    bins = [
+        q_opfs[name],
+        q_opfs_m[name],
+        q_opfs_m0[name],
+        q_exfs[name],
+        rpfs_bin,
+    ]
     direction = QUALITY_METRICS[name].direction
     plt.title(f'{name} {"+" if direction == "maximize" else "-"}')
-    labels = ["(a)"] + ["(b)"] + ["(c)"]
+    labels = (
+        [f"o_{NAME_ABBREVIATIONS[name]}"]
+        + [f"ofs_{NAME_ABBREVIATIONS[name]}"]
+        + [f"o10s_{NAME_ABBREVIATIONS[name]}"]
+        + ["exp"]
+        + ["rand"]
+    )
     plt.boxplot(
         bins,
         labels=labels,
         whis=float("inf"),
         # sym="",
     )
-    # plt.xticks(rotation=-60, ha="center")
+    plt.xticks(rotation=-60, ha="center")
     plt.savefig(
         f"{export_path}/{name}.png",
         format="png",
@@ -197,7 +220,7 @@ for name in TARGET_QUALITY_METRICS:
 dst_export_path = f"{export_path}/all.png"
 images = []
 tmp = []
-for quality in TARGET_QUALITY_METRICS:
+for quality in ALL_QUALITY_METRICS_NAMES:
     image_path = f"{export_path}/{quality}.png"
     img = Image.open(image_path)
 

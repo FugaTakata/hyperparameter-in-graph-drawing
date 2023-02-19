@@ -77,14 +77,14 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-export_path = f"data/c_rpfs_opfs/{args.l}/{args.d}"
+export_path = f"data/c_rpfs_opfs_m/{args.l}/{args.d}"
 os.makedirs(export_path, exist_ok=True)
 
 l = args.l
 d = args.d
 
 rpfs_df = pd.read_pickle(f"data/rpfs/{l}/{d}/ignore_20rp_50fs.pkl")
-opfs_df = pd.read_pickle(f"data/opfs/{l}/{d}/ignore_all.pkl")
+opfs_df = pd.read_pickle(f"data/opfs_m/{l}/{d}/ignore_all.pkl")
 experienced = pd.read_pickle(f"data/experienced/{l}/{d}/ignore_50fs.pkl")
 
 

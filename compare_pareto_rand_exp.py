@@ -90,6 +90,7 @@ args = parser.parse_args()
 
 
 ADJUST_RANDOMIZED_LONG_BEARD = args.a
+TARGET_QUALITY_METRICS = args.t
 
 export_path = f"data/c_pareto_rand_exp/{args.l}/{args.d}"
 if ADJUST_RANDOMIZED_LONG_BEARD:
@@ -100,13 +101,18 @@ os.makedirs(export_path, exist_ok=True)
 l = args.l
 d = args.d
 
-rpfs_df = pd.read_pickle(f"data/rpfs_ex/{l}/{d}/ignore_100rp_1fs.pkl")
-exfs_df = pd.read_pickle(f"data/experienced/{l}/{d}/ignore_50fs.pkl")
+rpfs_df = pd.read_pickle(f"{export_path}/rpfs_data.pkl")
+exfs_df = pd.read_pickle(f"{export_path}/exfs_data.pkl")
+# rpfs_df = pd.read_pickle(f"data/rpfs_ex/{l}/{d}/ignore_100rp_1fs.pkl")
+# exfs_df = pd.read_pickle(f"data/experienced/{l}/{d}/ignore_50fs.pkl")
 mopfs_df = pd.read_pickle(f"data/paretofs/{l}/{d}/{','.join(args.t)}.pkl")
 
-n_pareto = len(mopfs_df)
-rpfs_df = rpfs_df.sample(n=n_pareto)
-exfs_df = exfs_df.sample(n=n_pareto)
+# n_pareto = len(mopfs_df)
+# rpfs_df = rpfs_df.sample(n=n_pareto)
+# exfs_df = exfs_df.sample(n=n_pareto)
+
+# rpfs_df.to_pickle(f"{export_path}/rpfs_data.pkl")
+# exfs_df.to_pickle(f"{export_path}/exfs_data.pkl")
 
 q_opfs = {}
 for name in ALL_QUALITY_METRICS_NAMES:
@@ -146,7 +152,7 @@ for q in rpfs_df["quality_metrics"]:
     for name in ALL_QUALITY_METRICS_NAMES:
         q_rpfs[name].append(q[name])
 
-for name in ALL_QUALITY_METRICS_NAMES:
+for name in TARGET_QUALITY_METRICS:
     rpfs_bin = q_rpfs[name]
     if ADJUST_RANDOMIZED_LONG_BEARD and (
         name == "crossing_number"
@@ -162,10 +168,10 @@ for name in ALL_QUALITY_METRICS_NAMES:
     plt.title(f'{name} {"+" if direction == "maximize" else "-"}')
     plt.boxplot(
         bins,
-        labels=["m_opt"] + ["exp"] + ["rand"],
+        labels=["(a)"] + ["(b)"] + ["(c)"],
         whis=float("inf"),
     )
-    plt.xticks(rotation=-60, ha="center")
+    # plt.xticks(rotation=-60, ha="center")
     plt.savefig(
         f"{export_path}/{name}.png",
         format="png",
@@ -178,7 +184,7 @@ for name in ALL_QUALITY_METRICS_NAMES:
 dst_export_path = f"{export_path}/all.png"
 images = []
 tmp = []
-for quality in ALL_QUALITY_METRICS_NAMES:
+for quality in TARGET_QUALITY_METRICS:
     image_path = f"{export_path}/{quality}.png"
     img = Image.open(image_path)
 
