@@ -5,7 +5,7 @@ description = ""
 authors = ["FugaTakata <fuga.takata.dev@gmail.com>"]
 readme = "README.md"
 packages = [
-  { include = "configs", from = "src" },
+  { include = "config", from = "src" },
   { include = "data_processors", from = "src" },
   { include = "generators", from = "src" },
   { include = "layouts", from = "src" },
