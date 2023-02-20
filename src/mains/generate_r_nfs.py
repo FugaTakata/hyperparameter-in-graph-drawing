@@ -1,6 +1,9 @@
 # Standard Library
 import argparse
 
+# Third Party Library
+from tqdm import trange
+
 # First Party Library
 from config import const, dataset, layout, paths
 from generators import graph as graph_generator
@@ -39,7 +42,7 @@ if __name__ == "__main__":
     dataset_path = paths.get_dataset_path(dataset_name=D)
 
     r_nfs_dir = paths.get_r_nfs_dir(dataset_name=D, layout_name=L)
-    r_nfs_dir.mkdir(parents=True)
+    r_nfs_dir.mkdir(parents=True, exist_ok=True)
     r_nfs_path = paths.get_r_nfs_path(
         dataset_name=D, layout_name=L, filename=filename
     )
@@ -51,13 +54,13 @@ if __name__ == "__main__":
 
     if L == layout.SS:
         eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
-
-        r_nfs.ss(
-            nx_graph=nx_graph,
-            eg_graph=eg_graph,
-            eg_indices=eg_indices,
-            shortest_path_length=shortest_path_length,
-            r_nfs_path=r_nfs_path,
-            n_seed=N_SEED,
-            edge_weight=const.EDGE_WEIGHT,
-        )
+        for _ in trange(N_PARAMS):
+            r_nfs.ss(
+                nx_graph=nx_graph,
+                eg_graph=eg_graph,
+                eg_indices=eg_indices,
+                shortest_path_length=shortest_path_length,
+                r_nfs_path=r_nfs_path,
+                n_seed=N_SEED,
+                edge_weight=const.EDGE_WEIGHT,
+            )

@@ -1,13 +1,16 @@
-from scipy.spatial import ConvexHull
-from utils import gravity_center
+# Third Party Library
 import numpy as np
+from scipy.spatial import ConvexHull
 
-direction = 'maximize'
+# First Party Library
+from utils import gravity_center
+
+direction = "maximize"
 
 
 def quality(nx_graph, pos):
     N = 7
-    gx, gy = gravity_center(pos)
+    gx, gy = gravity_center.gravity_center(pos)
     centered_pos = {}
     for node_id in nx_graph.nodes:
         x, y = pos[node_id]
@@ -23,10 +26,10 @@ def quality(nx_graph, pos):
 
     q = 1
     for k in range(N):
-        max_x = -float('inf')
-        min_x = float('inf')
-        max_y = -float('inf')
-        min_y = float('inf')
+        max_x = -float("inf")
+        min_x = float("inf")
+        max_y = -float("inf")
+        min_y = float("inf")
 
         theta = (2 * np.pi * k) / N
         c = np.cos(theta)

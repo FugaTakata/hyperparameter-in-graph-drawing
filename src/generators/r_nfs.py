@@ -68,6 +68,7 @@ def ss(
             eg_indices=eg_indices,
             params=params,
             shortest_path_length=shortest_path_length,
+            seed=seed,
             edge_weight=edge_weight,
         )
 

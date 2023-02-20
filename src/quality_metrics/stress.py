@@ -2,19 +2,26 @@
 from itertools import combinations
 
 # Third Party Library
-import networkx as nx
 import numpy as np
 from scipy.spatial.distance import pdist
+
+# First Party Library
+from utils import graph
 
 direction = "minimize"
 
 
-def quality(nx_graph, pos, all_shortest_paths, K=1, L=1):
-    if all_shortest_paths is None:
-        all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
+def quality(nx_graph, pos, shortest_path_length, K=1, L=1):
+    if shortest_path_length is None:
+        shortest_path_length = graph.get_shortest_path_length(
+            nx_graph=nx_graph
+        )
     dx = pdist([pos[i] for i in nx_graph.nodes])
     d = np.array(
-        [all_shortest_paths[i][j] for i, j in combinations(nx_graph.nodes, 2)]
+        [
+            shortest_path_length[i][j]
+            for i, j in combinations(nx_graph.nodes, 2)
+        ]
     )
 
     s = np.sum(((K / d**2) * (dx - L * d) ** 2) / 2)

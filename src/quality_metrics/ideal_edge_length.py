@@ -1,16 +1,20 @@
+# Third Party Library
 import numpy as np
-import networkx as nx
+
+# First Party Library
+from utils import graph
+
+direction = "minimize"
 
 
-direction = 'minimize'
-
-
-def quality(nx_graph, pos, all_shortest_paths):
-    if all_shortest_paths is None:
-        all_shortest_paths = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
+def quality(nx_graph, pos, shortest_path_length):
+    if shortest_path_length is None:
+        shortest_path_length = graph.get_shortest_path_length(
+            nx_graph=nx_graph
+        )
     s = 0
     for source, target in nx_graph.edges:
-        lij = all_shortest_paths[source][target]
+        lij = shortest_path_length[source][target]
         dist = np.linalg.norm(np.array(pos[source]) - np.array(pos[target]))
         s += ((dist - lij) / lij) ** 2
 
