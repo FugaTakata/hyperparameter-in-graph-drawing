@@ -52,7 +52,7 @@ if __name__ == "__main__":
     if L == layout.SS:
         eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
 
-        r_nfs.ss_generator(
+        r_nfs.ss(
             nx_graph=nx_graph,
             eg_graph=eg_graph,
             eg_indices=eg_indices,

@@ -34,7 +34,7 @@ def save(params_id, seed, params, qualities, pos, r_nfs_path):
     df.to_pickle(r_nfs_path)
 
 
-def ss_generator(
+def ss(
     nx_graph,
     eg_graph,
     eg_indices,
