@@ -62,12 +62,5 @@ target/
 # Notebook Checkpoints
 .ipynb_checkpoints/
 
+# venv
 .venv
-.DS_Store
-
-ignore_*.pkl
-ignore_*.db
-ignore_*
-*.ipynb
-*.csv
-*.out
