@@ -1,6 +1,7 @@
-from scipy.spatial import Delaunay
-import numpy as np
+# Third Party Library
 import networkx as nx
+import numpy as np
+from scipy.spatial import Delaunay
 
 
 def generate_delaunay_triangulation_graph(pos, edge_weight=1):
@@ -26,11 +27,14 @@ def generate_delaunay_triangulation_graph(pos, edge_weight=1):
         n1 = n[1]
         n2 = n[2]
         weighted_edges.append(
-            (index_id_map[n0], index_id_map[n1], edge_weight))
+            (index_id_map[n0], index_id_map[n1], edge_weight)
+        )
         weighted_edges.append(
-            (index_id_map[n0], index_id_map[n2], edge_weight))
+            (index_id_map[n0], index_id_map[n2], edge_weight)
+        )
         weighted_edges.append(
-            (index_id_map[n1], index_id_map[n2], edge_weight))
+            (index_id_map[n1], index_id_map[n2], edge_weight)
+        )
     delaunay_triangulation_graph.add_weighted_edges_from(weighted_edges)
 
     return delaunay_triangulation_graph
@@ -49,7 +53,7 @@ def jaccard_similarity_sum(nx_graph, nx_shape_graph):
     return j_s_sum / len(nx_graph.nodes)
 
 
-direction = 'maximize'
+direction = "maximize"
 
 
 def quality(nx_graph, pos, edge_weight=1):

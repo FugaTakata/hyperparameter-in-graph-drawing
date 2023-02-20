@@ -1,7 +1,7 @@
+# Standard Library
 import time
 
-
-direction = 'minimize'
+direction = "minimize"
 
 
 class RunTime:
