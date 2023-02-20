@@ -51,14 +51,15 @@ import_heading_localfolder = "Local Library"
 multi_line_output = 3
 include_trailing_comma = true
 known_firstparty = [
-  'config',
-  'generators',
-  'layout',
-  'quality_metrics',
-  'utils',
+  "config",
+  "generators",
+  "layout",
+  "quality_metrics",
+  "utils",
 ]
 
 [tool.flake8]
 max-line-length = 79
 exclude = [".venv", ".git", "__pycache__"]
+ignore = ['E203']
 max-complexity = 10
