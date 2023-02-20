@@ -8,24 +8,10 @@ from quality_metrics import (
     gabriel_graph_property,
     ideal_edge_length,
     node_resolution,
-    run_time,
     shape_based_metrics,
     stress,
 )
 from utils import edge_crossing_finder
-
-QUALITY_METRICS_MAP = {
-    "angular_resolution": angular_resolution,
-    "aspect_ratio": aspect_ratio,
-    "crossing_angle": crossing_angle,
-    "crossing_number": crossing_number,
-    "gabriel_graph_property": gabriel_graph_property,
-    "ideal_edge_length": ideal_edge_length,
-    "node_resolution": node_resolution,
-    "run_time": run_time,
-    "shape_based_metrics": shape_based_metrics,
-    "stress": stress,
-}
 
 
 def measure_qualities(
