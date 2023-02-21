@@ -8,12 +8,13 @@ from tqdm import trange
 from config import const, dataset, layout, paths
 from generators import graph as graph_generator
 from generators import r_nfs
-from utils import graph, uuid
+from utils import graph
 
 
 def get_args():
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("--stem", required=True, help="export file stem")
     parser.add_argument(
         "-d", choices=dataset.DATASET_NAMES, required=True, help="dataset name"
     )
@@ -31,13 +32,13 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
+    STEM = args.stem
     D = args.d
     L = args.l
     N_PARAMS = args.n_params
     N_SEED = args.n_seed
 
-    file_id = uuid.get_uuid()
-    filename = f"{file_id}.pkl"
+    filename = f"{STEM}.pkl"
 
     dataset_path = paths.get_dataset_path(dataset_name=D)
 
