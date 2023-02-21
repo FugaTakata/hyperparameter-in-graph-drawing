@@ -40,7 +40,7 @@ if __name__ == "__main__":
     shell_script_path = paths.get_shell_script_path(filename=filename)
 
     dt_now_jst = iso_datetime.get_now_jst()
-    export_file_stem = f"{N_PARAMS}r-{N_SEED}nfs_{dt_now_jst}"
+    export_file_stem = f"{N_PARAMS * N_JOBS}r-{N_SEED}nfs_{dt_now_jst}"
 
     lines = ["#!/bin/sh", ""]
     for job_n in range(N_JOBS):
