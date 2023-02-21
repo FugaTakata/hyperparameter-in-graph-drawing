@@ -66,5 +66,5 @@ known_firstparty = [
 [tool.flake8]
 max-line-length = 79
 exclude = [".venv", ".git", "__pycache__"]
-ignore = ['E203']
+ignore = ['E203', 'E501']
 max-complexity = 10
