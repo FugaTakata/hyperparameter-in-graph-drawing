@@ -20,6 +20,15 @@ def get_dataset_path(dataset_name):
     return dataset_path
 
 
+def get_shell_script_path(filename):
+    shell_scripts_dir = Path(project_root_dir).joinpath("shell_scripts/")
+    shell_scripts_path = shell_scripts_dir.joinpath(filename)
+
+    shell_scripts_dir.mkdir(parents=True, exist_ok=True)
+
+    return shell_scripts_path
+
+
 def get_data_dir(layout_name, dataset_name):
     data_dir = (
         Path(project_root_dir)

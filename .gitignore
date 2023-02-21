@@ -67,3 +67,6 @@ target/
 
 # environment variables
 .env
+
+# shell scripts
+shell_scripts/*.sh
