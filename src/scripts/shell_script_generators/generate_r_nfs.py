@@ -45,7 +45,7 @@ if __name__ == "__main__":
     lines = ["#!/bin/sh", ""]
     for job_n in range(N_JOBS):
         lines.append(
-            f"(seep {job_n} && poetry run python -u ./src/scripts/{stem}.py --stem {export_file_stem} -d {D} -l {L} --n-params {N_PARAMS} --n-seed {N_SEED} 2>&1 | tee -a {stem}-{job_n}.out) &"
+            f"(sleep {job_n} && poetry run python -u ./src/scripts/{stem}.py --stem {export_file_stem} -d {D} -l {L} --n-params {N_PARAMS} --n-seed {N_SEED} 2>&1 | tee -a {stem}-{job_n}.out) &"
         )
 
     lines.append("wait")
