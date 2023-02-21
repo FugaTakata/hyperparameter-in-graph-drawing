@@ -5,11 +5,11 @@ import json
 import networkx as nx
 
 # First Party Library
-from config.paths import get_dataset_path
+from config import paths
 
 
 def load_nx_graph(dataset_name, edge_weight):
-    dataset_path = get_dataset_path(dataset_name=dataset_name)
+    dataset_path = paths.get_dataset_path(dataset_name=dataset_name)
     with open(dataset_path) as f:
         graph_data = json.load(f)
     nx_graph = graph_preprocessing(
