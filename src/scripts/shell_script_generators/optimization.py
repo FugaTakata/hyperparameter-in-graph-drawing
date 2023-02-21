@@ -36,6 +36,7 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
+    STEM = args.stem
     D = args.d
     L = args.l
     N_TRIALS = args.n_trials
@@ -51,14 +52,8 @@ if __name__ == "__main__":
     dt_now_jst = datetime.datetime.now(tz=tz_jst)
     dt_now_jst_iso = datetime.datetime.isoformat(dt_now_jst)
     db_stem = f"{N_TRIALS * N_JOBS}trials-{N_MEANS}means-{'fixed-seed' if FIXED_SEED else 'non-fixed-seed'}_{dt_now_jst_iso}"
-    db_name = f"{db_stem}.sql"
 
     target_qm_names = quality_metrics.ALL_QM_NAMES
-
-    optimization_path = paths.get_optimization_path(
-        layout_name=L, dataset_name=D, filename=db_name
-    )
-    database_uri = f"sqlite:///{optimization_path.resolve()}"
 
     lines = ["#!/bin/sh", ""]
 
@@ -67,7 +62,7 @@ if __name__ == "__main__":
         line = [f"sleep {job_n}"]
         for target_qm_name in target_qm_names:
             line.append(
-                f"poetry run python -u ./src/scripts/{stem}.py --database-uri {database_uri} -d {D} -l {L} --n-trials {N_TRIALS} --n-means {N_MEANS} {'--fixed-seed' if FIXED_SEED else None} -t {target_qm_name} 2>&1 | tee -a {stem}-{job_n}.out"
+                f"poetry run python -u ./src/scripts/{stem}.py --stem {STEM} -d {D} -l {L} --n-trials {N_TRIALS} --n-means {N_MEANS} {'--fixed-seed' if FIXED_SEED else None} -t {target_qm_name} 2>&1 | tee -a {stem}-{job_n}.out"
             )
         lines.append(f"({' && '.join(line)}) &")
 

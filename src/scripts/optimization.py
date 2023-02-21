@@ -3,16 +3,14 @@ import argparse
 import random
 
 # First Party Library
-from config import const, dataset, layout, quality_metrics
+from config import const, dataset, layout, paths, quality_metrics
 from optimizers import single
 
 
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "--database-uri", required=True, help="study storage uri"
-    )
+    parser.add_argument("--stem", required=True, help="database stem")
     parser.add_argument(
         "-d", choices=dataset.DATASET_NAMES, required=True, help="dataset name"
     )
@@ -44,7 +42,7 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
-    DATABASE_URI = args.database_uri
+    STEM = args.stem
     D = args.d
     L = args.l
     N_TRIALS = args.n_trials
@@ -55,6 +53,12 @@ if __name__ == "__main__":
     if (not FIXED_SEED) and 1 < N_MEANS:
         raise ValueError("n means must be 1 when seed fixed")
 
+    db_name = f"{STEM}.sql"
+    optimization_path = paths.get_optimization_path(
+        layout_name=L, dataset_name=D, filename=db_name
+    )
+    database_uri = f"sqlite:///{optimization_path.resolve()}"
+
     study_name = ",".join(TARGET_QM_NAMES)
 
     def generate_seed():
@@ -64,7 +68,7 @@ if __name__ == "__main__":
 
     single.ss(
         dataset_name=D,
-        database_uri=DATABASE_URI,
+        database_uri=database_uri,
         study_name=study_name,
         n_trials=N_TRIALS,
         n_means=N_MEANS,
