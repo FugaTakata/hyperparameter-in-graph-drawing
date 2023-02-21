@@ -7,7 +7,6 @@ from quality_metrics import (
     gabriel_graph_property,
     ideal_edge_length,
     node_resolution,
-    run_time,
     shape_based_metrics,
     stress,
 )
@@ -20,7 +19,7 @@ QUALITY_METRICS_MAP = {
     "gabriel_graph_property": gabriel_graph_property,
     "ideal_edge_length": ideal_edge_length,
     "node_resolution": node_resolution,
-    "run_time": run_time,
+    # "run_time": run_time,
     "shape_based_metrics": shape_based_metrics,
     "stress": stress,
 }
