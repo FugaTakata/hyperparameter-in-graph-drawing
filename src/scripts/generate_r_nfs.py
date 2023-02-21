@@ -41,8 +41,6 @@ if __name__ == "__main__":
 
     dataset_path = paths.get_dataset_path(dataset_name=D)
 
-    r_nfs_dir = paths.get_r_nfs_dir(dataset_name=D, layout_name=L)
-    r_nfs_dir.mkdir(parents=True, exist_ok=True)
     r_nfs_path = paths.get_r_nfs_path(
         dataset_name=D, layout_name=L, filename=filename
     )
