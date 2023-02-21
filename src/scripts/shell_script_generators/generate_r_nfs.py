@@ -39,9 +39,9 @@ if __name__ == "__main__":
     shell_script_path = paths.get_shell_script_path(filename=filename)
 
     lines = ["#!/bin/sh", ""]
-    for _ in range(N_JOBS):
+    for job_n in range(N_JOBS):
         lines.append(
-            f"poetry run python ./src/scripts/{stem}.py -d {D} -l {L} --n-params {N_PARAMS} --n-seed {N_SEED} &"
+            f"poetry run python -u ./src/scripts/{stem}.py -d {D} -l {L} --n-params {N_PARAMS} --n-seed {N_SEED} 2>&1 | tee -a {stem}-{job_n}.out &"
         )
 
     lines.append("wait")
