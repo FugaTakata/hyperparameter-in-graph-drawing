@@ -36,7 +36,6 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
-    STEM = args.stem
     D = args.d
     L = args.l
     N_TRIALS = args.n_trials
@@ -62,7 +61,7 @@ if __name__ == "__main__":
         line = [f"sleep {job_n}"]
         for target_qm_name in target_qm_names:
             line.append(
-                f"poetry run python -u ./src/scripts/{stem}.py --stem {STEM} -d {D} -l {L} --n-trials {N_TRIALS} --n-means {N_MEANS} {'--fixed-seed' if FIXED_SEED else None} -t {target_qm_name} 2>&1 | tee -a {stem}-{job_n}.out"
+                f"poetry run python -u ./src/scripts/{stem}.py --stem {db_stem} -d {D} -l {L} --n-trials {N_TRIALS} --n-means {N_MEANS} {'--fixed-seed' if FIXED_SEED else None} -t {target_qm_name} 2>&1 | tee -a {stem}-{job_n}.out"
             )
         lines.append(f"({' && '.join(line)}) &")
 
