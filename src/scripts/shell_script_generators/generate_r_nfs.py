@@ -40,10 +40,10 @@ if __name__ == "__main__":
     shell_script_path = paths.get_shell_script_path(filename=filename)
 
     dt_now_jst = iso_datetime.get_now_jst()
-    export_file_stem = f"{N_PARAMS * N_JOBS}r-{N_SEED}nfs_{dt_now_jst}"
 
     lines = ["#!/bin/sh", ""]
     for job_n in range(N_JOBS):
+        export_file_stem = f"{N_PARAMS * N_JOBS}r-{N_SEED}nfs-{job_n}_{dt_now_jst}"
         lines.append(
             f"(sleep {job_n} && poetry run python -u ./src/scripts/{stem}.py --stem {export_file_stem} -d {D} -l {L} --n-params {N_PARAMS} --n-seed {N_SEED} 2>&1 | tee -a {stem}-{job_n}.out) &"
         )
