@@ -50,7 +50,7 @@ if __name__ == "__main__":
     tz_jst = datetime.timezone(datetime.timedelta(hours=+9))
     dt_now_jst = datetime.datetime.now(tz=tz_jst)
     dt_now_jst_iso = datetime.datetime.isoformat(dt_now_jst)
-    db_stem = dt_now_jst_iso
+    db_stem = f"{N_TRIALS * N_JOBS}trials-{N_MEANS}means-{'fixed-seed' if FIXED_SEED else 'non-fixed-seed'}_{dt_now_jst_iso}"
     db_name = f"{db_stem}.sql"
 
     target_qm_names = quality_metrics.ALL_QM_NAMES
