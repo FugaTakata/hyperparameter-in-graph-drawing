@@ -68,3 +68,13 @@ def get_o_nfs_path(layout_name, dataset_name, filename):
     o_nfs_dir.mkdir(parents=True, exist_ok=True)
 
     return o_nfs_path
+
+
+def get_e_nfs_path(layout_name, dataset_name, filename):
+    data_dir = get_data_dir(layout_name=layout_name, dataset_name=dataset_name)
+    e_nfs_dir = data_dir.joinpath("e_nfs/")
+    e_nfs_path = e_nfs_dir.joinpath(filename)
+
+    e_nfs_dir.mkdir(parents=True, exist_ok=True)
+
+    return e_nfs_path

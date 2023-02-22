@@ -6,7 +6,7 @@ import random
 from tqdm import trange
 
 # First Party Library
-from config import const, dataset, layout, parameters, paths, quality_metrics
+from config import const, dataset, layout, parameters, paths
 from generators import drawing_and_qualities
 from generators import graph as graph_generator
 from utils import graph, save, uuid
@@ -36,7 +36,6 @@ if __name__ == "__main__":
     D = args.d
     L = args.l
     N_SEED = args.n_seed
-    TARGET_QM_NAMES = args.t
 
     filename = f"{STEM}.pkl"
 
@@ -54,7 +53,6 @@ if __name__ == "__main__":
     if L == layout.SS:
         eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
 
-        params_id = uuid.get_uuid()
         params = {
             "edge_length": const.EDGE_WEIGHT,
             "number_of_pivots": parameters.empirical_ss["number_of_pivots"],
@@ -77,7 +75,6 @@ if __name__ == "__main__":
             )
 
             save.e_nfs(
-                params_id=params_id,
                 seed=seed,
                 params=params,
                 qualities=qualities,
