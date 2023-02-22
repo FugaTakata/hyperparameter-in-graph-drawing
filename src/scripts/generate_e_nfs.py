@@ -23,13 +23,6 @@ def get_args():
         "-l", choices=layout.LAYOUT_NAMES, required=True, help="layout name"
     )
     parser.add_argument("--n-seed", type=int, required=True, help="n seed")
-    parser.add_argument(
-        "-t",
-        choices=quality_metrics.ALL_QM_NAMES,
-        nargs="*",
-        required=True,
-        help="target quality metrics names",
-    )
 
     args = parser.parse_args()
 
