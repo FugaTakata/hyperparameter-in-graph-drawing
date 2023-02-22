@@ -19,10 +19,16 @@ def get_args():
         "--n-trials", type=int, required=True, help="n trials on optimization"
     )
     parser.add_argument(
-        "--n-means", type=int, required=True, help="n seed per trial"
+        "--n-seed", type=int, required=True, help="n seed per trial"
     )
     parser.add_argument(
         "--fixed-seed", action="store_true", help="use fixed seed"
+    )
+    parser.add_argument(
+        "--handle-result",
+        choices=["normal", "mean", "median"],
+        required=True,
+        help="how to handle multiple seed",
     )
     parser.add_argument(
         "--n-jobs", type=int, required=True, help="number of jobs"
@@ -39,7 +45,8 @@ if __name__ == "__main__":
     D = args.d
     L = args.l
     N_TRIALS = args.n_trials
-    N_MEANS = args.n_means
+    N_SEED = args.n_seed
+    HANDLE_RESULT = args.handle_result
     FIXED_SEED = args.fixed_seed
     N_JOBS = args.n_jobs
 
@@ -50,7 +57,14 @@ if __name__ == "__main__":
     tz_jst = datetime.timezone(datetime.timedelta(hours=+9))
     dt_now_jst = datetime.datetime.now(tz=tz_jst)
     dt_now_jst_iso = datetime.datetime.isoformat(dt_now_jst)
-    db_stem = f"{N_TRIALS * N_JOBS}trials-{N_MEANS}means-{'fixed-seed' if FIXED_SEED else 'non-fixed-seed'}_{dt_now_jst_iso}"
+
+    result_handler_type = ""
+    if HANDLE_RESULT == "median":
+        result_handler_type = f"-{N_SEED}median"
+    elif HANDLE_RESULT == "mean":
+        result_handler_type += f"-{N_SEED}mean"
+
+    db_stem = f"{N_TRIALS * N_JOBS}trials{result_handler_type}-{'fixed-seed' if FIXED_SEED else 'non-fixed-seed'}_{dt_now_jst_iso}"
 
     target_qm_names = quality_metrics.ALL_QM_NAMES
 
@@ -61,7 +75,7 @@ if __name__ == "__main__":
         line = [f"sleep {job_n}"]
         for target_qm_name in target_qm_names:
             line.append(
-                f"poetry run python -u ./src/scripts/{stem}.py --stem {db_stem} -d {D} -l {L} --n-trials {N_TRIALS} --n-means {N_MEANS} {'--fixed-seed' if FIXED_SEED else ''} -t {target_qm_name} 2>&1 | tee -a {stem}-{job_n}.out"
+                f"poetry run python -u ./src/scripts/{stem}.py --stem {db_stem} -d {D} -l {L} --n-trials {N_TRIALS} --n-seed {N_SEED} {'--fixed-seed' if FIXED_SEED else ''} --handle-result {HANDLE_RESULT} -t {target_qm_name} 2>&1 | tee -a {stem}-{job_n}.out"
             )
         lines.append(f"({' && '.join(line)}) &")
 

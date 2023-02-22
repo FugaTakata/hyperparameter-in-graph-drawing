@@ -1,6 +1,3 @@
-# Standard Library
-import statistics
-
 # Third Party Library
 import optuna
 
@@ -14,7 +11,8 @@ def ss(
     shortest_path_length,
     target_qm_names,
     edge_weight,
-    n_means,
+    n_seed,
+    result_handler,
     generate_seed,
 ):
     eg_graph, eg_indices = graph.egraph_graph(nx_graph=nx_graph)
@@ -41,11 +39,11 @@ def ss(
 
         trial.set_user_attr("params", params)
 
-        qualities_means = {}
+        qualities_list = {}
         for qm_name in quality_metrics.ALL_QM_NAMES:
-            qualities_means[qm_name] = []
+            qualities_list[qm_name] = []
 
-        for _ in range(n_means):
+        for _ in range(n_seed):
             seed = generate_seed()
             pos, qualities = drawing_and_qualities.ss(
                 nx_graph=nx_graph,
@@ -58,17 +56,14 @@ def ss(
             )
 
             for qm_name in quality_metrics.ALL_QM_NAMES:
-                qualities_means[qm_name].append(qualities[qm_name])
+                qualities_list[qm_name].append(qualities[qm_name])
 
-        for qm_name in quality_metrics.ALL_QM_NAMES:
-            qualities_means[qm_name] = statistics.mean(
-                qualities_means[qm_name]
-            )
+        qualities_result = result_handler(qualities_list)
 
-        trial.set_user_attr("qualities", qualities_means)
+        trial.set_user_attr("qualities", qualities_result)
 
         result = tuple(
-            [qualities_means[qm_name] for qm_name in target_qm_names]
+            [qualities_result[qm_name] for qm_name in target_qm_names]
         )
 
         return result
