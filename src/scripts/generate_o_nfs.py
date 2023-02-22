@@ -38,7 +38,6 @@ if __name__ == "__main__":
     DB_STEM = args.db_stem
     D = args.d
     L = args.l
-    N_PARAMS = args.n_params
     N_SEED = args.n_seed
     TARGET_QM_NAMES = args.t
 
