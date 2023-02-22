@@ -9,7 +9,6 @@ from utils import iso_datetime
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--stem", required=True, help="export file stem")
     parser.add_argument(
         "-d", choices=dataset.DATASET_NAMES, required=True, help="dataset name"
     )
@@ -26,11 +25,9 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
-    DB_STEM = args.db_stem
     D = args.d
     L = args.l
     N_SEED = args.n_seed
-    N_JOBS = args.n_jobs
 
     stem = "generate_o_nfs"
     filename = f"{stem}.sh"
