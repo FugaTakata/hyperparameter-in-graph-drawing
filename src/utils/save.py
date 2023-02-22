@@ -5,9 +5,7 @@ import pandas as pd
 from utils import uuid
 
 
-def e_nfs(
-    params_id, target_qm_names, seed, params, qualities, pos, e_nfs_path
-):
+def e_nfs(target_qm_names, seed, params, qualities, pos, e_nfs_path):
     data_id = uuid.get_uuid()
     base_df = pd.DataFrame()
     if e_nfs_path.exists():
@@ -17,7 +15,6 @@ def e_nfs(
         [
             {
                 "id": data_id,
-                "params_id": params_id,
                 "target_qm_names": target_qm_names,
                 "seed": seed,
                 "params": params,
