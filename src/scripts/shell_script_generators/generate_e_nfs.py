@@ -29,7 +29,7 @@ if __name__ == "__main__":
     L = args.l
     N_SEED = args.n_seed
 
-    stem = "generate_o_nfs"
+    stem = "generate_e_nfs"
     filename = f"{stem}.sh"
     shell_script_path = paths.get_shell_script_path(filename=filename)
 
