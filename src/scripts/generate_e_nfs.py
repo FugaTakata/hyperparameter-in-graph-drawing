@@ -9,7 +9,7 @@ from tqdm import trange
 from config import const, dataset, layout, parameters, paths
 from generators import drawing_and_qualities
 from generators import graph as graph_generator
-from utils import graph, save, uuid
+from utils import graph, save
 
 
 def get_args():
