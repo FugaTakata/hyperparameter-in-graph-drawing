@@ -1,11 +1,16 @@
 # Standard Library
 import argparse
+import random
+
+# Third Party Library
+import optuna
+from tqdm import trange
 
 # First Party Library
 from config import const, dataset, layout, paths, quality_metrics
+from generators import drawing_and_qualities
 from generators import graph as graph_generator
-from generators import o_nfs
-from utils import graph
+from utils import graph, save, uuid
 
 
 def get_args():
@@ -63,14 +68,30 @@ if __name__ == "__main__":
     if L == layout.SS:
         eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
 
-        o_nfs.ss(
-            nx_graph=nx_graph,
-            eg_graph=eg_graph,
-            eg_indices=eg_indices,
-            target_qm_names=TARGET_QM_NAMES,
-            database_uri=database_uri,
-            shortest_path_length=shortest_path_length,
-            o_nfs_path=o_nfs_path,
-            n_seed=N_SEED,
-            edge_weight=const.EDGE_WEIGHT,
+        params_id = uuid.get_uuid()
+        study = optuna.load_study(
+            study_name=",".join(TARGET_QM_NAMES), storage=database_uri
         )
+        params = study.best_trial.user_attrs["params"]
+
+        for _ in trange(N_SEED):
+            seed = random.randint(0, const.RAND_MAX)
+            pos, qualities = drawing_and_qualities.ss(
+                nx_graph=nx_graph,
+                eg_graph=eg_graph,
+                eg_indices=eg_indices,
+                params=params,
+                shortest_path_length=shortest_path_length,
+                seed=seed,
+                edge_weight=const.EDGE_WEIGHT,
+            )
+
+            save.o_nfs(
+                params_id=params_id,
+                target_qm_names=TARGET_QM_NAMES,
+                seed=seed,
+                params=params,
+                qualities=qualities,
+                pos=pos,
+                o_nfs_path=o_nfs_path,
+            )

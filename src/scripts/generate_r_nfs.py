@@ -1,14 +1,15 @@
 # Standard Library
 import argparse
+import random
 
 # Third Party Library
 from tqdm import trange
 
 # First Party Library
-from config import const, dataset, layout, paths
+from config import const, dataset, layout, params_domains, paths
+from generators import drawing_and_qualities
 from generators import graph as graph_generator
-from generators import r_nfs
-from utils import graph
+from utils import graph, save, uuid
 
 
 def get_args():
@@ -54,12 +55,40 @@ if __name__ == "__main__":
     if L == layout.SS:
         eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
         for _ in trange(N_PARAMS):
-            r_nfs.ss(
-                nx_graph=nx_graph,
-                eg_graph=eg_graph,
-                eg_indices=eg_indices,
-                shortest_path_length=shortest_path_length,
-                r_nfs_path=r_nfs_path,
-                n_seed=N_SEED,
-                edge_weight=const.EDGE_WEIGHT,
-            )
+            params_id = uuid.get_uuid()
+            params = {
+                "edge_length": const.EDGE_WEIGHT,
+                "number_of_pivots": random.randint(
+                    params_domains.ss["number_of_pivots"]["l"],
+                    params_domains.ss["number_of_pivots"]["u"],
+                ),
+                "number_of_iterations": random.randint(
+                    params_domains.ss["number_of_iterations"]["l"],
+                    params_domains.ss["number_of_iterations"]["u"],
+                ),
+                "eps": random.uniform(
+                    params_domains.ss["eps"]["l"],
+                    params_domains.ss["eps"]["u"],
+                ),
+            }
+
+            for _ in trange(N_SEED):
+                seed = random.randint(0, const.RAND_MAX)
+                pos, qualities = drawing_and_qualities.ss(
+                    nx_graph=nx_graph,
+                    eg_graph=eg_graph,
+                    eg_indices=eg_indices,
+                    params=params,
+                    shortest_path_length=shortest_path_length,
+                    seed=seed,
+                    edge_weight=const.EDGE_WEIGHT,
+                )
+
+                save.r_nfs(
+                    params_id=params_id,
+                    seed=seed,
+                    params=params,
+                    qualities=qualities,
+                    pos=pos,
+                    r_nfs_path=r_nfs_path,
+                )
