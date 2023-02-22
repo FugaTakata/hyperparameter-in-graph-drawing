@@ -50,7 +50,7 @@ if __name__ == "__main__":
     FIXED_SEED = args.fixed_seed
     TARGET_QM_NAMES = args.t
 
-    if (not FIXED_SEED) and 1 < N_MEANS:
+    if FIXED_SEED and 1 != N_MEANS:
         raise ValueError("n means must be 1 when seed fixed")
 
     db_name = f"{STEM}.sql"
