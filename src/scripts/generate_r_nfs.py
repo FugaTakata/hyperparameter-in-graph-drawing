@@ -6,7 +6,7 @@ import random
 from tqdm import trange
 
 # First Party Library
-from config import const, dataset, layout, params_domains, paths
+from config import const, dataset, layout, parameters, paths
 from generators import drawing_and_qualities
 from generators import graph as graph_generator
 from utils import graph, save, uuid
@@ -56,19 +56,19 @@ if __name__ == "__main__":
         eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
         for _ in trange(N_PARAMS):
             params_id = uuid.get_uuid()
-            params = {
+            parameters = {
                 "edge_length": const.EDGE_WEIGHT,
                 "number_of_pivots": random.randint(
-                    params_domains.ss["number_of_pivots"]["l"],
-                    params_domains.ss["number_of_pivots"]["u"],
+                    parameters.domain_ss["number_of_pivots"]["l"],
+                    parameters.domain_ss["number_of_pivots"]["u"],
                 ),
                 "number_of_iterations": random.randint(
-                    params_domains.ss["number_of_iterations"]["l"],
-                    params_domains.ss["number_of_iterations"]["u"],
+                    parameters.domain_ss["number_of_iterations"]["l"],
+                    parameters.domain_ss["number_of_iterations"]["u"],
                 ),
                 "eps": random.uniform(
-                    params_domains.ss["eps"]["l"],
-                    params_domains.ss["eps"]["u"],
+                    parameters.domain_ss["eps"]["l"],
+                    parameters.domain_ss["eps"]["u"],
                 ),
             }
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
                     nx_graph=nx_graph,
                     eg_graph=eg_graph,
                     eg_indices=eg_indices,
-                    params=params,
+                    params=parameters,
                     shortest_path_length=shortest_path_length,
                     seed=seed,
                     edge_weight=const.EDGE_WEIGHT,
@@ -87,7 +87,7 @@ if __name__ == "__main__":
                 save.r_nfs(
                     params_id=params_id,
                     seed=seed,
-                    params=params,
+                    params=parameters,
                     qualities=qualities,
                     pos=pos,
                     r_nfs_path=r_nfs_path,

@@ -5,7 +5,7 @@ import statistics
 import optuna
 
 # First Party Library
-from config import params_domains, quality_metrics
+from config import parameters, quality_metrics
 from generators import drawing_and_qualities, graph
 
 
@@ -24,18 +24,18 @@ def ss(
             "edge_length": edge_weight,
             "number_of_pivots": trial.suggest_int(
                 "number_of_pivots",
-                params_domains.ss["number_of_pivots"]["l"],
-                params_domains.ss["number_of_pivots"]["u"],
+                parameters.domain_ss["number_of_pivots"]["l"],
+                parameters.domain_ss["number_of_pivots"]["u"],
             ),
             "number_of_iterations": trial.suggest_int(
                 "number_of_iterations",
-                params_domains.ss["number_of_iterations"]["l"],
-                params_domains.ss["number_of_iterations"]["u"],
+                parameters.domain_ss["number_of_iterations"]["l"],
+                parameters.domain_ss["number_of_iterations"]["u"],
             ),
             "eps": trial.suggest_float(
                 "eps",
-                params_domains.ss["eps"]["l"],
-                params_domains.ss["eps"]["u"],
+                parameters.domain_ss["eps"]["l"],
+                parameters.domain_ss["eps"]["u"],
             ),
         }
 
