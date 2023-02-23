@@ -16,11 +16,19 @@ def generate_r_nfs(dataset_name, layout_name, n_params, n_seed, n_jobs, uuid):
     return lines
 
 
-def generate_o_nfs(db_stem, dataset_name, layout_name, n_seed, n_jobs, uuid):
-    lines = [
-        f"# {layout_name} {dataset_name} o_nfs",
-        f"poetry run python src/scripts/shell_script_generators/generate_o_nfs.py --uuid {uuid} --db-stem {db_stem} -d {dataset_name} -l {layout_name} --n-seed {n_seed} --n-jobs {n_jobs}",
+def generate_o_nfs(dataset_name, layout_name, n_seed, n_jobs, uuid):
+    db_stems = [
+        "100trials-non_fixed_seed",
+        "100trials-5mean-non_fixed_seed",
+        "100trials-5median-non_fixed_seed",
+        "100trials-fixed_seed",
     ]
+    lines = []
+    for db_stem in db_stems:
+        lines += [
+            f"# {layout_name} {dataset_name} o_nfs",
+            f"poetry run python src/scripts/shell_script_generators/generate_o_nfs.py --uuid {uuid} --db-stem {db_stem} -d {dataset_name} -l {layout_name} --n-seed {n_seed} --n-jobs {n_jobs}",
+        ]
 
     return lines
 
@@ -101,20 +109,13 @@ if __name__ == "__main__":
                 uuid=uuid,
             )
 
-            optimization_dir = data_dir.joinpath("optimization/")
-            if not optimization_dir.exists():
-                continue
-
-            for db_path in optimization_dir.iterdir():
-                db_stem = db_path.stem
-                lines += generate_o_nfs(
-                    db_stem=db_stem,
-                    dataset_name=dataset_name,
-                    layout_name=layout_name,
-                    n_seed=50,
-                    n_jobs=4,
-                    uuid=uuid,
-                )
+            lines += generate_o_nfs(
+                dataset_name=dataset_name,
+                layout_name=layout_name,
+                n_seed=50,
+                n_jobs=4,
+                uuid=uuid,
+            )
 
     with project_root_path.joinpath("data").joinpath("uuid_jst_map.json").open(
         mode="r"
