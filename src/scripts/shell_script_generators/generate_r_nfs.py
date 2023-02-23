@@ -43,14 +43,16 @@ if __name__ == "__main__":
 
     lines = ["#!/bin/sh", ""]
     for job_n in range(N_JOBS):
-        export_file_stem = f"{N_PARAMS * N_JOBS}r-{N_SEED}nfs-{job_n}_{dt_now_jst}"
+        export_file_stem = (
+            f"{N_PARAMS * N_JOBS}r-{N_SEED}nfs-{job_n}_{dt_now_jst}"
+        )
         lines.append(
             f"(sleep {job_n} && poetry run python -u ./src/scripts/{stem}.py --stem {export_file_stem} -d {D} -l {L} --n-params {N_PARAMS} --n-seed {N_SEED} 2>&1 | tee -a {stem}-{job_n}.out) &"
         )
 
     lines.append("wait")
     lines.append(
-        f'poetry run python ./src/scripts/notify.py -m "{stem} finished"'
+        f'poetry run python ./src/scripts/notify.py -m "{stem} {L} {D} finished"'
     )
 
     with shell_script_path.open(mode="w") as f:

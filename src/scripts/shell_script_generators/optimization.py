@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     lines.append("wait")
     lines.append(
-        f'poetry run python ./src/scripts/notify.py -m "{stem} finished"'
+        f'poetry run python ./src/scripts/notify.py -m "{stem} {L} {D} finished"'
     )
 
     with shell_script_path.open(mode="w") as f:
