@@ -16,6 +16,7 @@ from utils import graph, save, uuid
 def get_args():
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("--uuid", required=True, help="uuid")
     parser.add_argument("--db-stem", required=True, help="database stem")
     parser.add_argument(
         "-d", choices=dataset.DATASET_NAMES, required=True, help="dataset name"
@@ -40,6 +41,7 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
+    UUID = args.uuid
     DB_STEM = args.db_stem
     D = args.d
     L = args.l
@@ -51,7 +53,7 @@ if __name__ == "__main__":
     dataset_path = paths.get_dataset_path(dataset_name=D)
 
     o_nfs_path = paths.get_o_nfs_path(
-        dataset_name=D, layout_name=L, filename=filename
+        dataset_name=D, layout_name=L, filename=filename, uuid=UUID
     )
 
     nx_graph = graph.load_nx_graph(
@@ -61,7 +63,7 @@ if __name__ == "__main__":
 
     database_name = f"{DB_STEM}.sql"
     optimization_path = paths.get_optimization_path(
-        layout_name=L, dataset_name=D, filename=database_name
+        layout_name=L, dataset_name=D, filename=database_name, uuid=UUID
     )
     database_uri = f"sqlite:///{optimization_path.resolve()}"
 

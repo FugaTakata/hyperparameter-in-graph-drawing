@@ -15,6 +15,7 @@ from utils import graph
 def get_args():
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("--uuid", required=True, help="uuid")
     parser.add_argument("--stem", required=True, help="database stem")
     parser.add_argument(
         "-d", choices=dataset.DATASET_NAMES, required=True, help="dataset name"
@@ -52,6 +53,7 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
+    UUID = args.uuid
     STEM = args.stem
     D = args.d
     L = args.l
@@ -74,7 +76,7 @@ if __name__ == "__main__":
 
     db_name = f"{STEM}.sql"
     optimization_path = paths.get_optimization_path(
-        layout_name=L, dataset_name=D, filename=db_name
+        layout_name=L, dataset_name=D, filename=db_name, uuid=UUID
     )
     database_uri = f"sqlite:///{optimization_path.resolve()}"
 
