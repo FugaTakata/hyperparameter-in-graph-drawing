@@ -1,12 +1,10 @@
-# First Party Library
-from utils import edge_crossing_finder
+# Third Party Library
+from egraph import crossing_edges, crossing_number
 
 direction = "minimize"
 
 
-def quality(nx_graph, pos, edge_crossing=None):
-    if edge_crossing is None:
-        edge_crossing = edge_crossing_finder(nx_graph, pos)
-    s = len(edge_crossing)
-
-    return s
+def quality(eg_graph, eg_drawing, eg_crossings=None):
+    if eg_crossings is None:
+        eg_crossings = crossing_edges(eg_graph, eg_drawing)
+    return crossing_number(eg_graph, eg_drawing, eg_crossings)
