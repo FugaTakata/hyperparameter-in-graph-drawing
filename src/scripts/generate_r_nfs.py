@@ -58,7 +58,7 @@ if __name__ == "__main__":
         eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
         for _ in trange(N_PARAMS):
             params_id = uuid.get_uuid()
-            parameters = {
+            params = {
                 "edge_length": const.EDGE_WEIGHT,
                 "number_of_pivots": random.randint(
                     parameters.domain_ss["number_of_pivots"]["l"],
@@ -80,7 +80,7 @@ if __name__ == "__main__":
                     nx_graph=nx_graph,
                     eg_graph=eg_graph,
                     eg_indices=eg_indices,
-                    params=parameters,
+                    params=params,
                     shortest_path_length=shortest_path_length,
                     seed=seed,
                     edge_weight=const.EDGE_WEIGHT,
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                 save.r_nfs(
                     params_id=params_id,
                     seed=seed,
-                    params=parameters,
+                    params=params,
                     qualities=qualities,
                     pos=pos,
                     r_nfs_path=r_nfs_path,
