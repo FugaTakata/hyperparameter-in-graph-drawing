@@ -26,7 +26,7 @@ def generate_o_nfs(dataset_name, layout_name, n_seed, n_jobs, uuid):
     lines = []
     for db_stem in db_stems:
         lines += [
-            f"# {layout_name} {dataset_name} o_nfs",
+            f"# {layout_name} {dataset_name} o_nfs {db_stem}",
             f"poetry run python src/scripts/shell_script_generators/generate_o_nfs.py --uuid {uuid} --db-stem {db_stem} -d {dataset_name} -l {layout_name} --n-seed {n_seed} --n-jobs {n_jobs}",
         ]
 
