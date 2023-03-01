@@ -1,7 +1,7 @@
 # Third Party Library
 from egraph import gabriel_graph_property
 
-direction = "maximize"
+direction = "minimize"
 
 
 def quality(eg_graph, eg_drawing):

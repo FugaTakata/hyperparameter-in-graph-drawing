@@ -1,5 +1,8 @@
+# Third Party Library
+from egraph import all_sources_bfs, crossing_edges
+
 # First Party Library
-from config import quality_metrics
+from config import const
 from quality_metrics import (
     angular_resolution,
     aspect_ratio,
@@ -7,61 +10,72 @@ from quality_metrics import (
     crossing_number,
     gabriel_graph_property,
     ideal_edge_length,
+    neighborhood_preservation,
     node_resolution,
-    shape_based_metrics,
     stress,
 )
-from utils import edge_crossing_finder
 
 
 def measure_qualities(
-    nx_graph,
-    pos,
-    shortest_path_length,
-    edge_weight,
+    target_qm_names,
+    eg_graph,
+    eg_drawing,
+    eg_crossings=None,
+    eg_distance_matrix=None,
 ):
+    if eg_distance_matrix is None and (
+        "ideal_edge_length" in target_qm_names or "stress" in target_qm_names
+    ):
+        eg_distance_matrix = all_sources_bfs(eg_graph, const.EDGE_WEIGHT)
+    if eg_crossings is None and (
+        "crossing_angle" in target_qm_names
+        or "crossing_number" in target_qm_names
+    ):
+        eg_crossings = crossing_edges(eg_graph, eg_drawing)
+
     qualities = {}
-    edge_crossing = edge_crossing_finder.edge_crossing_finder(
-        nx_graph=nx_graph, pos=pos
-    )
-    for qm_name in quality_metrics.ALL_QM_NAMES:
+    for qm_name in target_qm_names:
         if qm_name == "angular_resolution":
             qualities[qm_name] = angular_resolution.quality(
-                nx_graph=nx_graph, pos=pos
+                eg_graph=eg_graph, eg_drawing=eg_drawing
             )
         elif qm_name == "aspect_ratio":
-            qualities[qm_name] = aspect_ratio.quality(
-                nx_graph=nx_graph, pos=pos
-            )
+            qualities[qm_name] = aspect_ratio.quality(eg_drawing=eg_drawing)
         elif qm_name == "crossing_angle":
             qualities[qm_name] = crossing_angle.quality(
-                nx_graph=nx_graph, pos=pos, edge_crossing=edge_crossing
+                eg_graph=eg_graph,
+                eg_drawing=eg_drawing,
+                eg_crossings=eg_crossings,
             )
         elif qm_name == "crossing_number":
             qualities[qm_name] = crossing_number.quality(
-                nx_graph=nx_graph, pos=pos, edge_crossing=edge_crossing
+                eg_graph=eg_graph,
+                eg_drawing=eg_drawing,
+                eg_crossings=eg_crossings,
             )
         elif qm_name == "gabriel_graph_property":
             qualities[qm_name] = gabriel_graph_property.quality(
-                nx_graph=nx_graph, pos=pos
+                eg_graph=eg_graph, eg_drawing=eg_drawing
             )
         elif qm_name == "ideal_edge_length":
             qualities[qm_name] = ideal_edge_length.quality(
-                nx_graph=nx_graph,
-                pos=pos,
-                shortest_path_length=shortest_path_length,
+                eg_graph=eg_graph,
+                eg_drawing=eg_drawing,
+                eg_distance_matrix=eg_distance_matrix,
             )
         elif qm_name == "node_resolution":
-            qualities[qm_name] = node_resolution.quality(pos=pos)
+            qualities[qm_name] = node_resolution.quality(
+                eg_graph=eg_graph, eg_drawing=eg_drawing
+            )
         elif qm_name == "shape_based_metrics":
-            qualities[qm_name] = shape_based_metrics.quality(
-                nx_graph=nx_graph, pos=pos, edge_weight=edge_weight
+            qualities[qm_name] = neighborhood_preservation.quality(
+                eg_graph=eg_graph, eg_drawing=eg_drawing
             )
         elif qm_name == "stress":
             qualities[qm_name] = stress.quality(
-                nx_graph=nx_graph,
-                pos=pos,
-                shortest_path_length=shortest_path_length,
+                eg_graph=eg_graph,
+                eg_drawing=eg_drawing,
+                eg_distance_matrix=eg_distance_matrix,
             )
 
     return qualities

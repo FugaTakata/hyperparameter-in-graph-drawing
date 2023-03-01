@@ -1,7 +1,7 @@
 # Third Party Library
 from egraph import node_resolution
 
-direction = "maximize"
+direction = "minimize"
 
 
 def quality(eg_graph, eg_drawing):
