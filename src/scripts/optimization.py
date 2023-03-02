@@ -61,7 +61,7 @@ if __name__ == "__main__":
     N_SEED = args.n_seed
     HANDLE_RESULT = args.handle_result
     FIXED_SEED = args.fixed_seed
-    TARGET_QM_NAMES = args.t
+    TARGET_QM_NAMES = sorted(args.t)
 
     if FIXED_SEED and 1 != N_SEED:
         raise ValueError("n seed must be 1 when seed fixed")
@@ -102,7 +102,6 @@ if __name__ == "__main__":
     nx_graph = graph.load_nx_graph(
         dataset_name=D, edge_weight=const.EDGE_WEIGHT
     )
-    shortest_path_length = graph.get_shortest_path_length(nx_graph=nx_graph)
 
     study = optuna.create_study(
         directions=[
@@ -117,7 +116,6 @@ if __name__ == "__main__":
     study.optimize(
         func=objective.ss(
             nx_graph=nx_graph,
-            shortest_path_length=shortest_path_length,
             target_qm_names=TARGET_QM_NAMES,
             edge_weight=const.EDGE_WEIGHT,
             n_seed=N_SEED,

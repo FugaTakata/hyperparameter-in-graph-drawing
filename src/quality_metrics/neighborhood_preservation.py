@@ -5,4 +5,4 @@ direction = "maximize"
 
 
 def quality(eg_graph, eg_drawing):
-    neighborhood_preservation(eg_graph, eg_drawing)
+    return neighborhood_preservation(eg_graph, eg_drawing)

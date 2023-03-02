@@ -5,7 +5,7 @@ from quality_metrics import (
     crossing_angle,
     crossing_number,
     gabriel_graph_property,
-    ideal_edge_length,
+    ideal_edge_lengths,
     neighborhood_preservation,
     node_resolution,
     stress,
@@ -17,10 +17,9 @@ QUALITY_METRICS_MAP = {
     "crossing_angle": crossing_angle,
     "crossing_number": crossing_number,
     "gabriel_graph_property": gabriel_graph_property,
-    "ideal_edge_length": ideal_edge_length,
+    "ideal_edge_lengths": ideal_edge_lengths,
     "node_resolution": node_resolution,
-    # "run_time": run_time,
-    "shape_based_metrics": neighborhood_preservation,
+    "neighborhood_preservation": neighborhood_preservation,
     "stress": stress,
 }
 

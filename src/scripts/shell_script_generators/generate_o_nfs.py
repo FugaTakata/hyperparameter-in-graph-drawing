@@ -45,12 +45,12 @@ if __name__ == "__main__":
             [
                 "angular_resolution",
                 "aspect_ratio",
-                "ideal_edge_length",
+                "ideal_edge_lengths",
             ],
             ["crossing_angle", "crossing_number"],
             [
                 "gabriel_graph_property",
-                "shape_based_metrics",
+                "neighborhood_preservation",
             ],
             ["node_resolution", "stress"],
         ]

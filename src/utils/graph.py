@@ -19,12 +19,6 @@ def load_nx_graph(dataset_name, edge_weight):
     return nx_graph
 
 
-def get_shortest_path_length(nx_graph):
-    shortest_path_length = dict(nx.all_pairs_dijkstra_path_length(nx_graph))
-
-    return shortest_path_length
-
-
 def graph_preprocessing(nx_graph, edge_weight):
     nx_graph = nx.Graph(nx_graph)
 

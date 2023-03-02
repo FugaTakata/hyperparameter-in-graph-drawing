@@ -4,13 +4,15 @@ from itertools import product
 
 # Third Party Library
 import pandas as pd
+from egraph import Coordinates, warshall_floyd
 from tqdm import tqdm
 
 # First Party Library
-from config import const, dataset, layout, parameters, paths
-from generators import drawing_and_qualities
+from config import const, dataset, layout, parameters, paths, quality_metrics
 from generators import graph as graph_generator
+from layouts import sgd
 from utils import graph, uuid
+from utils.quality_metrics import measure_qualities
 
 
 def save(params_id, seed, params, qualities, path):
@@ -97,8 +99,8 @@ if __name__ == "__main__":
             eg_graph, eg_indices = graph_generator.egraph_graph(
                 nx_graph=nx_graph
             )
-            shortest_path_length = graph.get_shortest_path_length(
-                nx_graph=nx_graph
+            eg_distance_matrix = warshall_floyd(
+                eg_graph, lambda _: const.EDGE_WEIGHT
             )
 
             grid_data_path = data_dir.joinpath("grid").joinpath(
@@ -109,14 +111,20 @@ if __name__ == "__main__":
                 print(params)
                 params_id = uuid.get_uuid()
                 seed = 0
-                pos, qualities = drawing_and_qualities.ss(
-                    nx_graph=nx_graph,
+                eg_drawing = Coordinates.initial_placement(eg_graph)
+
+                pos = sgd.sgd(
                     eg_graph=eg_graph,
                     eg_indices=eg_indices,
+                    eg_drawing=eg_drawing,
                     params=params,
-                    shortest_path_length=shortest_path_length,
                     seed=seed,
-                    edge_weight=const.EDGE_WEIGHT,
+                )
+                qualities = measure_qualities(
+                    target_qm_names=quality_metrics.ALL_QM_NAMES,
+                    eg_graph=eg_graph,
+                    eg_drawing=eg_drawing,
+                    eg_distance_matrix=eg_distance_matrix,
                 )
 
                 save(

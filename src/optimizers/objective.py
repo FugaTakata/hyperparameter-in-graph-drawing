@@ -1,21 +1,24 @@
 # Third Party Library
 import optuna
+from egraph import Coordinates, warshall_floyd
 
 # First Party Library
 from config import parameters, quality_metrics
-from generators import drawing_and_qualities, graph
+from generators import graph as graph_generator
+from layouts import sgd
+from utils.quality_metrics import measure_qualities
 
 
 def ss(
     nx_graph,
-    shortest_path_length,
     target_qm_names,
     edge_weight,
     n_seed,
     result_handler,
     generate_seed,
 ):
-    eg_graph, eg_indices = graph.egraph_graph(nx_graph=nx_graph)
+    eg_graph, eg_indices = graph_generator.egraph_graph(nx_graph=nx_graph)
+    eg_distance_matrix = warshall_floyd(eg_graph, lambda _: edge_weight)
 
     def objective(trial: optuna.Trial):
         params = {
@@ -45,14 +48,21 @@ def ss(
 
         for _ in range(n_seed):
             seed = generate_seed()
-            pos, qualities = drawing_and_qualities.ss(
-                nx_graph=nx_graph,
+            eg_drawing = Coordinates.initial_placement(eg_graph)
+
+            _ = sgd.sgd(
                 eg_graph=eg_graph,
                 eg_indices=eg_indices,
+                eg_drawing=eg_drawing,
                 params=params,
-                shortest_path_length=shortest_path_length,
                 seed=seed,
-                edge_weight=edge_weight,
+            )
+
+            qualities = measure_qualities(
+                target_qm_names=quality_metrics.ALL_QM_NAMES,
+                eg_graph=eg_graph,
+                eg_drawing=eg_drawing,
+                eg_distance_matrix=eg_distance_matrix,
             )
 
             for qm_name in quality_metrics.ALL_QM_NAMES:
