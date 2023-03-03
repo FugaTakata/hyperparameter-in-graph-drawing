@@ -50,7 +50,7 @@ if __name__ == "__main__":
     N_SEED = args.n_seed
     TARGET_QM_NAMES = sorted(args.t)
 
-    filename = f"{','.join(TARGET_QM_NAMES)}_{DB_STEM}.pkl"
+    filename = f"op-{N_SEED}nfs-{','.join(TARGET_QM_NAMES)}-{DB_STEM}.pkl"
 
     dataset_path = paths.get_dataset_path(dataset_name=D)
 

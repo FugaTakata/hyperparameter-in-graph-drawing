@@ -41,6 +41,7 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--n-slice", type=int, required=True, help="n slice")
+    parser.add_argument("--uuid", required=True, help="uuid")
 
     args = parser.parse_args()
 
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     args = get_args()
     N_SLICE = args.n_slice
 
-    UUID = "cd7c1537-2ebe-4434-9ead-f7b1a866815a"
+    UUID = args.uuid
 
     P_NAMES = ["number_of_pivots", "number_of_iterations", "eps"]
     N_SPLIT = 20
@@ -106,6 +107,7 @@ if __name__ == "__main__":
             grid_data_path = data_dir.joinpath("grid").joinpath(
                 f"{N_SPLIT}split-{N_SLICE}.pkl"
             )
+            grid_data_path.parent.mkdir(exist_ok=True)
             n = len(params_list) // 4
             for params in tqdm(params_list[n * N_SLICE : n * (N_SLICE + 1)]):
                 print(params)
