@@ -10,6 +10,9 @@ load_dotenv()
 project_root_dir = os.environ["HYPERPARAMETER_OPTIMIZATION_ROOT_PATH"]
 
 
+root_path = Path(project_root_dir)
+
+
 def get_project_root_path():
     project_root_path = Path(project_root_dir)
 

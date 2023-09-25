@@ -23,4 +23,4 @@ QUALITY_METRICS_MAP = {
     "stress": stress,
 }
 
-ALL_QM_NAMES = sorted([name for name in QUALITY_METRICS_MAP])
+qm_names = sorted([name for name in QUALITY_METRICS_MAP])

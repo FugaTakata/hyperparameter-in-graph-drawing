@@ -73,3 +73,6 @@ shell_scripts/*.sh
 
 # output
 *.out
+
+# vscode
+.vscode

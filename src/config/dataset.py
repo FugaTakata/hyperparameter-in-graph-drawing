@@ -1,4 +1,4 @@
-DATASET_NAMES = sorted(
+dataset_names = sorted(
     [
         "3elt",
         "1138_bus",

@@ -18,7 +18,7 @@ def get_args():
     parser.add_argument("--uuid", required=True, help="uuid")
     parser.add_argument("--stem", required=True, help="database stem")
     parser.add_argument(
-        "-d", choices=dataset.DATASET_NAMES, required=True, help="dataset name"
+        "-d", choices=dataset.dataset_names, required=True, help="dataset name"
     )
     parser.add_argument(
         "-l", choices=layout.LAYOUT_NAMES, required=True, help="layout name"
@@ -39,7 +39,7 @@ def get_args():
     )
     parser.add_argument(
         "-t",
-        choices=quality_metrics.ALL_QM_NAMES,
+        choices=quality_metrics.qm_names,
         nargs="*",
         required=True,
         help="target quality metrics names",
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     def result_handler(result):
         qualities_result = {}
-        for qm_name in quality_metrics.ALL_QM_NAMES:
+        for qm_name in quality_metrics.qm_names:
             if HANDLE_RESULT == "normal":
                 qualities_result[qm_name] = result[qm_name][0]
             elif HANDLE_RESULT == "mean":
@@ -100,8 +100,14 @@ if __name__ == "__main__":
         return qualities_result
 
     nx_graph = graph.load_nx_graph(
-        dataset_name=D, edge_weight=const.EDGE_WEIGHT
+        dataset_path=f"submodules/js/dataset/{D}.json"
     )
+    nx_graph = graph.graph_preprocessing(
+        nx_graph=nx_graph, edge_weight=const.EDGE_WEIGHT
+    )
+    # nx_graph = graph.load_nx_graph(
+    #     dataset_name=D, edge_weight=const.EDGE_WEIGHT
+    # )
 
     study = optuna.create_study(
         directions=[

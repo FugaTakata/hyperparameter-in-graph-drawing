@@ -10,7 +10,7 @@ def get_args():
 
     parser.add_argument("--uuid", required=True, help="uuid")
     parser.add_argument(
-        "-d", choices=dataset.DATASET_NAMES, required=True, help="dataset name"
+        "-d", choices=dataset.dataset_names, required=True, help="dataset name"
     )
     parser.add_argument(
         "-l", choices=layout.LAYOUT_NAMES, required=True, help="layout name"
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     db_stem = f"{N_TRIALS * N_JOBS}trials{result_handler_type}-{'fixed_seed' if FIXED_SEED else 'non_fixed_seed'}"
 
-    target_qm_names = quality_metrics.ALL_QM_NAMES
+    target_qm_names = quality_metrics.qm_names
 
     lines = ["#!/bin/sh", ""]
 

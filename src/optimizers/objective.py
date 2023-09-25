@@ -43,7 +43,7 @@ def ss(
         trial.set_user_attr("params", params)
 
         qualities_list = {}
-        for qm_name in quality_metrics.ALL_QM_NAMES:
+        for qm_name in quality_metrics.qm_names:
             qualities_list[qm_name] = []
 
         for _ in range(n_seed):
@@ -59,13 +59,13 @@ def ss(
             )
 
             qualities = measure_qualities(
-                target_qm_names=quality_metrics.ALL_QM_NAMES,
+                target_qm_names=quality_metrics.qm_names,
                 eg_graph=eg_graph,
                 eg_drawing=eg_drawing,
                 eg_distance_matrix=eg_distance_matrix,
             )
 
-            for qm_name in quality_metrics.ALL_QM_NAMES:
+            for qm_name in quality_metrics.qm_names:
                 qualities_list[qm_name].append(qualities[qm_name])
 
         qualities_result = result_handler(qualities_list)

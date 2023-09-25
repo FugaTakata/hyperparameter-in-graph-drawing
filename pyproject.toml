@@ -33,6 +33,7 @@ seaborn = "^0.12.2"
 statsmodels = "^0.14.0"
 lxml = "^4.9.2"
 lightgbm = "^3.3.5"
+japanize-matplotlib = "^1.1.3"
 
 
 [tool.poetry.group.dev.dependencies]
