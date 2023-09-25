@@ -1,3 +1,0 @@
-[submodule "submodules/egraph-rs"]
-	path = submodules/egraph-rs
-	url = https://github.com/likr/egraph-rs.git

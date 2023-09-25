@@ -1,4 +1,0 @@
-SS = "SS"
-
-
-LAYOUT_NAMES = [SS]

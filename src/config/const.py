@@ -1,2 +1,0 @@
-EDGE_WEIGHT = 30
-RAND_MAX = 2**32
