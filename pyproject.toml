@@ -1,21 +1,69 @@
-[project]
+[tool.poetry]
 name = "hyperparameter-in-graph-drawing"
 version = "0.1.0"
-description = "Add your description here"
-authors = [
-    { name = "FugaTakata", email = "fuga.takata.dev@gmail.com" }
-]
-dependencies = []
+description = ""
+authors = ["FugaTakata <fuga.takata.dev@gmail.com>"]
 readme = "README.md"
-requires-python = ">= 3.8"
+packages = [
+  { include = "config", from = "src" },
+  { include = "quality_metrics", from = "src" },
+  { include = "utils", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+optuna = "^3.3.0"
+networkx = { extras = ["default"], version = "^3.1" }
+tqdm = "^4.66.1"
+pandas = "^2.1.1"
+python-dotenv = "^1.0.0"
+optuna-dashboard = "^0.12.0"
+scikit-learn = "^1.3.1"
+plotly = "^5.17.0"
+nbformat = "^5.9.2"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+maturin = "^1.2.3"
+pyproject-flake8 = "^6.1.0"
+flake8-isort = "^6.1.0"
+flake8-bugbear = "^23.9.16"
+flake8-builtins = "^2.1.0"
+flake8-eradicate = "^1.5.0"
+flake8-unused-arguments = "^0.0.13"
+flake8-pytest-style = "^1.7.2"
+pep8-naming = "^0.13.3"
+ipykernel = "^6.25.2"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
-[tool.rye]
-managed = true
-dev-dependencies = []
+# https://zenn.dev/zenizeni/books/a64578f98450c2/viewer/ac820f
+[tool.black]
+line-length = 79
 
-[tool.hatch.metadata]
-allow-direct-references = true
+[tool.isort]
+profile = "black"
+line_length = 79
+# 各ライブラリ群の説明を追記する
+import_heading_stdlib = "Standard Library"
+import_heading_thirdparty = "Third Party Library"
+import_heading_firstparty = "First Party Library"
+import_heading_localfolder = "Local Library"
+# from third_party import lib1, lib2...のような記述時の改行方法の設定(https://pycqa.github.io/isort/docs/configuration/multi_line_output_modes.html)
+multi_line_output = 3
+# 最後の要素の末尾に","を付けるようにする設定
+include_trailing_comma = true
+
+[tool.flake8]
+max-line-length = 79
+# E203: ":"の前の空白を入れないルール
+# W503: 演算子の前に改行しないようにするルール
+# U101: _がついた未使用の変数についてのルール
+extend-ignore = ["E203", "W503", "U101"]
+exclude = [".venv", ".git", "__pycache__"]
+max-complexity = 10
