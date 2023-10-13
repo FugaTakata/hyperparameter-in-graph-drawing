@@ -2,7 +2,6 @@
 
 # Standard Library
 import argparse
-import random
 
 # Third Party Library
 import pandas as pd
@@ -41,9 +40,9 @@ def main():
     eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
 
     export_df_data = []
-    pivots = random.randint(1, 100)
-    iterations = random.randint(1, 200)
-    eps = random.uniform(0.01, 1)
+    pivots = 50
+    iterations = 100
+    eps = 0.1
     for seed in tqdm(range(N_SEED), leave=False):
         eg_drawing = Drawing.initial_placement(eg_graph)
 

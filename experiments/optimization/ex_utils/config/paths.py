@@ -1,8 +1,8 @@
 # Standard Library
 from pathlib import Path
 
-# First Party Library
-from config.env import PROJECT_ROOT_PATH_STRING
+# Local Library
+from .env import PROJECT_ROOT_PATH_STRING
 
 root_path = Path(PROJECT_ROOT_PATH_STRING)
 

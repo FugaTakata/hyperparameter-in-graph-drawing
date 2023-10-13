@@ -2,9 +2,9 @@
 import pandas as pd
 from egraph import Rng, SparseSgd, crossing_edges
 
-# First Party Library
-from config.paths import root_path
-from quality_metrics import (
+# Local Library
+from .config.paths import root_path
+from .quality_metrics import (
     angular_resolution,
     aspect_ratio,
     crossing_angle,
@@ -105,7 +105,7 @@ def draw_and_measure(
         "iterations": iterations,
         "eps": eps,
     }
-    sgd(
+    pos = sgd(
         eg_graph=eg_graph,
         eg_indices=eg_indices,
         eg_drawing=eg_drawing,
@@ -122,7 +122,7 @@ def draw_and_measure(
         eg_distance_matrix=eg_distance_matrix,
     )
 
-    return params, quality_metrics
+    return params, quality_metrics, pos
 
 
 def generate_df_data(
