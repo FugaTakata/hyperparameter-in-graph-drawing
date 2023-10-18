@@ -76,3 +76,5 @@ shell_scripts/*.sh
 
 # vscode
 .vscode
+
+playground.ipynb
