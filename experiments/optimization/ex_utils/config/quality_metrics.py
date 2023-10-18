@@ -1,5 +1,5 @@
-# First Party Library
-from quality_metrics import (
+# Local Library
+from ..quality_metrics import (
     angular_resolution,
     aspect_ratio,
     crossing_angle,

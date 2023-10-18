@@ -24,7 +24,7 @@ def objective(nx_graph):
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
 
-        _params, quality_metrics = draw_and_measure(
+        _params, quality_metrics, pos = draw_and_measure(
             pivots=trial.suggest_int("pivots", 1, 100),
             iterations=trial.suggest_int("iterations", 1, 200),
             eps=trial.suggest_float("eps", 0.01, 1),
