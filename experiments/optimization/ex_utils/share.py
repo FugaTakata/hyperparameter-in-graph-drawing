@@ -22,16 +22,11 @@ ex_path = root_path.joinpath("experiments/optimization/")
 def measure_quality_metrics(
     eg_graph, eg_drawing, eg_crossings, eg_distance_matrix
 ):
-    return {
+    quality_metrics = {
         "angular_resolution": -angular_resolution.measure(
             eg_graph=eg_graph, eg_drawing=eg_drawing
         ),
         "aspect_ratio": aspect_ratio.measure(eg_drawing=eg_drawing),
-        "crossing_angle": -crossing_angle.measure(
-            eg_graph=eg_graph,
-            eg_drawing=eg_drawing,
-            eg_crossings=eg_crossings,
-        ),
         "crossing_number": -crossing_number.measure(
             eg_graph=eg_graph,
             eg_drawing=eg_drawing,
@@ -54,6 +49,15 @@ def measure_quality_metrics(
             eg_distance_matrix=eg_distance_matrix,
         ),
     }
+
+    quality_metrics["crossing_angle"] = -crossing_angle.measure(
+        eg_graph=eg_graph,
+        eg_drawing=eg_drawing,
+        eg_crossings=eg_crossings,
+        crossing_number=quality_metrics["crossing_number"],
+    )
+
+    return quality_metrics
 
 
 def sgd(
@@ -89,6 +93,26 @@ def sgd(
     return pos
 
 
+def draw(
+    params,
+    eg_graph,
+    eg_indices,
+    eg_drawing,
+    edge_weight,
+    seed,
+):
+    pos = sgd(
+        eg_graph=eg_graph,
+        eg_indices=eg_indices,
+        eg_drawing=eg_drawing,
+        params=params,
+        seed=seed,
+        edge_weight=edge_weight,
+    )
+
+    return pos
+
+
 def draw_and_measure(
     pivots,
     iterations,
@@ -105,13 +129,13 @@ def draw_and_measure(
         "iterations": iterations,
         "eps": eps,
     }
-    pos = sgd(
+    pos = draw(
+        params=params,
         eg_graph=eg_graph,
         eg_indices=eg_indices,
         eg_drawing=eg_drawing,
-        params=params,
-        seed=seed,
         edge_weight=edge_weight,
+        seed=seed,
     )
 
     eg_crossings = crossing_edges(eg_graph, eg_drawing)
