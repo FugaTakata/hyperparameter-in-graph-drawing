@@ -1,0 +1,1 @@
+poetry run python multi_ovjective.py -d dwt_2680 -n 500

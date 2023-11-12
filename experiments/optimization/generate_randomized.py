@@ -10,7 +10,7 @@ import pandas as pd
 from egraph import Drawing, all_sources_bfs
 from ex_utils.config.dataset import dataset_names
 from ex_utils.config.paths import get_dataset_path
-from ex_utils.share import draw_and_measure, ex_path, generate_df_data
+from ex_utils.share import draw_and_measure, ex_path, generate_base_df_data
 from ex_utils.utils.graph import (
     egraph_graph,
     load_nx_graph,
@@ -65,7 +65,7 @@ def main():
             )
 
             export_df_data.append(
-                generate_df_data(
+                generate_base_df_data(
                     params=params,
                     quality_metrics=quality_metrics,
                     seed=seed,
