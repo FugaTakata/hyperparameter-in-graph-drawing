@@ -1,5 +1,5 @@
 # Standard Library
-from time import perf_counter
+import math
 
 # Third Party Library
 import numpy as np
@@ -20,13 +20,21 @@ from .quality_metrics import (
     neighborhood_preservation,
     node_resolution,
     stress,
+    time_complexity,
 )
 
-ex_path = root_path.joinpath("experiments/optimization/")
+ex_path = root_path.joinpath("experiments/japan-vis/")
 
 
 def measure_quality_metrics(
-    eg_graph, eg_drawing, eg_crossings, eg_distance_matrix
+    pivots,
+    iterations,
+    eg_graph,
+    eg_drawing,
+    eg_crossings,
+    eg_distance_matrix,
+    n_nodes,
+    n_edges,
 ):
     quality_metrics = {
         "angular_resolution": -angular_resolution.measure(
@@ -54,6 +62,12 @@ def measure_quality_metrics(
             eg_drawing=eg_drawing,
             eg_distance_matrix=eg_distance_matrix,
         ),
+        "time_complexity": -time_complexity.measure(
+            pivots=pivots,
+            iterations=iterations,
+            n_nodes=n_nodes,
+            n_edges=n_edges,
+        ),
     }
 
     quality_metrics["crossing_angle"] = -crossing_angle.measure(
@@ -67,10 +81,12 @@ def measure_quality_metrics(
 
 
 def sgd(
+    pivots,
+    iterations,
+    eps,
     eg_graph,
     eg_indices,
     eg_drawing,
-    params,
     seed,
     edge_weight,
 ):
@@ -78,12 +94,12 @@ def sgd(
     sparse_sgd = SparseSgd(
         eg_graph,
         lambda _: edge_weight,
-        params["pivots"],
+        pivots,
         rng,
     )
     scheduler = sparse_sgd.scheduler(
-        params["iterations"],
-        params["eps"],
+        iterations,
+        eps,
     )
 
     def step(eta):
@@ -100,7 +116,9 @@ def sgd(
 
 
 def draw(
-    params,
+    pivots,
+    iterations,
+    eps,
     eg_graph,
     eg_indices,
     eg_drawing,
@@ -108,10 +126,12 @@ def draw(
     seed,
 ):
     pos = sgd(
+        pivots=pivots,
+        iterations=iterations,
+        eps=eps,
         eg_graph=eg_graph,
         eg_indices=eg_indices,
         eg_drawing=eg_drawing,
-        params=params,
         seed=seed,
         edge_weight=edge_weight,
     )
@@ -129,33 +149,33 @@ def draw_and_measure(
     eg_distance_matrix,
     edge_weight,
     seed,
+    n_nodes,
+    n_edges,
 ):
-    params = {
-        "pivots": pivots,
-        "iterations": iterations,
-        "eps": eps,
-    }
-    start = perf_counter()
     pos = draw(
-        params=params,
+        pivots=pivots,
+        iterations=iterations,
+        eps=eps,
         eg_graph=eg_graph,
         eg_indices=eg_indices,
         eg_drawing=eg_drawing,
         edge_weight=edge_weight,
         seed=seed,
     )
-    end = perf_counter()
 
     eg_crossings = crossing_edges(eg_graph, eg_drawing)
     quality_metrics = measure_quality_metrics(
+        pivots=pivots,
+        iterations=iterations,
         eg_graph=eg_graph,
         eg_drawing=eg_drawing,
         eg_crossings=eg_crossings,
         eg_distance_matrix=eg_distance_matrix,
+        n_nodes=n_nodes,
+        n_edges=n_edges,
     )
-    quality_metrics["runtime"] = -(end - start)
 
-    return params, quality_metrics, pos
+    return pos, quality_metrics
 
 
 def draw_and_measure_scaled(
@@ -168,9 +188,11 @@ def draw_and_measure_scaled(
     eg_distance_matrix,
     edge_weight,
     seed,
+    n_nodes,
+    n_edges,
     scalers,
 ):
-    params, quality_metrics, pos = draw_and_measure(
+    pos, quality_metrics = draw_and_measure(
         pivots=pivots,
         iterations=iterations,
         eps=eps,
@@ -180,15 +202,17 @@ def draw_and_measure_scaled(
         eg_distance_matrix=eg_distance_matrix,
         edge_weight=edge_weight,
         seed=seed,
+        n_nodes=n_nodes,
+        n_edges=n_edges,
     )
 
     scaled_quality_metrics = {}
     for qm_name in qm_names:
         scaled_quality_metrics[qm_name] = scalers[qm_name].transform(
             [[quality_metrics[qm_name]]]
-        )
+        )[0][0]
 
-    return params, quality_metrics, scaled_quality_metrics, pos
+    return pos, quality_metrics, scaled_quality_metrics
 
 
 def generate_base_df_data(
@@ -217,9 +241,24 @@ def calc_bounds(pos):
     return x_bounds, y_bounds
 
 
-def generate_hp_grid(n_split):
+def generate_hp_grid(n_split, n_nodes):
     pivots_v, iterations_v, eps_v = np.meshgrid(
-        np.linspace(1, 100, n_split, dtype=int),
+        np.array(
+            list(
+                map(
+                    int,
+                    map(
+                        lambda x: min(x, n_nodes),
+                        map(
+                            math.ceil,
+                            np.logspace(
+                                np.log10(1), np.log10(n_nodes), n_split
+                            ),
+                        ),
+                    ),
+                )
+            )
+        ),
         np.linspace(1, 200, n_split, dtype=int),
         np.logspace(np.log10(0.01), np.log10(1), n_split),
         indexing="ij",
@@ -228,16 +267,34 @@ def generate_hp_grid(n_split):
     return pivots_v, iterations_v, eps_v
 
 
+def generate_seed_median_df(df):
+    median_df = (
+        df.groupby(["params_pivots", "params_iterations", "params_eps"])
+        .agg(
+            dict(
+                [(f"values_{qm_name}", "median") for qm_name in qm_names]
+                + [("edge_weight", "first")]
+            )
+        )
+        .reset_index()
+        .sort_index(axis=1)
+    )
+
+    return median_df
+
+
 def generate_sscalers(dataset_paths):
     df = pd.concat(
         [pd.read_pickle(dataset_path) for dataset_path in dataset_paths]
     )
 
+    median_df = generate_seed_median_df(df)
+
     sscalers = {}
     for qm_name in qm_names:
         sscalers[qm_name] = StandardScaler()
         sscalers[qm_name] = sscalers[qm_name].fit(
-            df[f"values_{qm_name}"].values.reshape(-1, 1)
+            median_df[f"values_{qm_name}"].values.reshape(-1, 1)
         )
 
     return sscalers
@@ -248,11 +305,17 @@ def generate_mmscalers(dataset_paths):
         [pd.read_pickle(dataset_path) for dataset_path in dataset_paths]
     )
 
+    median_df = generate_seed_median_df(df)
+
     mmscalers = {}
     for qm_name in qm_names:
         mmscalers[qm_name] = MinMaxScaler()
         mmscalers[qm_name] = mmscalers[qm_name].fit(
-            df[f"values_{qm_name}"].values.reshape(-1, 1)
+            median_df[f"values_{qm_name}"].values.reshape(-1, 1)
         )
 
     return mmscalers
+
+
+def rate2pivots(rate, n_nodes):
+    return math.ceil(n_nodes * rate)

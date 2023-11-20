@@ -9,6 +9,7 @@ from ..quality_metrics import (
     neighborhood_preservation,
     node_resolution,
     stress,
+    time_complexity,
 )
 
 qm_name_abbreviations = {
@@ -20,8 +21,8 @@ qm_name_abbreviations = {
     "ideal_edge_length": "IE",
     "node_resolution": "NR",
     "neighborhood_preservation": "NP",
-    "runtime": "RT",
     "stress": "ST",
+    "time_complexity": "TC",
 }
 
 quality_metrics_map = {
@@ -34,6 +35,7 @@ quality_metrics_map = {
     "neighborhood_preservation": neighborhood_preservation,
     "node_resolution": node_resolution,
     "stress": stress,
+    "time_complexity": time_complexity,
 }
 
 qm_names = sorted([qm_name for qm_name in qm_name_abbreviations])

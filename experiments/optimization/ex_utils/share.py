@@ -20,13 +20,21 @@ from .quality_metrics import (
     neighborhood_preservation,
     node_resolution,
     stress,
+    time_complexity,
 )
 
 ex_path = root_path.joinpath("experiments/optimization/")
 
 
 def measure_quality_metrics(
-    eg_graph, eg_drawing, eg_crossings, eg_distance_matrix
+    eg_graph,
+    eg_drawing,
+    eg_crossings,
+    eg_distance_matrix,
+    pivots,
+    iterations,
+    n_nodes,
+    n_edges,
 ):
     quality_metrics = {
         "angular_resolution": -angular_resolution.measure(
@@ -53,6 +61,12 @@ def measure_quality_metrics(
         "stress": -stress.measure(
             eg_drawing=eg_drawing,
             eg_distance_matrix=eg_distance_matrix,
+        ),
+        "time_complexity": -time_complexity.measure(
+            pivots=pivots,
+            iterations=iterations,
+            n_nodes=n_nodes,
+            n_edges=n_edges,
         ),
     }
 
