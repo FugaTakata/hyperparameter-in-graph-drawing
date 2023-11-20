@@ -107,6 +107,7 @@ def main():
                 states=(
                     optuna.trial.TrialState.COMPLETE,
                     optuna.trial.TrialState.RUNNING,
+                    optuna.trial.TrialState.WAITING,
                 ),
             )
         ],
