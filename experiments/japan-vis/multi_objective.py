@@ -86,6 +86,8 @@ def main():
         "-d", choices=dataset_names, required=True, help="dataset name"
     )
     parser.add_argument("-n", type=int, required=True, help="n_trials")
+    parser.add_argument("-j", type=int, default=-1, help="n_jobs")
+    parser.add_argument("-a", required=True, help="additional name info")
 
     args = parser.parse_args()
 
@@ -98,7 +100,7 @@ def main():
         load_nx_graph(dataset_path=dataset_path), EDGE_WEIGHT
     )
 
-    study_name = f"{args.d}_n-trials={args.n}_prune-time-10-8_multi-objective"
+    study_name = f"{args.d}_n-trials={args.n}_multi-objective_{args.a}"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
         engine_kwargs={"connect_args": {"timeout": 1000}},
@@ -123,7 +125,7 @@ def main():
                 ),
             )
         ],
-        n_jobs=-1,
+        n_jobs=args.j,
         show_progress_bar=True,
     )
 
