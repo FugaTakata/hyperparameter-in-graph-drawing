@@ -14,6 +14,7 @@ from ex_utils.utils.graph import (
     load_nx_graph,
     nx_graph_preprocessing,
 )
+import os
 
 EDGE_WEIGHT = 30
 
@@ -113,6 +114,24 @@ def main():
     )
     study.set_metric_names(qm_names)
 
+    cpu_count = os.cpu_count()
+
+    study.optimize(
+        func=objective(nx_graph=nx_graph),
+        callbacks=[
+            optuna.study.MaxTrialsCallback(
+                n_trials=args.n - 2 * cpu_count,
+                states=(
+                    optuna.trial.TrialState.COMPLETE,
+                    optuna.trial.TrialState.RUNNING,
+                    optuna.trial.TrialState.WAITING,
+                ),
+            )
+        ],
+        n_jobs=args.j,
+        show_progress_bar=True,
+    )
+
     study.optimize(
         func=objective(nx_graph=nx_graph),
         callbacks=[
@@ -125,7 +144,6 @@ def main():
                 ),
             )
         ],
-        n_jobs=args.j,
         show_progress_bar=True,
     )
 
