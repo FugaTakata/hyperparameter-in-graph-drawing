@@ -16,7 +16,6 @@ from ex_utils.utils.graph import (
 )
 
 EDGE_WEIGHT = 30
-TIME_COMPLEXITY_CAP = 10**8
 
 
 def objective(nx_graph):
@@ -24,6 +23,19 @@ def objective(nx_graph):
     eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
     n_nodes = len(nx_graph.nodes)
     n_edges = len(nx_graph.edges)
+    l = time_complexity.measure(
+        pivots=n_nodes,
+        iterations=200,
+        n_nodes=n_nodes,
+        n_edges=n_edges,
+    )
+    s = time_complexity.measure(
+        pivots=1,
+        iterations=1,
+        n_nodes=n_nodes,
+        n_edges=n_edges,
+    )
+    time_complexity_cap = (l + s) / 2
 
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
@@ -37,7 +49,7 @@ def objective(nx_graph):
             n_nodes=n_nodes,
             n_edges=n_edges,
         )
-        if TIME_COMPLEXITY_CAP < time_complexity_value:
+        if time_complexity_cap < time_complexity_value:
             raise optuna.TrialPruned()
 
         pos, quality_metrics = draw_and_measure(
