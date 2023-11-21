@@ -24,19 +24,19 @@ def objective(nx_graph):
     eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
     n_nodes = len(nx_graph.nodes)
     n_edges = len(nx_graph.edges)
-    l = time_complexity.measure(
-        pivots=n_nodes,
-        iterations=200,
-        n_nodes=n_nodes,
-        n_edges=n_edges,
-    )
-    s = time_complexity.measure(
-        pivots=1,
-        iterations=1,
-        n_nodes=n_nodes,
-        n_edges=n_edges,
-    )
-    time_complexity_cap = (l + s) / 2
+    # l = time_complexity.measure(
+    #     pivots=n_nodes,
+    #     iterations=200,
+    #     n_nodes=n_nodes,
+    #     n_edges=n_edges,
+    # )
+    # s = time_complexity.measure(
+    #     pivots=1,
+    #     iterations=1,
+    #     n_nodes=n_nodes,
+    #     n_edges=n_edges,
+    # )
+    time_complexity_cap = 10**8
 
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
