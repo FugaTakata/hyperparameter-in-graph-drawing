@@ -4,10 +4,12 @@ import os
 
 # Third Party Library
 import optuna
+import pandas as pd
 from egraph import Drawing, all_sources_bfs
 from ex_utils.config.dataset import dataset_names
 from ex_utils.config.paths import get_dataset_path
 from ex_utils.config.quality_metrics import qm_names
+from ex_utils.quality_metrics import time_complexity
 from ex_utils.share import (
     draw_and_measure_scaled,
     ex_path,
@@ -29,12 +31,36 @@ def objective(nx_graph, scalers):
     n_nodes = len(nx_graph.nodes)
     n_edges = len(nx_graph.edges)
 
+    df_data = []
+    for pivots in range(1, n_nodes + 1):
+        for iterations in range(1, 200 + 1):
+            df_data.append(
+                {
+                    "pivots": pivots,
+                    "iterations": iterations,
+                    "time_complexity": -time_complexity.measure(
+                        pivots, iterations, n_nodes, n_edges
+                    ),
+                }
+            )
+    df = pd.DataFrame(df_data)
+    time_complexity_cap = df["time_complexity"].quantile(0.25)
+
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
         pivots_rate = trial.suggest_float("pivots_rate", 0, 1)
         pivots = rate2pivots(rate=pivots_rate, n_nodes=n_nodes)
         iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
+        time_complexity_value = -time_complexity.measure(
+            pivots=pivots,
+            iterations=iterations,
+            n_nodes=n_nodes,
+            n_edges=n_edges,
+        )
+
+        if time_complexity_cap > time_complexity_value:
+            raise optuna.TrialPruned()
 
         pos, quality_metrics, scaled_qualit_metrics = draw_and_measure_scaled(
             pivots=pivots,
