@@ -45,13 +45,13 @@ def objective(nx_graph):
                 {
                     "pivots": pivots,
                     "iterations": iterations,
-                    "time_complexity": time_complexity.measure(
+                    "time_complexity": -time_complexity.measure(
                         pivots, iterations, n_nodes, n_edges
                     ),
                 }
             )
     df = pd.DataFrame(df_data)
-    time_complexity_cap = -df["time_complexity"].quantile(0.75)
+    time_complexity_cap = df["time_complexity"].quantile(0.25)
 
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
@@ -59,14 +59,14 @@ def objective(nx_graph):
         pivots = rate2pivots(rate=pivots_rate, n_nodes=n_nodes)
         iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
-        time_complexity_value = time_complexity.measure(
+        time_complexity_value = -time_complexity.measure(
             pivots=pivots,
             iterations=iterations,
             n_nodes=n_nodes,
             n_edges=n_edges,
         )
 
-        if time_complexity_cap < time_complexity_value:
+        if time_complexity_cap > time_complexity_value:
             raise optuna.TrialPruned()
 
         pos, quality_metrics = draw_and_measure(
