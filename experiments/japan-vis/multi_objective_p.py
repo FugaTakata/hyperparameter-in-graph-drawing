@@ -56,7 +56,7 @@ def objective(nx_graph):
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
         pivots_rate = trial.suggest_float(
-            "pivots_rate", 0, 1.0, step=1 / p_max
+            "pivots_rate", 1 / p_max, 1.0, step=1 / p_max
         )
         pivots = rate2pivots(rate=pivots_rate, n_nodes=p_max)
         iterations = trial.suggest_int("iterations", 1, 100)
@@ -87,7 +87,9 @@ def objective(nx_graph):
             "iterations": iterations,
             "eps": eps,
         }
+
         trial.set_user_attr("params", params)
+        trial.set_user_attr('pivots_rate', pivots_rate)
         trial.set_user_attr("row_quality_metrics", quality_metrics)
         # for qm_name in qm_names:
         #     quality_metrics[qm_name] = quality_metrics[qm_name] * (
@@ -115,7 +117,7 @@ def main():
     args = parser.parse_args()
 
     db_uri = (
-        f"sqlite:///{ex_path.joinpath('data/optimization/optimization.db')}"
+        f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
     )
 
     dataset_path = get_dataset_path(args.d)
