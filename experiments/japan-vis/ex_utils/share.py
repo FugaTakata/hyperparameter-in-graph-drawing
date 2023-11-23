@@ -283,18 +283,12 @@ def generate_seed_median_df(df):
     return median_df
 
 
-def generate_sscalers(dataset_paths):
-    df = pd.concat(
-        [pd.read_pickle(dataset_path) for dataset_path in dataset_paths]
-    )
-
-    median_df = generate_seed_median_df(df)
-
+def generate_sscalers(df):
     sscalers = {}
     for qm_name in qm_names:
         sscalers[qm_name] = StandardScaler()
         sscalers[qm_name] = sscalers[qm_name].fit(
-            median_df[f"values_{qm_name}"].values.reshape(-1, 1)
+            df[f"values_{qm_name}"].values.reshape(-1, 1)
         )
 
     return sscalers
@@ -319,3 +313,7 @@ def generate_mmscalers(dataset_paths):
 
 def rate2pivots(rate, n_nodes):
     return max(1, int(n_nodes * rate))
+
+
+def pivots2rate(pivots, max_pivots):
+    return pivots / max_pivots

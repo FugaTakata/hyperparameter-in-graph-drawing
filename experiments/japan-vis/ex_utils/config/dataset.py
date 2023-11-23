@@ -23,7 +23,6 @@ dataset_names = sorted(
         "les_miserables",
         "moebius_kantor",
         "octahedral",
-        "package",
         "pappus",
         "petersen",
         "poli",
