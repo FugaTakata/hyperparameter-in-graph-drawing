@@ -59,7 +59,7 @@ def objective(nx_graph):
             "pivots_rate", 1 / p_max, 1.0, step=1 / p_max
         )
         pivots = rate2pivots(rate=pivots_rate, n_nodes=p_max)
-        iterations = trial.suggest_int("iterations", 1, 100)
+        iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
         # time_complexity_value = time_complexity.measure(
         #     pivots=pivots,
@@ -89,7 +89,7 @@ def objective(nx_graph):
         }
 
         trial.set_user_attr("params", params)
-        trial.set_user_attr('pivots_rate', pivots_rate)
+        trial.set_user_attr("pivots_rate", pivots_rate)
         trial.set_user_attr("row_quality_metrics", quality_metrics)
         # for qm_name in qm_names:
         #     quality_metrics[qm_name] = quality_metrics[qm_name] * (
@@ -116,9 +116,7 @@ def main():
 
     args = parser.parse_args()
 
-    db_uri = (
-        f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
-    )
+    db_uri = f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
 
     dataset_path = get_dataset_path(args.d)
     nx_graph = nx_graph_preprocessing(

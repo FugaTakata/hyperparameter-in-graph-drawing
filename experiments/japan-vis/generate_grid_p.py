@@ -62,7 +62,7 @@ def main():
                 )
             )
         ),
-        np.linspace(1, 100, n_split, dtype=int),
+        np.linspace(1, 200, n_split, dtype=int),
         np.logspace(np.log10(0.01), np.log10(1), n_split),
         indexing="ij",
     )
