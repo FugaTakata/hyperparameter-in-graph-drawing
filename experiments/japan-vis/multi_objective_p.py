@@ -55,9 +55,7 @@ def objective(nx_graph):
 
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
-        pivots_rate = trial.suggest_float(
-            "pivots_rate", 1 / p_max, 1.0, step=1 / p_max
-        )
+        pivots_rate = trial.suggest_float("pivots_rate", 1 / p_max, 1.0)
         pivots = rate2pivots(rate=pivots_rate, n_nodes=p_max)
         iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
