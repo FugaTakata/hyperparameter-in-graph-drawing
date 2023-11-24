@@ -96,7 +96,7 @@ def main():
                 )
                 params = {
                     "pivots": pivots,
-                    "pivots_rate": pivots2rate(pivots, p_max),
+                    "pivots_rate": pivots2rate(pivots, n_nodes),
                     "iterations": iterations,
                     "eps": eps,
                 }

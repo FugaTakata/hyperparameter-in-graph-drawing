@@ -1,7 +1,5 @@
 # Standard Library
 import argparse
-import math
-import os
 
 # Third Party Library
 import optuna
@@ -36,7 +34,7 @@ def objective(nx_graph, scalers):
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
         pivots = trial.suggest_int("pivots", 1, p_max)
-        pivots_rate = pivots2rate(pivots, p_max)
+        pivots_rate = pivots2rate(pivots, n_nodes)
         iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
 
