@@ -94,7 +94,7 @@ def main():
     study.optimize(
         func=objective(nx_graph=nx_graph),
         n_trials=args.n,
-        n_jobs=args.j,
+        n_jobs=-1,
         show_progress_bar=True,
     )
 
