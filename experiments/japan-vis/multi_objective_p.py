@@ -140,34 +140,41 @@ def main():
 
     study.optimize(
         func=objective(nx_graph=nx_graph),
-        callbacks=[
-            optuna.study.MaxTrialsCallback(
-                n_trials=args.n - 2 * cpu_count,
-                states=(
-                    optuna.trial.TrialState.COMPLETE,
-                    optuna.trial.TrialState.RUNNING,
-                    optuna.trial.TrialState.WAITING,
-                ),
-            )
-        ],
+        n_trials=args.n,
         n_jobs=args.j,
         show_progress_bar=True,
     )
 
-    study.optimize(
-        func=objective(nx_graph=nx_graph),
-        callbacks=[
-            optuna.study.MaxTrialsCallback(
-                n_trials=args.n,
-                states=(
-                    optuna.trial.TrialState.COMPLETE,
-                    optuna.trial.TrialState.RUNNING,
-                    optuna.trial.TrialState.WAITING,
-                ),
-            )
-        ],
-        show_progress_bar=True,
-    )
+    # study.optimize(
+    #     func=objective(nx_graph=nx_graph),
+    #     callbacks=[
+    #         optuna.study.MaxTrialsCallback(
+    #             n_trials=args.n - 2 * cpu_count,
+    #             states=(
+    #                 optuna.trial.TrialState.COMPLETE,
+    #                 optuna.trial.TrialState.RUNNING,
+    #                 optuna.trial.TrialState.WAITING,
+    #             ),
+    #         )
+    #     ],
+    #     n_jobs=args.j,
+    #     show_progress_bar=True,
+    # )
+
+    # study.optimize(
+    #     func=objective(nx_graph=nx_graph),
+    #     callbacks=[
+    #         optuna.study.MaxTrialsCallback(
+    #             n_trials=args.n,
+    #             states=(
+    #                 optuna.trial.TrialState.COMPLETE,
+    #                 optuna.trial.TrialState.RUNNING,
+    #                 optuna.trial.TrialState.WAITING,
+    #             ),
+    #         )
+    #     ],
+    #     show_progress_bar=True,
+    # )
 
 
 if __name__ == "__main__":
