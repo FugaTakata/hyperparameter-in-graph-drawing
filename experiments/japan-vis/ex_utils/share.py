@@ -312,7 +312,7 @@ def generate_mmscalers(dataset_paths):
 
 
 def rate2pivots(rate, n_nodes):
-    return max(1, int(n_nodes * rate))
+    return int((n_nodes * rate * 2 + 1) // 2)
 
 
 def pivots2rate(pivots, max_pivots):
