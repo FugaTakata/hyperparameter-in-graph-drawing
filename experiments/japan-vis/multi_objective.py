@@ -1,16 +1,14 @@
 # Standard Library
 import argparse
-import os
+import math
 
 # Third Party Library
 import optuna
-import pandas as pd
 from egraph import Drawing, all_sources_bfs
 from ex_utils.config.dataset import dataset_names
 from ex_utils.config.paths import get_dataset_path
 from ex_utils.config.quality_metrics import qm_names
-from ex_utils.quality_metrics import time_complexity
-from ex_utils.share import draw_and_measure, ex_path, rate2pivots
+from ex_utils.share import draw_and_measure, ex_path, pivots2rate
 from ex_utils.utils.graph import (
     egraph_graph,
     load_nx_graph,
@@ -25,49 +23,14 @@ def objective(nx_graph):
     eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
     n_nodes = len(nx_graph.nodes)
     n_edges = len(nx_graph.edges)
-    # l = time_complexity.measure(
-    #     pivots=n_nodes,
-    #     iterations=200,
-    #     n_nodes=n_nodes,
-    #     n_edges=n_edges,
-    # )
-    # s = time_complexity.measure(
-    #     pivots=1,
-    #     iterations=1,
-    #     n_nodes=n_nodes,
-    #     n_edges=n_edges,
-    # )
-    # time_complexity_cap = 10**8
-    df_data = []
-    for pivots in range(1, n_nodes + 1):
-        for iterations in range(1, 200 + 1):
-            df_data.append(
-                {
-                    "pivots": pivots,
-                    "iterations": iterations,
-                    "time_complexity": -time_complexity.measure(
-                        pivots, iterations, n_nodes, n_edges
-                    ),
-                }
-            )
-    df = pd.DataFrame(df_data)
-    time_complexity_cap = df["time_complexity"].quantile(0.25)
+    p_max = max(1, int(n_nodes * 0.25))
 
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
-        pivots_rate = trial.suggest_float("pivots_rate", 0, 1)
-        pivots = rate2pivots(rate=pivots_rate, n_nodes=n_nodes)
+        pivots = trial.suggest_int("pivots", 1, p_max)
+        pivots_rate = pivots2rate(pivots, p_max)
         iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
-        time_complexity_value = -time_complexity.measure(
-            pivots=pivots,
-            iterations=iterations,
-            n_nodes=n_nodes,
-            n_edges=n_edges,
-        )
-
-        if time_complexity_cap > time_complexity_value:
-            raise optuna.TrialPruned()
 
         pos, quality_metrics = draw_and_measure(
             pivots=pivots,
@@ -85,11 +48,13 @@ def objective(nx_graph):
 
         params = {
             "pivots": pivots,
+            "pivots_rate": pivots_rate,
             "iterations": iterations,
             "eps": eps,
         }
+
         trial.set_user_attr("params", params)
-        trial.set_user_attr("quality_metrics", quality_metrics)
+        trial.set_user_attr("row_quality_metrics", quality_metrics)
 
         result = [quality_metrics[qm_name] for qm_name in qm_names]
         return result
@@ -103,14 +68,11 @@ def main():
         "-d", choices=dataset_names, required=True, help="dataset name"
     )
     parser.add_argument("-n", type=int, required=True, help="n_trials")
-    parser.add_argument("-j", type=int, default=-1, help="n_jobs")
     parser.add_argument("-a", required=True, help="additional name info")
 
     args = parser.parse_args()
 
-    db_uri = (
-        f"sqlite:///{ex_path.joinpath('data/optimization/optimization.db')}"
-    )
+    db_uri = f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
 
     dataset_path = get_dataset_path(args.d)
     nx_graph = nx_graph_preprocessing(
@@ -130,36 +92,10 @@ def main():
     )
     study.set_metric_names(qm_names)
 
-    cpu_count = os.cpu_count()
-
     study.optimize(
         func=objective(nx_graph=nx_graph),
-        callbacks=[
-            optuna.study.MaxTrialsCallback(
-                n_trials=args.n - 2 * cpu_count,
-                states=(
-                    optuna.trial.TrialState.COMPLETE,
-                    optuna.trial.TrialState.RUNNING,
-                    optuna.trial.TrialState.WAITING,
-                ),
-            )
-        ],
+        n_trials=args.n,
         n_jobs=args.j,
-        show_progress_bar=True,
-    )
-
-    study.optimize(
-        func=objective(nx_graph=nx_graph),
-        callbacks=[
-            optuna.study.MaxTrialsCallback(
-                n_trials=args.n,
-                states=(
-                    optuna.trial.TrialState.COMPLETE,
-                    optuna.trial.TrialState.RUNNING,
-                    optuna.trial.TrialState.WAITING,
-                ),
-            )
-        ],
         show_progress_bar=True,
     )
 

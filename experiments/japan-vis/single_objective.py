@@ -1,5 +1,6 @@
 # Standard Library
 import argparse
+import math
 import os
 
 # Third Party Library
@@ -9,12 +10,12 @@ from egraph import Drawing, all_sources_bfs
 from ex_utils.config.dataset import dataset_names
 from ex_utils.config.paths import get_dataset_path
 from ex_utils.config.quality_metrics import qm_names
-from ex_utils.quality_metrics import time_complexity
 from ex_utils.share import (
     draw_and_measure_scaled,
     ex_path,
+    generate_seed_median_df,
     generate_sscalers,
-    rate2pivots,
+    pivots2rate,
 )
 from ex_utils.utils.graph import (
     egraph_graph,
@@ -30,37 +31,14 @@ def objective(nx_graph, scalers):
     eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
     n_nodes = len(nx_graph.nodes)
     n_edges = len(nx_graph.edges)
-
-    df_data = []
-    for pivots in range(1, n_nodes + 1):
-        for iterations in range(1, 200 + 1):
-            df_data.append(
-                {
-                    "pivots": pivots,
-                    "iterations": iterations,
-                    "time_complexity": -time_complexity.measure(
-                        pivots, iterations, n_nodes, n_edges
-                    ),
-                }
-            )
-    df = pd.DataFrame(df_data)
-    time_complexity_cap = df["time_complexity"].quantile(0.25)
+    p_max = max(1, int(n_nodes * 0.25))
 
     def _objective(trial: optuna.Trial):
         eg_drawing = Drawing.initial_placement(eg_graph)
-        pivots_rate = trial.suggest_float("pivots_rate", 0, 1)
-        pivots = rate2pivots(rate=pivots_rate, n_nodes=n_nodes)
+        pivots = trial.suggest_int("pivots", 1, p_max)
+        pivots_rate = pivots2rate(pivots, p_max)
         iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
-        time_complexity_value = -time_complexity.measure(
-            pivots=pivots,
-            iterations=iterations,
-            n_nodes=n_nodes,
-            n_edges=n_edges,
-        )
-
-        if time_complexity_cap > time_complexity_value:
-            raise optuna.TrialPruned()
 
         pos, quality_metrics, scaled_qualit_metrics = draw_and_measure_scaled(
             pivots=pivots,
@@ -76,15 +54,16 @@ def objective(nx_graph, scalers):
             n_edges=n_edges,
             scalers=scalers,
         )
-        print(scaled_qualit_metrics)
 
         params = {
             "pivots": pivots,
+            "pivots_rate": pivots_rate,
             "iterations": iterations,
             "eps": eps,
         }
+
         trial.set_user_attr("params", params)
-        trial.set_user_attr("quality_metrics", quality_metrics)
+        trial.set_user_attr("row_quality_metrics", quality_metrics)
         trial.set_user_attr("scaled_quality_metrics", scaled_qualit_metrics)
 
         result = sum([scaled_qualit_metrics[qm_name] for qm_name in qm_names])
@@ -94,18 +73,28 @@ def objective(nx_graph, scalers):
 
 
 def main():
-    print(os.cpu_count())
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-d", choices=dataset_names, required=True, help="dataset name"
     )
     parser.add_argument("-n", type=int, required=True, help="n_trials")
+    parser.add_argument("-a", required=True, help="additional name info")
+    for qm_name in qm_names:
+        parser.add_argument(
+            f"--{qm_name}",
+            required=True,
+            type=int,
+            help=f"pref weight for {qm_name}",
+        )
 
     args = parser.parse_args()
+    args_dict = args.__dict__
 
-    db_uri = (
-        f"sqlite:///{ex_path.joinpath('data/optimization/optimization.db')}"
-    )
+    pref = {}
+    for qm_name in qm_names:
+        pref[qm_name] = args_dict[qm_name]
+
+    db_uri = f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
 
     dataset_path = get_dataset_path(args.d)
     nx_graph = nx_graph_preprocessing(
@@ -113,16 +102,18 @@ def main():
     )
 
     n_split = 10
-    data_seeds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    data_seeds = list(range(10))
     df_paths = [
         ex_path.joinpath(
-            f"data/grid/{args.d}/seed={data_seed}_n={n_split}.pkl"
+            f"data/grid_p/{args.d}/n={n_split}/seed={data_seed}.pkl"
         )
         for data_seed in data_seeds
     ]
-    sscalers = generate_sscalers(df_paths)
+    df = pd.concat([pd.read_pickle(df_path) for df_path in df_paths])
+    mdf = generate_seed_median_df(df)
+    sscalers = generate_sscalers(mdf)
 
-    study_name = f"{args.d}_n-trials={args.n}_sscaled-sum"
+    study_name = f"{args.d}_n-trials={args.n}_sscaled-sum_pref=[]"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
         engine_kwargs={"connect_args": {"timeout": 1000}},
@@ -133,6 +124,8 @@ def main():
         study_name=study_name,
         load_if_exists=True,
     )
+    study.set_user_attr("pref", pref)
+    study.set_metric_names(["weighted_scaled_sum"])
 
     study.optimize(
         func=objective(nx_graph=nx_graph, scalers=sscalers),
