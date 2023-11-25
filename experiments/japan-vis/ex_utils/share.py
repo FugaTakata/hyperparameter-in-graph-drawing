@@ -74,7 +74,7 @@ def measure_quality_metrics(
         eg_graph=eg_graph,
         eg_drawing=eg_drawing,
         eg_crossings=eg_crossings,
-        crossing_number=quality_metrics["crossing_number"],
+        crossing_number=abs(quality_metrics["crossing_number"]),
     )
 
     return quality_metrics
