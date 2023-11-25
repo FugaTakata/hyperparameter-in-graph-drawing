@@ -81,7 +81,7 @@ def main():
         parser.add_argument(
             f"--{qm_name}",
             required=True,
-            type=int,
+            type=float,
             help=f"pref weight for {qm_name}",
         )
 
@@ -89,8 +89,9 @@ def main():
     args_dict = args.__dict__
 
     pref = {}
+    pref_sum = sum([args_dict[qm_name] for qm_name in qm_names])
     for qm_name in qm_names:
-        pref[qm_name] = args_dict[qm_name]
+        pref[qm_name] = args_dict[qm_name] / pref_sum
 
     db_uri = f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
 
