@@ -24,7 +24,7 @@ from ex_utils.utils.graph import (
 EDGE_WEIGHT = 30
 
 
-def objective(nx_graph, scalers):
+def objective(nx_graph, scalers, pref):
     eg_graph, eg_indices = egraph_graph(nx_graph=nx_graph)
     eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
     n_nodes = len(nx_graph.nodes)
@@ -38,7 +38,7 @@ def objective(nx_graph, scalers):
         iterations = trial.suggest_int("iterations", 1, 200)
         eps = trial.suggest_float("eps", 0.01, 1)
 
-        pos, quality_metrics, scaled_qualit_metrics = draw_and_measure_scaled(
+        pos, quality_metrics, scaled_quality_metrics = draw_and_measure_scaled(
             pivots=pivots,
             iterations=iterations,
             eps=eps,
@@ -62,9 +62,19 @@ def objective(nx_graph, scalers):
 
         trial.set_user_attr("params", params)
         trial.set_user_attr("row_quality_metrics", quality_metrics)
-        trial.set_user_attr("scaled_quality_metrics", scaled_qualit_metrics)
+        trial.set_user_attr("scaled_quality_metrics", scaled_quality_metrics)
+        weighted_scaled_quality_metrics = {}
+        for qm_name in qm_names:
+            weighted_scaled_quality_metrics[qm_name] = (
+                pref[qm_name] * scaled_quality_metrics[qm_name]
+            )
+        trial.set_user_attr(
+            "weighted_scaled_quality_metrics", weighted_scaled_quality_metrics
+        )
 
-        result = sum([scaled_qualit_metrics[qm_name] for qm_name in qm_names])
+        result = sum(
+            [weighted_scaled_quality_metrics[qm_name] for qm_name in qm_names]
+        )
         return result
 
     return _objective
@@ -127,7 +137,7 @@ def main():
     study.set_metric_names(["weighted_scaled_sum"])
 
     study.optimize(
-        func=objective(nx_graph=nx_graph, scalers=sscalers),
+        func=objective(nx_graph=nx_graph, scalers=sscalers, pref=pref),
         n_trials=args.n,
         n_jobs=-1,
         show_progress_bar=True,
