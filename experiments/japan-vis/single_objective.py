@@ -104,7 +104,7 @@ def main():
     data_seeds = list(range(10))
     df_paths = [
         ex_path.joinpath(
-            f"data/grid_p/{args.d}/n={n_split}/seed={data_seed}.pkl"
+            f"data/grid/{args.d}/n={n_split}/seed={data_seed}.pkl"
         )
         for data_seed in data_seeds
     ]
@@ -112,7 +112,7 @@ def main():
     mdf = generate_seed_median_df(df)
     sscalers = generate_sscalers(mdf)
 
-    study_name = f"{args.d}_n-trials={args.n}_sscaled-sum_pref=[]"
+    study_name = f"{args.d}_n-trials={args.n}_sscaled-sum_pref={','.join(map(str, [args_dict[qm_name] for qm_name in qm_names]))}"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
         engine_kwargs={"connect_args": {"timeout": 1000}},
