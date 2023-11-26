@@ -1,28 +1,17 @@
-# Standard Library
-import argparse
-import math
-import os
-from pprint import pprint
-from random import random
-
 # Third Party Library
 import matplotlib.pyplot as plt
 import networkx as nx
 import optuna
 import pandas as pd
 from egraph import Drawing, all_sources_bfs
-from ex_utils.config.dataset import dataset_names
 from ex_utils.config.paths import get_dataset_path
-from ex_utils.config.quality_metrics import qm_name_abbreviations, qm_names
-from ex_utils.quality_metrics import time_complexity
 from ex_utils.share import (
+    compare_quality_metrics,
     draw,
     draw_and_measure,
-    draw_and_measure_scaled,
     ex_path,
     generate_seed_median_df,
     generate_sscalers,
-    rate2pivots,
 )
 from ex_utils.utils.graph import (
     egraph_graph,
@@ -44,15 +33,12 @@ def main():
         "3elt",
         "dwt_2680",
     ]
-    print(
-        "dataset",
-        "best",
-        "even",
-        "empirical",
-        "best/(all - even)",
-    )
+
+    print("dataset", "best", "even", "empirical", "best/all", "empirical/all")
+
     for d_name in d_names:
         n_trials = 100
+        n_compare = 200
         aas = [
             "pref=1.0,2.0,1.0,1.0,2.0,2.0,2.0,1.0,2.0,3.0",
             "pref=1.0,2.0,1.0,1.0,2.0,2.0,2.0,1.0,2.0,3.0",
@@ -61,9 +47,8 @@ def main():
             "pref=10.0,10.0,15.0,10.0,5.0,10.0,20.0,5.0,15.0,15.0",
             "pref=5.0,5.0,5.0,20.0,5.0,20.0,40.0,5.0,30.0,3.0",
         ]
-        a = aas[5]
+        a = aas[3]
 
-        n_compare = 200
         db_uri = (
             f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
         )
@@ -91,12 +76,11 @@ def main():
 
         eg_graph, eg_indices = egraph_graph(nx_graph=nx_graph)
         eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
-        p_max = math.ceil(n_nodes * 0.25)
 
+        # generate empirical
         pivots = 50
         iterations = 100
         eps = 0.1
-        # print(pivots, iterations, eps)
 
         eg_drawing = Drawing.initial_placement(eg_graph)
         pos, e_quality_metrics = draw_and_measure(
@@ -113,87 +97,23 @@ def main():
             n_edges=n_edges,
         )
 
+        # compare
         best_trial = study.best_trial
-
-        result_df_data = []
-
-        for _ in range(n_compare):
-            sqma = {}
-            sqmb = {}
-            weight = {}
-            for qm_name in qm_names:
-                weight[qm_name] = random()
-            weight_sum = sum(weight[qm_name] for qm_name in qm_names)
-            for qm_name in qm_names:
-                weight[qm_name] = weight[qm_name] / weight_sum
-
-            qma = best_trial.user_attrs["row_quality_metrics"]
-            qmb = e_quality_metrics
-            for qm_name in qm_names:
-                sqma[qm_name] = (
-                    scalers[qm_name].transform([[qma[qm_name]]])[0][0]
-                    * weight[qm_name]
-                )
-                sqmb[qm_name] = (
-                    scalers[qm_name].transform([[qmb[qm_name]]])[0][0]
-                    * weight[qm_name]
-                )
-            weighted_qma_sum = sum(sqma[qm_name] for qm_name in qm_names)
-            weighted_qmb_sum = sum(sqmb[qm_name] for qm_name in qm_names)
-            result_df_data.append(
-                {
-                    # **dict(
-                    #     [
-                    #         (f"a_{qm_name}", sqma[qm_name])
-                    #         for qm_name in qm_names
-                    #     ]
-                    # ),
-                    # **dict(
-                    #     [
-                    #         (f"b_{qm_name}", sqmb[qm_name])
-                    #         for qm_name in qm_names
-                    #     ]
-                    # ),
-                    # **dict(
-                    #     [
-                    #         (f"weight_{qm_name}", weight[qm_name])
-                    #         for qm_name in qm_names
-                    #     ]
-                    # ),
-                    "weighted_qma_sum": weighted_qma_sum,
-                    "weighted_qmb_sum": weighted_qmb_sum,
-                    # "best": best_trial,
-                }
-            )
-
-        result_df = (
-            pd.DataFrame(result_df_data).sort_index(axis=1).reset_index()
+        n_left, n_center, n_right = compare_quality_metrics(
+            qa=best_trial.user_attrs["row_quality_metrics"],
+            qb=e_quality_metrics,
+            scalers=scalers,
+            n_compare=n_compare,
+            threshold=0.05,
         )
 
-        con_left = (
-            result_df["weighted_qma_sum"] / result_df["weighted_qmb_sum"] < 0.5
-        )
-
-        con_center = (
-            result_df["weighted_qma_sum"] / result_df["weighted_qmb_sum"]
-            == 0.5
-        )
-
-        con_right = (
-            result_df["weighted_qma_sum"] / result_df["weighted_qmb_sum"] > 0.5
-        )
-
-        ldf = result_df[con_left]
-        cdf = result_df[con_center]
-        rdf = result_df[con_right]
-
-        # print(best_trial.params)
         print(
             d_name,
-            len(rdf),
-            len(cdf),
-            len(ldf),
-            len(rdf) / (len(result_df)),
+            n_right,
+            n_center,
+            n_left,
+            n_right / n_compare,
+            n_left / n_compare,
         )
 
         pivots = best_trial.user_attrs["params"]["pivots"]
@@ -202,27 +122,20 @@ def main():
         # print(pivots, iterations, eps)
 
         eg_drawing = Drawing.initial_placement(eg_graph)
-        pos, e_quality_metrics = draw_and_measure(
+        pos = draw(
             pivots=pivots,
             iterations=iterations,
             eps=eps,
             eg_graph=eg_graph,
             eg_indices=eg_indices,
             eg_drawing=eg_drawing,
-            eg_distance_matrix=eg_distance_matrix,
             edge_weight=EDGE_WEIGHT,
             seed=0,
-            n_nodes=n_nodes,
-            n_edges=n_edges,
         )
 
         fig, ax = plt.subplots(dpi=300, facecolor="white")
         ax.set_aspect("equal")
 
-        # ax.set_title(
-        #     f"""{d_name} pivots={pivots},iter={iterations},eps={round(eps, 4)}"""
-        # )
-        # fig.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95)
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
 
         nx.draw(

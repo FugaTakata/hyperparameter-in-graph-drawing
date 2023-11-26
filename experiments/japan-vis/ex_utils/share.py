@@ -1,5 +1,6 @@
 # Standard Library
 import math
+from random import random
 
 # Third Party Library
 import numpy as np
@@ -317,3 +318,52 @@ def rate2pivots(rate, n_nodes):
 
 def pivots2rate(pivots, max_pivots):
     return pivots / max_pivots
+
+
+def compare_quality_metrics(qa, qb, scalers, n_compare, threshold):
+    data = []
+    for _ in range(n_compare):
+        weights = {}
+        for qm_name in qm_names:
+            weights[qm_name] = random()
+        weight_sum = sum(weights[qm_name] for qm_name in qm_names)
+        for qm_name in qm_names:
+            weights[qm_name] /= weight_sum
+
+        scaled_qa = {}
+        scaled_qb = {}
+        for qm_name in qm_names:
+            scaled_qa[qm_name] = scalers[qm_name].transform([[qa[qm_name]]])[
+                0
+            ][0]
+            scaled_qb[qm_name] = scalers[qm_name].transform([[qb[qm_name]]])[
+                0
+            ][0]
+        weighted_qa_sum = sum(
+            scaled_qa[qm_name] * weights[qm_name] for qm_name in qm_names
+        )
+        weighted_qb_sum = sum(
+            scaled_qb[qm_name] * weights[qm_name] for qm_name in qm_names
+        )
+        data.append(
+            {
+                "weighted_qa_sum": weighted_qa_sum,
+                "weighted_qb_sum": weighted_qb_sum,
+            }
+        )
+
+    df = pd.DataFrame(data)
+
+    con_left = df["weighted_qa_sum"] / df["weighted_qb_sum"] < 0.5 - threshold
+
+    con_right = 0.5 + threshold < df["weighted_qa_sum"] / df["weighted_qb_sum"]
+
+    left_df = df[con_left]
+    center_df = df[~con_left & ~con_right]
+    right_df = df[con_right]
+
+    n_left = len(left_df)
+    n_center = len(center_df)
+    n_right = len(right_df)
+
+    return n_left, n_center, n_right
