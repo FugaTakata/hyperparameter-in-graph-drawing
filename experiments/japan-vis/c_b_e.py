@@ -6,7 +6,7 @@ import pandas as pd
 from egraph import Drawing, all_sources_bfs
 from ex_utils.config.paths import get_dataset_path
 from ex_utils.share import (
-    compare_quality_metrics,
+    calc_hp_compare_score,
     draw,
     draw_and_measure,
     ex_path,
@@ -21,6 +21,8 @@ from ex_utils.utils.graph import (
 
 threshold = 0.05
 EDGE_WEIGHT = 30
+n_trials = 100
+n_compare = 100
 
 
 def main():
@@ -34,11 +36,9 @@ def main():
         "dwt_2680",
     ]
 
-    print("dataset", "best", "even", "empirical", "best/all", "empirical/all")
+    print("dataset", "score", "pivots", "iterations", "eps")
 
     for d_name in d_names:
-        n_trials = 100
-        n_compare = 200
         aas = [
             "pref=1.0,2.0,1.0,1.0,2.0,2.0,2.0,1.0,2.0,3.0",
             "pref=1.0,2.0,1.0,1.0,2.0,2.0,2.0,1.0,2.0,3.0",
@@ -47,7 +47,7 @@ def main():
             "pref=10.0,10.0,15.0,10.0,5.0,10.0,20.0,5.0,15.0,15.0",
             "pref=5.0,5.0,5.0,20.0,5.0,20.0,40.0,5.0,30.0,3.0",
         ]
-        a = aas[3]
+        a = aas[5]
 
         db_uri = (
             f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
@@ -99,27 +99,17 @@ def main():
 
         # compare
         best_trial = study.best_trial
-        n_left, n_center, n_right = compare_quality_metrics(
+        score = calc_hp_compare_score(
             qa=best_trial.user_attrs["row_quality_metrics"],
             qb=e_quality_metrics,
             scalers=scalers,
             n_compare=n_compare,
-            threshold=0.05,
-        )
-
-        print(
-            d_name,
-            n_right,
-            n_center,
-            n_left,
-            n_right / n_compare,
-            n_left / n_compare,
         )
 
         pivots = best_trial.user_attrs["params"]["pivots"]
         iterations = best_trial.user_attrs["params"]["iterations"]
         eps = best_trial.user_attrs["params"]["eps"]
-        # print(pivots, iterations, eps)
+        print(d_name, score, pivots, iterations, eps)
 
         eg_drawing = Drawing.initial_placement(eg_graph)
         pos = draw(

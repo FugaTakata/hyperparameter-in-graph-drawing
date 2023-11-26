@@ -320,7 +320,7 @@ def pivots2rate(pivots, max_pivots):
     return pivots / max_pivots
 
 
-def compare_quality_metrics(qa, qb, scalers, n_compare, threshold):
+def calc_hp_compare_score(qa, qb, scalers, n_compare):
     data = []
     for _ in range(n_compare):
         weights = {}
@@ -354,16 +354,18 @@ def compare_quality_metrics(qa, qb, scalers, n_compare, threshold):
 
     df = pd.DataFrame(data)
 
-    con_left = df["weighted_qa_sum"] / df["weighted_qb_sum"] < 0.5 - threshold
-
-    con_right = 0.5 + threshold < df["weighted_qa_sum"] / df["weighted_qb_sum"]
+    con_left = df["weighted_qa_sum"] < df["weighted_qb_sum"]
+    con_right = df["weighted_qa_sum"] > df["weighted_qb_sum"]
 
     left_df = df[con_left]
-    center_df = df[~con_left & ~con_right]
     right_df = df[con_right]
 
     n_left = len(left_df)
-    n_center = len(center_df)
     n_right = len(right_df)
 
-    return n_left, n_center, n_right
+    if n_left == 0:
+        return float("inf")
+
+    score = n_right / n_left
+
+    return score

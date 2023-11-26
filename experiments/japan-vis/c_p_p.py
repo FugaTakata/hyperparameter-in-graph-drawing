@@ -1,28 +1,18 @@
-# Standard Library
-import argparse
-import math
-import os
-from pprint import pprint
-from random import random
-
 # Third Party Library
 import matplotlib.pyplot as plt
 import networkx as nx
 import optuna
 import pandas as pd
 from egraph import Drawing, all_sources_bfs
-from ex_utils.config.dataset import dataset_names
 from ex_utils.config.paths import get_dataset_path
-from ex_utils.config.quality_metrics import qm_name_abbreviations, qm_names
-from ex_utils.quality_metrics import time_complexity
+from ex_utils.config.quality_metrics import qm_names
 from ex_utils.share import (
+    calc_hp_compare_score,
     draw,
     draw_and_measure,
-    draw_and_measure_scaled,
     ex_path,
     generate_seed_median_df,
     generate_sscalers,
-    rate2pivots,
 )
 from ex_utils.utils.graph import (
     egraph_graph,
@@ -30,9 +20,11 @@ from ex_utils.utils.graph import (
     nx_graph_preprocessing,
 )
 
-pd.set_option("display.max_columns", None)
-
 EDGE_WEIGHT = 30
+
+n_trials = 200
+n_compare = 2
+threshold = 0.05
 
 
 def main():
@@ -45,12 +37,10 @@ def main():
         "3elt",
         "dwt_2680",
     ]
+    print("dataset", "n_pareto", "max_win")
 
     for d_name in d_names:
-        n_trials = 200
         a = "max_pivots=0.25n"
-
-        n_compare = 10
 
         db_uri = (
             f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
@@ -59,12 +49,10 @@ def main():
         study = optuna.load_study(study_name=study_name, storage=db_uri)
 
         best_trials = []
-
         for trial in study.best_trials:
             trial_dict = {
                 **trial.user_attrs["row_quality_metrics"],
-                **trial.user_attrs["params"]
-                # trial.user_attrs["quality_metrics_with_time-compexity-penalty"],
+                **trial.user_attrs["params"],
             }
             best_trials.append(trial_dict)
 
@@ -89,7 +77,6 @@ def main():
 
         eg_graph, eg_indices = egraph_graph(nx_graph=nx_graph)
         eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
-        p_max = math.ceil(n_nodes * 0.25)
 
         pivots = 50
         iterations = 100
@@ -112,131 +99,75 @@ def main():
         )
 
         best_df = pd.DataFrame(best_trials)
-        best_df["sp"] = False
-
-        c = 0
-        threshold = 0.05
-        vs = []
-
-        best_df["win_count"] = 0
+        best_df["win"] = 0
         best_df["even"] = 0
-        best_df["lose_count"] = 0
-
-        rows = list(best_df.query("not sp").iterrows())
-
-        # for best in best_trials:
-        for i_w, best_win in rows:
-            for i_l, best_lose in rows[i_w:]:
-                if i_w == i_l:
-                    continue
-                result_df_data = []
-                for _ in range(n_compare):
-                    sqma = {}
-                    sqmb = {}
-                    weight = {}
-                    for qm_name in qm_names:
-                        weight[qm_name] = random()
-                    weight_sum = sum(weight[qm_name] for qm_name in qm_names)
-                    for qm_name in qm_names:
-                        weight[qm_name] = weight[qm_name] / weight_sum
-
-                    # qma = best
-                    qma = dict(
-                        [(qm_name, best_win[qm_name]) for qm_name in qm_names]
-                    )
-                    qmb = dict(
-                        [(qm_name, best_lose[qm_name]) for qm_name in qm_names]
-                    )
-                    for qm_name in qm_names:
-                        sqma[qm_name] = (
-                            scalers[qm_name].transform([[qma[qm_name]]])[0][0]
-                            * weight[qm_name]
-                        )
-                        sqmb[qm_name] = (
-                            scalers[qm_name].transform([[qmb[qm_name]]])[0][0]
-                            * weight[qm_name]
-                        )
-                    weighted_qma_sum = sum(
-                        sqma[qm_name] for qm_name in qm_names
-                    )
-                    weighted_qmb_sum = sum(
-                        sqmb[qm_name] for qm_name in qm_names
-                    )
-                    result_df_data.append(
-                        {
-                            # **dict(
-                            #     [
-                            #         (f"a_{qm_name}", sqma[qm_name])
-                            #         for qm_name in qm_names
-                            #     ]
-                            # ),
-                            # **dict(
-                            #     [
-                            #         (f"b_{qm_name}", sqmb[qm_name])
-                            #         for qm_name in qm_names
-                            #     ]
-                            # ),
-                            # **dict(
-                            #     [
-                            #         (f"weight_{qm_name}", weight[qm_name])
-                            #         for qm_name in qm_names
-                            #     ]
-                            # ),
-                            "weighted_qma_sum": weighted_qma_sum,
-                            "weighted_qmb_sum": weighted_qmb_sum,
-                            # "best_win": best_win,
-                            # "best_loser": best_loser,
-                        }
-                    )
-
-                result_df = (
-                    pd.DataFrame(result_df_data)
-                    .sort_index(axis=1)
-                    .reset_index()
+        best_df["lose"] = 0
+        rows = list(best_df.iterrows())
+        for row_index, (i_a, trial_a) in enumerate(rows):
+            for i_b, trial_b in rows[row_index + 1 :]:
+                qa = dict(
+                    [(qm_name, trial_a[qm_name]) for qm_name in qm_names]
+                )
+                qb = dict(
+                    [(qm_name, trial_b[qm_name]) for qm_name in qm_names]
+                )
+                score = calc_hp_compare_score(
+                    qa=qa,
+                    qb=qb,
+                    scalers=scalers,
+                    n_compare=n_compare,
                 )
 
-                con_left = (
-                    result_df["weighted_qma_sum"]
-                    / result_df["weighted_qmb_sum"]
-                    < 0.5 - threshold
-                )
+                if score > 1 + threshold:
+                    best_df.at[i_a, "win"] += 1
+                    best_df.at[i_b, "lose"] += 1
+                elif score < 1 - threshold:
+                    best_df.at[i_a, "lose"] += 1
+                    best_df.at[i_b, "win"] += 1
+                else:
+                    best_df.at[i_a, "even"] += 1
+                    best_df.at[i_b, "even"] += 1
 
-                con_center = (
-                    0.5 - threshold
-                    <= result_df["weighted_qma_sum"]
-                    / result_df["weighted_qmb_sum"]
-                ) & (
-                    result_df["weighted_qma_sum"]
-                    / result_df["weighted_qmb_sum"]
-                    <= 0.5 + threshold
-                )
+        most_win = best_df[best_df["win"] == best_df["win"].max()]
+        print(
+            d_name,
+            len(best_df),
+            best_df["win"].max(),
+        )
+        for i, row in most_win.iterrows():
+            pivots = row["params_pivots"]
+            iterations = row["params_iterations"]
+            eps = row["params_eps"]
+            print(i, pivots, iterations, eps)
 
-                con_right = (
-                    result_df["weighted_qma_sum"]
-                    / result_df["weighted_qmb_sum"]
-                    > 0.5 - threshold
-                )
+            eg_drawing = Drawing.initial_placement(eg_graph)
+            pos = draw(
+                pivots=pivots,
+                iterations=iterations,
+                eps=eps,
+                eg_graph=eg_graph,
+                eg_indices=eg_indices,
+                eg_drawing=eg_drawing,
+                edge_weight=EDGE_WEIGHT,
+                seed=0,
+            )
 
-                ldf = result_df[con_left]
-                cdf = result_df[con_center]
-                rdf = result_df[con_right]
+            fig, ax = plt.subplots(dpi=300, facecolor="white")
+            ax.set_aspect("equal")
 
-                if len(adf) / len(result_df) > threshold:
-                    best_df.at[i_w, "win_count"] += 1
-                    best_df.at[i_l, "lose_count"] += 1
+            fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
 
-        super_winner = best_df[
-            best_df["win_count"] == best_df["win_count"].max()
-        ]
-        less_lose = best_df[best_df["lose_count"] == 0]
+            nx.draw(
+                nx_graph,
+                pos=pos,
+                node_size=0.5,
+                width=0.5,
+                # node_color="#AB47BC",
+                # edge_color="#CFD8DC",
+                ax=ax,
+            )
 
-        for i, row in super_winner.iterrows():
-            print(d_name, row)
-        # display(super_winner)
-        # display(less_lose)
-
-        # print("dataset", "gt_count", "n_pareto", "gt_count/all")
-        # print(d_name, c, len(best_trials), c / len(best_trials))
+            plt.savefig(f"./node-link-p_p-{d_name}_{i}.png")
 
 
 if __name__ == "__main__":
