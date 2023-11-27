@@ -24,7 +24,7 @@ from ex_utils.utils.graph import (
 EDGE_WEIGHT = 30
 
 n_trials = 200
-n_compare = 2
+n_compare = 100
 threshold = 0.05
 
 
