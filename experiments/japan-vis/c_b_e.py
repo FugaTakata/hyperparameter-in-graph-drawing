@@ -153,8 +153,8 @@ def main():
             n_compare=n_compare,
         )
 
-        pivots = best["params_pivots"]
-        iterations = best["params_iterations"]
+        pivots = int(best["params_pivots"])
+        iterations = int(best["params_iterations"])
         eps = best["params_eps"]
         compare_results.append([d_name, score, pivots, iterations, eps])
         print(d_name, score, pivots, iterations, eps)
