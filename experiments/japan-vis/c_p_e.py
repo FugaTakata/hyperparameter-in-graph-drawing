@@ -10,7 +10,7 @@ from ex_utils.share import (
 
 EDGE_WEIGHT = 30
 
-n_trials = 300
+n_trials = 200
 n_compare = 100
 threshold = 0.05
 
@@ -85,7 +85,12 @@ def main():
         data = []
         rows = list(pareto_df.iterrows())
         for _, trial_a in rows:
-            qa = dict([(qm_name, trial_a[qm_name]) for qm_name in qm_names])
+            qa = dict(
+                [
+                    (qm_name, trial_a[f"values_{qm_name}"])
+                    for qm_name in qm_names
+                ]
+            )
             qb = dict(
                 [
                     (qm_name, empirical_df.iloc[0][f"values_{qm_name}"])
