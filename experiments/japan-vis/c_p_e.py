@@ -1,20 +1,11 @@
 # Third Party Library
-import optuna
 import pandas as pd
-from egraph import Drawing, all_sources_bfs
-from ex_utils.config.paths import get_dataset_path
 from ex_utils.config.quality_metrics import qm_names
 from ex_utils.share import (
     calc_hp_compare_score,
-    draw_and_measure,
     ex_path,
     generate_seed_median_df,
     generate_sscalers,
-)
-from ex_utils.utils.graph import (
-    egraph_graph,
-    load_nx_graph,
-    nx_graph_preprocessing,
 )
 
 EDGE_WEIGHT = 30
@@ -43,22 +34,30 @@ def main():
         "even/all",
         "lose/all",
     )
+    compare_results = [
+        "dataset",
+        "win",
+        "even",
+        "lose",
+        "win/all",
+        "even/all",
+        "lose/all",
+    ]
     for d_name in d_names:
         a = "max_pivots=0.25n"
 
-        db_uri = (
-            f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
-        )
+        seeds = list(range(10))
         study_name = f"{d_name}_n-trials={n_trials}_multi-objective_{a}"
-        study = optuna.load_study(study_name=study_name, storage=db_uri)
-
-        best_trials = []
-        for trial in study.best_trials:
-            trial_dict = {
-                **trial.user_attrs["row_quality_metrics"],
-                **trial.user_attrs["params"],
-            }
-            best_trials.append(trial_dict)
+        pareto_df_paths = [
+            ex_path.joinpath(
+                f"data/pareto/{d_name}/{study_name}/seed={seed}.pkl"
+            )
+            for seed in seeds
+        ]
+        pareto_df = pd.concat(
+            [pd.read_pickle(path) for path in pareto_df_paths]
+        )
+        pareto_df = generate_seed_median_df(pareto_df)
 
         n_split = 10
         data_seeds = list(range(10))
@@ -72,44 +71,30 @@ def main():
         mdf = generate_seed_median_df(df)
         scalers = generate_sscalers(mdf)
 
-        dataset_path = get_dataset_path(d_name)
-        nx_graph = nx_graph_preprocessing(
-            load_nx_graph(dataset_path=dataset_path), EDGE_WEIGHT
-        )
-        n_nodes = len(nx_graph.nodes)
-        n_edges = len(nx_graph.edges)
-
-        eg_graph, eg_indices = egraph_graph(nx_graph=nx_graph)
-        eg_distance_matrix = all_sources_bfs(eg_graph, EDGE_WEIGHT)
-
-        pivots = 50
-        iterations = 100
-        eps = 0.1
-        # print(pivots, iterations, eps)
-
-        eg_drawing = Drawing.initial_placement(eg_graph)
-        pos, e_quality_metrics = draw_and_measure(
-            pivots=pivots,
-            iterations=iterations,
-            eps=eps,
-            eg_graph=eg_graph,
-            eg_indices=eg_indices,
-            eg_drawing=eg_drawing,
-            eg_distance_matrix=eg_distance_matrix,
-            edge_weight=EDGE_WEIGHT,
-            seed=0,
-            n_nodes=n_nodes,
-            n_edges=n_edges,
+        # empirical
+        empirical_df_paths = [
+            ex_path.joinpath(
+                f"data/baseline/empirical/{d_name}/seed={seed}.pkl"
+            )
+            for seed in seeds
+        ]
+        empirical_df = pd.concat(
+            [pd.read_pickle(path) for path in empirical_df_paths]
         )
 
         data = []
-        best_df = pd.DataFrame(best_trials)
-        rows = list(best_df.iterrows())
+        rows = list(pareto_df.iterrows())
         for _, trial_a in rows:
             qa = dict([(qm_name, trial_a[qm_name]) for qm_name in qm_names])
+            qb = dict(
+                [
+                    (qm_name, empirical_df.iloc[0][f"values_{qm_name}"])
+                    for qm_name in qm_names
+                ]
+            )
             score = calc_hp_compare_score(
                 qa=qa,
-                qb=e_quality_metrics,
+                qb=qb,
                 scalers=scalers,
                 n_compare=n_compare,
             )
@@ -127,7 +112,7 @@ def main():
         n_win = len(win_df)
         n_lose = len(lose_df)
         n_even = len(even_df)
-        n_best = len(best_df)
+        n_best = len(pareto_df)
 
         print(
             d_name,
@@ -137,6 +122,17 @@ def main():
             n_win / n_best,
             n_even / n_best,
             n_lose / n_best,
+        )
+        compare_results.append(
+            [
+                d_name,
+                n_win,
+                n_even,
+                n_lose,
+                n_win / n_best,
+                n_even / n_best,
+                n_lose / n_best,
+            ]
         )
 
 
