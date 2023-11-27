@@ -196,7 +196,8 @@ def main():
         f"results/c_b_e/{d_name}/{study_name}/results.json"
     )
     compare_result_path.parent.mkdir(parents=True, exist_ok=True)
-    json.dump(compare_results, compare_result_path)
+    with open(compare_result_path, mode="w") as f:
+        json.dump(compare_results, f)
 
 
 if __name__ == "__main__":

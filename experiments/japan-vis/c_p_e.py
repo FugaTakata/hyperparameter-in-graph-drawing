@@ -1,4 +1,5 @@
 # Third Party Library
+import json
 import pandas as pd
 from ex_utils.config.quality_metrics import qm_names
 from ex_utils.share import (
@@ -139,6 +140,13 @@ def main():
                 n_lose / n_best,
             ]
         )
+
+    compare_result_path = ex_path.joinpath(
+        f"results/c_p_p/{d_name}/{study_name}/results.json"
+    )
+    compare_result_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(compare_result_path, mode="w") as f:
+        json.dump(compare_results, f)
 
 
 if __name__ == "__main__":
