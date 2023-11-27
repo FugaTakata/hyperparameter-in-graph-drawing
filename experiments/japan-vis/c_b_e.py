@@ -46,6 +46,7 @@ def main():
             "pref=10.0,5.0,10.0,10.0,5.0,5.0,20.0,5.0,15.0,15.0",
             "pref=10.0,10.0,15.0,10.0,5.0,10.0,20.0,5.0,15.0,15.0",
             "pref=5.0,5.0,5.0,20.0,5.0,20.0,40.0,5.0,30.0,3.0",
+            "pref=2.0,1.0,1.0,3.0,2.0,2.0,4.0,1.0,2.0,2.0",
         ]
         a = aas[5]
 
@@ -96,6 +97,23 @@ def main():
             n_nodes=n_nodes,
             n_edges=n_edges,
         )
+
+        fig, ax = plt.subplots(dpi=300, facecolor="white")
+        ax.set_aspect("equal")
+
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
+
+        nx.draw(
+            nx_graph,
+            pos=pos,
+            node_size=0.5,
+            width=0.5,
+            # node_color="#AB47BC",
+            # edge_color="#CFD8DC",
+            ax=ax,
+        )
+
+        plt.savefig(f"./node-link-empirical-{d_name}.png")
 
         # compare
         best_trial = study.best_trial

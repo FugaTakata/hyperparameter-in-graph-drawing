@@ -52,23 +52,16 @@ def main():
     export_df_data = []
     study_name = f"{args.d}_n-trials={args.n}_sscaled-sum_pref={','.join(map(str, [args_dict[qm_name] for qm_name in qm_names]))}"
     export_path = ex_path.joinpath(
-        f"data/pareto/{args.d}/{study_name}/seed={args.seed}.pkl"
+        f"data/best/{args.d}/{study_name}/seed={args.seed}.pkl"
     )
     export_path.parent.mkdir(parents=True, exist_ok=True)
 
     db_uri = f"sqlite:///{ex_path.joinpath('data/optimization/experiment.db')}"
-    study_name = args.study_name
     study = optuna.load_study(study_name=study_name, storage=db_uri)
 
     trial = study.best_trial
 
-    pareto_df_data = []
-    params = {
-        "pivots": trial.user_attrs["params"],
-        "pivots_rate": trial.user_attrs["pivots_rate"],
-        "iterations": trial.user_attrs["iterations"],
-        "eps": trial.user_attrs["eps"],
-    }
+    params = trial.user_attrs["params"]
     eg_drawing = Drawing.initial_placement(eg_graph)
     pivots = params["pivots"]
     iterations = params["iterations"]
@@ -83,17 +76,18 @@ def main():
         eg_drawing=eg_drawing,
         eg_distance_matrix=eg_distance_matrix,
         edge_weight=EDGE_WEIGHT,
-        seed=0,
+        seed=args.seed,
         n_nodes=n_nodes,
         n_edges=n_edges,
     )
 
-    pareto_df_data.append(
+    export_df_data.append(
         {
             **generate_base_df_data(
                 params=trial.user_attrs["params"],
                 quality_metrics=quality_metrics,
                 seed=args.seed,
+                edge_weight=EDGE_WEIGHT,
             )
         }
     )

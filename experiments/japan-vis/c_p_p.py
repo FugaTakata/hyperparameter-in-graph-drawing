@@ -135,9 +135,11 @@ def main():
             best_df["win"].max(),
         )
         for i, row in most_win.iterrows():
-            pivots = row["params_pivots"]
-            iterations = row["params_iterations"]
-            eps = row["params_eps"]
+            d = row.to_dict()
+            print(d)
+            pivots = int(d["pivots"])
+            iterations = int(d["iterations"])
+            eps = d["eps"]
             print(i, pivots, iterations, eps)
 
             eg_drawing = Drawing.initial_placement(eg_graph)
