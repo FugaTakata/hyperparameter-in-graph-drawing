@@ -128,7 +128,7 @@ def main():
             [
                 d_name,
                 len(pareto_df),
-                pareto_df["win"].max(),
+                int(pareto_df["win"].max()),
             ]
         )
         for i, row in most_win.iterrows():
