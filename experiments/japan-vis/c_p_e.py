@@ -35,16 +35,16 @@ def main():
         "even/all",
         "lose/all",
     )
-    compare_results = [
-        "dataset",
-        "win",
-        "even",
-        "lose",
-        "win/all",
-        "even/all",
-        "lose/all",
-    ]
     for d_name in d_names:
+        compare_results = [
+            "dataset",
+            "win",
+            "even",
+            "lose",
+            "win/all",
+            "even/all",
+            "lose/all",
+        ]
         a = "max_pivots=0.25n"
 
         seeds = list(range(10))
@@ -141,12 +141,12 @@ def main():
             ]
         )
 
-    compare_result_path = ex_path.joinpath(
-        f"results/c_p_p/{d_name}/{study_name}/results.json"
-    )
-    compare_result_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(compare_result_path, mode="w") as f:
-        json.dump(compare_results, f)
+        compare_result_path = ex_path.joinpath(
+            f"results/c_p_e/{d_name}/{study_name}/results.json"
+        )
+        compare_result_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(compare_result_path, mode="w") as f:
+            json.dump(compare_results, f)
 
 
 if __name__ == "__main__":

@@ -31,10 +31,12 @@ threshold = 0.05
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seed", type=int, required=True, help="picture seed")
+    parser.add_argument(
+        "--picture-seed", type=int, required=True, help="picture seed"
+    )
     args = parser.parse_args()
 
-    picture_seed = args.seed
+    picture_seed = args.picture_seed
 
     d_names = [
         "1138_bus",
@@ -148,7 +150,7 @@ def main():
                 eg_indices=eg_indices,
                 eg_drawing=eg_drawing,
                 edge_weight=EDGE_WEIGHT,
-                seed=0,
+                seed=picture_seed,
             )
 
             fig, ax = plt.subplots(dpi=300, facecolor="white")
@@ -167,7 +169,7 @@ def main():
             )
 
             most_win_pareto_picture_path = ex_path.joinpath(
-                f"results/picture/baseline/empirical/{d_name}/{study_name}/seed={picture_seed}.png"
+                f"results/picture/best_pareto/{d_name}/{study_name}/seed={picture_seed}.png"
             )
             most_win_pareto_picture_path.parent.mkdir(
                 parents=True, exist_ok=True
