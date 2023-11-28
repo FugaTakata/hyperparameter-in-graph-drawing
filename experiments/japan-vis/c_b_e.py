@@ -43,13 +43,13 @@ def main():
         "3elt",
         "dwt_2680",
     ]
-    compare_results = [
-        ["dataset", "score", "pivots", "iterations", "eps"],
-    ]
 
     print("dataset", "score", "pivots", "iterations", "eps")
 
     for d_name in d_names:
+        compare_results = [
+            ["dataset", "score", "pivots", "iterations", "eps"],
+        ]
         aas = [
             "pref=1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0",
             "pref=1.0,2.0,1.0,1.0,2.0,2.0,2.0,1.0,2.0,3.0",
@@ -192,12 +192,12 @@ def main():
         best_picture_path.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(best_picture_path)
 
-    compare_result_path = ex_path.joinpath(
-        f"results/c_b_e/{d_name}/{study_name}/results.json"
-    )
-    compare_result_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(compare_result_path, mode="w") as f:
-        json.dump(compare_results, f)
+        compare_result_path = ex_path.joinpath(
+            f"results/c_b_e/{d_name}/{study_name}/compare.json"
+        )
+        compare_result_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(compare_result_path, mode="w") as f:
+            json.dump(compare_results, f)
 
 
 if __name__ == "__main__":

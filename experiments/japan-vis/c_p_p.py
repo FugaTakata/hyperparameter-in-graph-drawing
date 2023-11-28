@@ -45,10 +45,10 @@ def main():
         "3elt",
         "dwt_2680",
     ]
-    compare_results = [["dataset", "n_pareto", "max_win"]]
     print("dataset", "n_pareto", "max_win")
 
     for d_name in d_names:
+        compare_results = [["dataset", "n_pareto", "max_win"]]
         a = "max_pivots=0.25n"
 
         seeds = list(range(10))
@@ -174,12 +174,12 @@ def main():
             )
             plt.savefig(most_win_pareto_picture_path)
 
-    compare_result_path = ex_path.joinpath(
-        f"results/c_p_p/{d_name}/{study_name}/results.json"
-    )
-    compare_result_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(compare_result_path, mode="w") as f:
-        json.dump(compare_results, f)
+        compare_result_path = ex_path.joinpath(
+            f"results/c_p_p/{d_name}/{study_name}/compare.json"
+        )
+        compare_result_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(compare_result_path, mode="w") as f:
+            json.dump(compare_results, f)
 
 
 if __name__ == "__main__":
