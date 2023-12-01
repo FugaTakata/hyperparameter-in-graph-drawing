@@ -1,5 +1,6 @@
 # Standard Library
 import json
+import argparse
 
 # Third Party Library
 import matplotlib.pyplot as plt
@@ -17,7 +18,14 @@ EDGE_WEIGHT = 30
 
 
 def main():
-    seeds = list(range(10))
+    # seeds = list(range(10))
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--picture-seed", type=int, required=True, help="picture seed"
+    )
+    args = parser.parse_args()
+
+    seeds = [args.picture_seed]
 
     d_names = [
         "1138_bus",
@@ -54,18 +62,23 @@ def main():
                 seed=picture_seed,
             )
 
-            fig, ax = plt.subplots(dpi=300, facecolor="white")
+            fig, ax = plt.subplots(
+                figsize=(7, 7),
+                dpi=300,
+                facecolor="white",
+            )
+            ax.set_xmargin(0)
+            ax.set_ymargin(0)
             ax.set_aspect("equal")
-
             fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
 
             nx.draw(
                 nx_graph,
                 pos=pos,
-                node_size=0.5,
+                node_size=2,
                 width=0.5,
-                # node_color="#AB47BC",
-                edge_color="#CFD8DC",
+                # node_color="#0092ca",
+                edge_color="#607D8B",
                 ax=ax,
             )
 
@@ -111,7 +124,13 @@ def main():
                     seed=picture_seed,
                 )
 
-                fig, ax = plt.subplots(dpi=300, facecolor="white")
+                fig, ax = plt.subplots(
+                    figsize=(7, 7),
+                    dpi=300,
+                    facecolor="white",
+                )
+                ax.set_xmargin(0)
+                ax.set_ymargin(0)
                 ax.set_aspect("equal")
 
                 fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
@@ -119,10 +138,10 @@ def main():
                 nx.draw(
                     nx_graph,
                     pos=pos,
-                    node_size=0.5,
+                    node_size=2,
                     width=0.5,
-                    # node_color="#AB47BC",
-                    edge_color="#CFD8DC",
+                    # node_color="#0092ca",
+                    edge_color="#607D8B",
                     ax=ax,
                 )
 
@@ -159,7 +178,13 @@ def main():
                 seed=picture_seed,
             )
 
-            fig, ax = plt.subplots(dpi=300, facecolor="white")
+            fig, ax = plt.subplots(
+                figsize=(7, 7),
+                dpi=300,
+                facecolor="white",
+            )
+            ax.set_xmargin(0)
+            ax.set_ymargin(0)
             ax.set_aspect("equal")
 
             fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
@@ -167,15 +192,18 @@ def main():
             nx.draw(
                 nx_graph,
                 pos=pos,
-                node_size=0.5,
+                node_size=2,
                 width=0.5,
-                # node_color="#AB47BC",
-                edge_color="#CFD8DC",
+                # node_color="#0092ca",
+                edge_color="#607D8B",
                 ax=ax,
             )
 
             most_win_pareto_picture_path = ex_path.joinpath(
                 f"results/picture/best_pareto/{d_name}/{study_name}/seed={picture_seed}.png"
+            )
+            most_win_pareto_picture_path.parent.mkdir(
+                parents=True, exist_ok=True
             )
             plt.savefig(most_win_pareto_picture_path)
             plt.close()
