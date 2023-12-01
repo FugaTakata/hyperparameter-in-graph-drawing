@@ -82,7 +82,6 @@ def main():
         "-d", choices=dataset_names, required=True, help="dataset name"
     )
     parser.add_argument("-n", type=int, required=True, help="n_trials")
-    parser.add_argument("-a", required=True, help="additional name info")
     parser.add_argument(
         "--seeds",
         type=int,
