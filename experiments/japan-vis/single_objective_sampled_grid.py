@@ -115,6 +115,7 @@ def main():
     parser.add_argument(
         "--n-split", type=int, required=True, help="n_split for grid"
     )
+    parser.add_argument("--db-suffix", required=True, help="db name suffix")
     parser.add_argument(
         "--seeds",
         type=int,
@@ -155,7 +156,11 @@ def main():
     )
     p_max = max(1, int(len(nx_graph.nodes) * 0.25))
 
-    db_uri = f"sqlite:///{ex_path.joinpath(f'data/optimization/sampled_grid/n_split={args.n_split}/{args.d}-a.db')}"
+    db_path = ex_path.joinpath(
+        f"data/optimization/sampled_grid/n_split={args.n_split}/{args.d}-{args.db_suffix}.db"
+    )
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    db_uri = f"sqlite:///{db_path}"
     study_name = f"single-objective_sscaled_n-trials=100_pref={','.join(map(str, [pref[qm_name] for qm_name in qm_names]))}"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
