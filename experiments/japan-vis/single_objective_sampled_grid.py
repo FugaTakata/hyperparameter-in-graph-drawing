@@ -115,6 +115,7 @@ def main():
     parser.add_argument(
         "--n-split", type=int, required=True, help="n_split for grid"
     )
+    parser.add_argument("--db-suffix", required=True, help="db name suffix")
     parser.add_argument(
         "--n-sample", type=int, required=True, help="n_sample for grid"
     )
@@ -160,7 +161,7 @@ def main():
     p_max = max(1, int(len(nx_graph.nodes) * 0.25))
 
     db_path = ex_path.joinpath(
-        f"data/optimization/n_split={args.n_split}/{args.d}-{args.db_suffix}.db"
+        f"data/optimization/sampled_grid/n_split={args.n_split}/{args.d}-{args.db_suffix}.db"
     )
     db_path.parent.mkdir(parents=True, exist_ok=True)
     db_uri = f"sqlite:///{db_path}"
