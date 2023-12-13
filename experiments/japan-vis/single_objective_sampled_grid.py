@@ -119,10 +119,7 @@ def main():
     parser.add_argument(
         "--n-sample", type=int, required=True, help="n_sample for grid"
     )
-    parser.add_argument(
-        "--grid-id", type=int, required=True, help="sampled grid id"
-    )
-    parser.add_argument("--db-suffix", required=True, help="db name suffix")
+    parser.add_argument("--grid-id", required=True, help="sampled grid id")
     parser.add_argument(
         "--seeds",
         type=int,
