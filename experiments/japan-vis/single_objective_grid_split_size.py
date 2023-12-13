@@ -157,7 +157,7 @@ def main():
     p_max = max(1, int(len(nx_graph.nodes) * 0.25))
 
     db_path = ex_path.joinpath(
-        f"data/optimization/sampled_grid/n_split={args.n_split}/{args.d}-{args.db_suffix}.db"
+        f"data/optimization/grid_split_size/n_split={args.n_split}/{args.d}-{args.db_suffix}.db"
     )
     db_path.parent.mkdir(parents=True, exist_ok=True)
     db_uri = f"sqlite:///{db_path}"

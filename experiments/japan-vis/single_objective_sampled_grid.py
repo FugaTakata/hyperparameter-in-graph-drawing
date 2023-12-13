@@ -161,11 +161,11 @@ def main():
     p_max = max(1, int(len(nx_graph.nodes) * 0.25))
 
     db_path = ex_path.joinpath(
-        f"data/optimization/sampled_grid/n_split={args.n_split}/{args.d}-{args.db_suffix}.db"
+        f"data/optimization/sampled_grid/n_split={args.n_split}/n_sample={args.n_sample}/{args.d}-{args.db_suffix}.db"
     )
     db_path.parent.mkdir(parents=True, exist_ok=True)
     db_uri = f"sqlite:///{db_path}"
-    study_name = f"single-objective_sscaled_n-trials=100_pref={','.join(map(str, [pref[qm_name] for qm_name in qm_names]))}"
+    study_name = f"single-objective_sscaled_n-trials=100_pref={','.join(map(str, [pref[qm_name] for qm_name in qm_names]))}_{args.grid_id}"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
         engine_kwargs={"connect_args": {"timeout": 1000}},
