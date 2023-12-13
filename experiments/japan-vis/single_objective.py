@@ -112,6 +112,7 @@ def main():
         "-d", choices=dataset_names, required=True, help="dataset name"
     )
     parser.add_argument("-n", type=int, required=True, help="n_trials")
+    parser.add_argument("--db-suffix", required=True, help="db name suffix")
     parser.add_argument(
         "--seeds",
         type=int,
@@ -139,7 +140,7 @@ def main():
     n_split = 10
     df_paths = [
         ex_path.joinpath(
-            f"data/grid/{args.d}/n={n_split}/seed={data_seed}.pkl"
+            f"data/grid/{args.d}/n_split={n_split}/seed={data_seed}.pkl"
         )
         for data_seed in args.seeds
     ]
@@ -153,8 +154,8 @@ def main():
     )
     p_max = max(1, int(len(nx_graph.nodes) * 0.25))
 
-    db_uri = f"sqlite:///{ex_path.joinpath(f'data/optimization/{args.d}.db')}"
-    study_name = f"single-objective_sscaled_n-trials={args.n}_pref={','.join(map(str, [pref[qm_name] for qm_name in qm_names]))}"
+    db_uri = f"sqlite:///{ex_path.joinpath(f'data/optimization/{args.d}-{args.db_suffix}.db')}"
+    study_name = f"single-objective_sscaled_n-trials=100_pref={','.join(map(str, [pref[qm_name] for qm_name in qm_names]))}"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
         engine_kwargs={"connect_args": {"timeout": 1000}},
@@ -179,8 +180,8 @@ def main():
             seeds=args.seeds,
         ),
         n_trials=args.n,
-        n_jobs=-1,
         show_progress_bar=True,
+        gc_after_trial=True,
     )
 
 

@@ -116,6 +116,13 @@ def main():
         "--n-split", type=int, required=True, help="n_split for grid"
     )
     parser.add_argument(
+        "--n-sample", type=int, required=True, help="n_sample for grid"
+    )
+    parser.add_argument(
+        "--grid-id", type=int, required=True, help="sampled grid id"
+    )
+    parser.add_argument("--db-suffix", required=True, help="db name suffix")
+    parser.add_argument(
         "--seeds",
         type=int,
         required=True,
@@ -139,15 +146,12 @@ def main():
     for qm_name in qm_names:
         pref[qm_name] /= pref_sum
 
-    df_paths = [
+    df = pd.read_pickle(
         ex_path.joinpath(
-            f"data/grid/{args.d}/n={args.n_split}/seed={data_seed}.pkl"
+            f"data/sampled_points/{args.d}/n_split={args.n_split}/n_sample={args.n_sample}/{args.grid_id}.pkl"
         )
-        for data_seed in args.seeds
-    ]
-    df = pd.concat([pd.read_pickle(df_path) for df_path in df_paths])
-    mdf = generate_seed_median_df(df)
-    sscalers = generate_sscalers(mdf)
+    )
+    sscalers = generate_sscalers(df)
 
     dataset_path = get_dataset_path(args.d)
     nx_graph = nx_graph_preprocessing(
@@ -155,7 +159,11 @@ def main():
     )
     p_max = max(1, int(len(nx_graph.nodes) * 0.25))
 
-    db_uri = f"sqlite:///{ex_path.joinpath(f'data/optimization/sampled_grid/n_split={args.n_split}/{args.d}-a.db')}"
+    db_path = ex_path.joinpath(
+        f"data/optimization/n_split={args.n_split}/{args.d}-{args.db_suffix}.db"
+    )
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    db_uri = f"sqlite:///{db_path}"
     study_name = f"single-objective_sscaled_n-trials=100_pref={','.join(map(str, [pref[qm_name] for qm_name in qm_names]))}"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
