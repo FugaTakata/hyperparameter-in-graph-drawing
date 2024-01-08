@@ -84,6 +84,9 @@ def main():
     parser.add_argument("-n", type=int, required=True, help="n_trials")
     parser.add_argument("--db-suffix", required=True, help="db name suffix")
     parser.add_argument(
+        "--study-suffix", required=True, help="study name suffix"
+    )
+    parser.add_argument(
         "--seeds",
         type=int,
         required=True,
@@ -99,7 +102,7 @@ def main():
     )
     p_max = max(1, int(len(nx_graph.nodes) * 0.25))
 
-    study_name = f"multi-obj"
+    study_name = f"multi-obj-{args.study_suffix}"
     db_uri = f"sqlite:///{ex_path.joinpath(f'data/optimization/{args.d}-{args.db_suffix}.db')}"
     storage = optuna.storages.RDBStorage(
         url=db_uri,
