@@ -1,0 +1,87 @@
+{
+  "1138_bus": {
+    "empirical": {
+      "pivots": 50,
+      "iterations": 100,
+      "eps": 0.1
+    },
+    "multi": {
+      "pivots": 283,
+      "iterations": 38,
+      "eps": 0.8807970177815843
+    },
+    "single": {
+      "pivots": 282,
+      "iterations": 12,
+      "eps": 0.2187574757975653
+    }
+  },
+  "USpowerGrid": {
+    "empirical": {
+      "pivots": 50,
+      "iterations": 100,
+      "eps": 0.1
+    },
+    "multi": {
+      "pivots": 935,
+      "iterations": 30,
+      "eps": 0.8666705392428989
+    },
+    "single": {
+      "pivots": 1126,
+      "iterations": 19,
+      "eps": 0.9137702131295232
+    }
+  },
+  "dwt_1005": {
+    "empirical": {
+      "pivots": 50,
+      "iterations": 100,
+      "eps": 0.1
+    },
+    "multi": {
+      "pivots": 225,
+      "iterations": 32,
+      "eps": 0.10455805187939982
+    },
+    "single": {
+      "pivots": 226,
+      "iterations": 30,
+      "eps": 0.21450580557489923
+    }
+  },
+  "poli": {
+    "empirical": {
+      "pivots": 50,
+      "iterations": 100,
+      "eps": 0.1
+    },
+    "multi": {
+      "pivots": 483,
+      "iterations": 13,
+      "eps": 0.8291988930769113
+    },
+    "single": {
+      "pivots": 504,
+      "iterations": 27,
+      "eps": 0.2843040614228487
+    }
+  },
+  "qh882": {
+    "empirical": {
+      "pivots": 50,
+      "iterations": 100,
+      "eps": 0.1
+    },
+    "multi": {
+      "pivots": 207,
+      "iterations": 62,
+      "eps": 0.6709299094410928
+    },
+    "single": {
+      "pivots": 214,
+      "iterations": 25,
+      "eps": 0.31731426087252684
+    }
+  }
+}
